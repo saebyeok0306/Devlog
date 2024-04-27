@@ -1,0 +1,9 @@
+@mixin mediaquery($breakpoint: zero, $map: $breakpoints) {
+    @if type-of($map) == map {
+        @if map-has-key($map, $breakpoint) {
+            @media (max-width: #{map-get($map, $breakpoint)}) {
+                @content;
+            }
+        }
+    }
+}

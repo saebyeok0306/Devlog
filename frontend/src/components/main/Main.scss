@@ -1,0 +1,19 @@
+
+.main {
+    margin-top: 1rem;
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+
+    section {
+        // flex-grow: 6;
+        width: 100%;
+        background-color: aquamarine;
+    }
+
+    aside {
+        // flex-grow: 1;
+        width: 20%;
+        background-color: beige;
+    }
+}
