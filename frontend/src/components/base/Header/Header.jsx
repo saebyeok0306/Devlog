@@ -1,7 +1,9 @@
 import React from 'react';
-import './Header.scss';
 import Responsive from '../../common/Responsive';
 import { Link } from 'react-router-dom';
+
+import { BLOG_NAME } from '../../../constants/base/main';
+import './Header.scss';
 
 function Header({right, menu}) {
   return (
@@ -9,10 +11,10 @@ function Header({right, menu}) {
       <Responsive>
         <div className="header-menu">
           <Link className='brand' to="/">
-            JSH's Devlog
+            {BLOG_NAME}
           </Link>
           <div>
-            여기에 검색창 넣자.
+            여기에 검색창 넣자. {window.innerWidth}
           </div>
           <div className="header-right">
             {right}

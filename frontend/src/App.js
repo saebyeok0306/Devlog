@@ -6,6 +6,7 @@ import AnyRoute from './routes/AnyRoute';
 import FooterContainer from './containers/base/FooterContainer';
 import Home from './pages/Home';
 import { AuthTokenInterceptor } from './api/Axios';
+import Editor from './pages/Editor';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route element={<AnyRoute/>}>
               <Route path="/" element={<Home/>} />
+              <Route path="/editor" element={<Editor/>} />
             </Route>
             {/* <Route element={<PublicRoute/>}>
               <Route path="/login" element={<LoginPage/>} />
