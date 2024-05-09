@@ -8,7 +8,7 @@ import { getCookie } from "../utils/useCookie";
 const REFRESH_URL = '/user/reissue';
 
 
-export const AXIOS_INSTANCE = axios.create({
+export const API = axios.create({
   baseURL: `${process.env.REACT_APP_API_ENDPOINT}`,
   withCredentials: true
 });
@@ -26,7 +26,7 @@ export const AuthTokenInterceptor = ({children}) => {
   }, [])
 
   const requestAuthTokenInjector = () => {
-    AXIOS_INSTANCE.interceptors.request.use((requestConfig) => {
+    API.interceptors.request.use((requestConfig) => {
       if(!requestConfig.headers) return requestConfig;
 
       const token = getCookie("access_token");
@@ -43,7 +43,7 @@ export const AuthTokenInterceptor = ({children}) => {
   }
 
   const requestRejectHandler = () => {
-    AXIOS_INSTANCE.interceptors.response.use(
+    API.interceptors.response.use(
       (res) => res,
       async(err) => {
         // Network Error

@@ -1,6 +1,6 @@
 import React from "react";
-import Main from "../../components/main";
-import LeftSideContainer from "../side/LeftSideContainer";
+import Main from "components/main";
+import LeftSideContainer from "containers/side/LeftSideContainer";
 
 
 function MainContainer() {

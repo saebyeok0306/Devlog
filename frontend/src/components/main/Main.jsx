@@ -1,8 +1,8 @@
 import React from "react";
-import Responsive from "../common/Responsive";
+import Responsive from "components/common/Responsive";
 
 import './Main.scss';
-import Posts from "../posts/Posts";
+import Posts from "components/posts/Posts";
 
 
 function Main({LeftSide, RightSide}) {

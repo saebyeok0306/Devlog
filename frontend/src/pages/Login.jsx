@@ -1,15 +1,16 @@
 import React from 'react';
 import PageTemplate from 'components/base/PageTemplate';
+import LoginContainer from 'containers/login/LoginContainer';
 import HeaderContainer from 'containers/base/HeaderContainer';
-import MainContainer from 'containers/main/MainContainer';
 
-function Home() {
+function Login() {
   return (
     <PageTemplate>
       <HeaderContainer/>
-      <MainContainer/>
+      <LoginContainer/>
     </PageTemplate>
   );
 }
 
-export default Home;
+// <LoginContainer/>
+export default Login;

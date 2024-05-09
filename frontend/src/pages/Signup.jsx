@@ -1,15 +1,15 @@
 import React from 'react';
 import PageTemplate from 'components/base/PageTemplate';
 import HeaderContainer from 'containers/base/HeaderContainer';
-import MainContainer from 'containers/main/MainContainer';
+import SignupContainer from 'containers/signup/SignupContainer';
 
-function Home() {
+function Signup() {
   return (
     <PageTemplate>
       <HeaderContainer/>
-      <MainContainer/>
+      <SignupContainer/>
     </PageTemplate>
   );
 }
 
-export default Home;
+export default Signup;

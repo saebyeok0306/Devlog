@@ -15,10 +15,14 @@
         .header-right {
             display: flex;
             flex-direction: row;
+            height: inherit;
+            align-items: center;
 
             div {
                 margin-left: 0.5rem;
                 margin-right: 0.5rem;
+                margin-top: auto;
+                margin-bottom: auto;
             }
         }
     }

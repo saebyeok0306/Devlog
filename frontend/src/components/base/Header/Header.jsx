@@ -1,8 +1,8 @@
 import React from 'react';
-import Responsive from '../../common/Responsive';
+import Responsive from 'components/common/Responsive';
 import { Link } from 'react-router-dom';
 
-import { BLOG_NAME } from '../../../constants/base/main';
+import { BLOG_NAME } from 'constants/base/main';
 import './Header.scss';
 
 function Header({right, menu}) {
