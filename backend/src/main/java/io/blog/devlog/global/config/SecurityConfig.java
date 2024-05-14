@@ -1,6 +1,21 @@
 package io.blog.devlog.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.blog.devlog.domain.repository.UserRepository;
+import io.blog.devlog.global.jwt.service.JwtService;
+import io.blog.devlog.global.login.filter.AuthenticationProcessingFilter;
+import io.blog.devlog.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
+import io.blog.devlog.global.login.handler.CustomAccessDeniedHandler;
+import io.blog.devlog.global.login.handler.CustomAuthenticationEntryPoint;
+import io.blog.devlog.global.login.handler.LoginFailureHandler;
+import io.blog.devlog.global.login.handler.LoginSuccessHandler;
+import io.blog.devlog.global.login.service.PrincipalDetailsService;
+import io.blog.devlog.global.oauth2.handler.OAuth2LoginFailureHandler;
+import io.blog.devlog.global.oauth2.handler.OAuth2LoginSuccessHandler;
+import io.blog.devlog.global.oauth2.service.CustomOAuth2UserService;
+import io.blog.devlog.global.response.ErrorResponse;
+import io.blog.devlog.global.response.SuccessResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,20 +30,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import io.blog.devlog.domain.repository.UserRepository;
-import io.blog.devlog.global.jwt.service.JwtService;
-import io.blog.devlog.global.login.handler.CustomAuthenticationEntryPoint;
-import io.blog.devlog.global.login.filter.AuthenticationProcessingFilter;
-import io.blog.devlog.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
-import io.blog.devlog.global.login.handler.CustomAccessDeniedHandler;
-import io.blog.devlog.global.login.handler.LoginFailureHandler;
-import io.blog.devlog.global.login.handler.LoginSuccessHandler;
-import io.blog.devlog.global.login.service.PrincipalDetailsService;
-import io.blog.devlog.global.oauth2.handler.OAuth2LoginFailureHandler;
-import io.blog.devlog.global.oauth2.handler.OAuth2LoginSuccessHandler;
-import io.blog.devlog.global.oauth2.service.CustomOAuth2UserService;
-import io.blog.devlog.global.response.ErrorResponse;
-import io.blog.devlog.global.response.SuccessResponse;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Spring Security Filter(SecurityConfig를 의미함)가 Spring Filter Chain에 등록됩니다.
@@ -55,8 +60,20 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        http.httpBasic(AbstractHttpConfigurer::disable);
+        http.httpBasic(AbstractHttpConfigurer::disable); //Http basic Auth 기반
         http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+        http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowCredentials(true);
+                config.addAllowedOrigin("http://localhost:3000");
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+                config.setExposedHeaders(List.of(CorsConfiguration.ALL));
+                return config;
+            }
+        }));
         http
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
