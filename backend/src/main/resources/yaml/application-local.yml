@@ -12,11 +12,5 @@ spring:
       ddl-auto: create # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
-        show-sql: true
+        show_sql: true
         format_sql: true
-
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
