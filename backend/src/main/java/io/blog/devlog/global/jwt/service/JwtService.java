@@ -1,5 +1,6 @@
 package io.blog.devlog.global.jwt.service;
 
+import io.blog.devlog.domain.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,8 +13,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import io.blog.devlog.domain.model.User;
-import io.blog.devlog.domain.repository.UserRepository;
 
 import java.security.Key;
 import java.util.Date;
@@ -23,7 +22,6 @@ import java.util.Optional;
 @Service
 public class JwtService {
 
-    private final UserRepository userRepository;
     @Getter
     private final String BEARER = "Bearer ";
     private final String ACCESS_TOKEN_SUBJECT = "AccessToken";
@@ -39,19 +37,11 @@ public class JwtService {
     @Getter
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
-    private final long accessTokenExpiration;
-    private final long refreshTokenExpiration;
+    @Value("${jwt.access.expiration}")
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh.expiration}")
+    private long refreshTokenExpiration;
     private Key key;
-
-    public JwtService(
-            UserRepository userRepository,
-            @Value("${jwt.access.expiration}") long accessTokenExpiration,
-            @Value("${jwt.refresh.expiration}") long refreshTokenExpiration
-    ) {
-        this.userRepository = userRepository;
-        this.accessTokenExpiration = accessTokenExpiration * 1000;
-        this.refreshTokenExpiration = refreshTokenExpiration * 1000;
-    }
 
     @PostConstruct
     public void init() {
@@ -63,7 +53,7 @@ public class JwtService {
         // 토큰의 expire 시간을 설정
         Date date = new Date();
         long now = date.getTime();
-        Date validity = new Date(now + accessTokenExpiration);
+        Date validity = new Date(now + accessTokenExpiration*1000);
 
         // JWT 용어가 헷갈릴 수 있는데, 내용 정리를 하자면
         // JWT는 Header, Payload, Signature로 이루어져 있음.
@@ -90,13 +80,30 @@ public class JwtService {
      * RefreshToken 생성
      * RefreshToken은 Claim에 email도 넣지 않으므로 withClaim() X
      */
-    public String createRefreshToken() {
-        long now = (new Date()).getTime();
-        Date validity = new Date(now + refreshTokenExpiration);
+    public String createRefreshToken(User user) {
+        Date date = new Date();
+        long now = date.getTime();
+        Date validity = new Date(now + refreshTokenExpiration*1000);
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
+                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .setExpiration(validity)
+                .setIssuedAt(date)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String createRefreshToken(User user, int salt) {
+        Date date = new Date();
+        long now = date.getTime();
+        Date validity = new Date(now + refreshTokenExpiration*1000 + salt);
+
+        return Jwts.builder()
+                .setSubject(REFRESH_TOKEN_SUBJECT)
+                .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .setExpiration(validity)
+                .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -155,9 +162,6 @@ public class JwtService {
         response.setHeader(refreshHeader, refreshToken);
     }
 
-    public void updateRefreshToken(String username, String refreshToken) {
-        userRepository.findByUsername(username).ifPresent(user -> user.updateRefreshToken(refreshToken));
-    }
 
     public boolean isTokenValid(String token) {
         try {

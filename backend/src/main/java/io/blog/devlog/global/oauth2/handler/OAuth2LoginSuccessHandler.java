@@ -54,7 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         User user = optUser.get();
         String accessToken = jwtService.createAccessToken(user);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(user);
         response.addHeader(jwtService.getAccessHeader(), jwtService.getBEARER() + accessToken);
         response.addHeader(jwtService.getRefreshHeader(), jwtService.getBEARER() + refreshToken);
 
