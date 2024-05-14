@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.controller;
 
+import io.blog.devlog.global.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final ErrorResponse errorResponse;
     private final SuccessResponse successResponse;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -33,7 +35,11 @@ public class AuthController {
 
         Optional<User> userEntity = userRepository.findByUsername(userDto.getUsername());
         if (userEntity.isPresent()) {
-            throw new BadRequestException("이미 가입된 유저입니다.");
+            Integer status = HttpServletResponse.SC_BAD_REQUEST;
+            String error = "이미 가입된 유저입니다.";
+            String path = request.getRequestURI();
+            errorResponse.setResponse(response, status, error, path);
+            return;
         }
 
         User user = User.builder()
