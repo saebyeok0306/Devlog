@@ -71,6 +71,8 @@ public class SecurityConfig {
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
                 config.setExposedHeaders(List.of(CorsConfiguration.ALL));
+                config.addExposedHeader("Authorization");
+                config.addExposedHeader("Authorization-Refresh");
                 return config;
             }
         }));

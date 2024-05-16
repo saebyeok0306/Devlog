@@ -28,11 +28,11 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        String username = extractUsername(authentication); // 인증 정보에서 Username(email) 추출
-        Optional<User> optUser = userRepository.findByUsername(username);
+        String email = extractUsername(authentication); // 인증 정보에서 Username(email) 추출
+        Optional<User> optUser = userRepository.findByEmail(email);
 
         if(optUser.isEmpty()) {
-            log.error("로그인한 유저의 정보가 없습니다! username : {}", username);
+            log.error("로그인한 유저의 정보가 없습니다! email : {}", email);
             return;
         }
         User user = optUser.get();
@@ -44,7 +44,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         user.updateRefreshToken(refreshToken);
         userRepository.saveAndFlush(user);
 
-        log.info("로그인에 성공하였습니다. Username : {}", username);
+        log.info("로그인에 성공하였습니다. Email : {}", email);
         log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);
         log.info("로그인에 성공하였습니다. RefreshToken : {}", refreshToken);
         Integer status = HttpServletResponse.SC_OK;

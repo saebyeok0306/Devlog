@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     // findBy 규칙 -> select * from user where username = 1?
     public Optional<User> findByUsername(String username); // JPA Query Methods
+    public Optional<User> findByEmail(String email);
     public Optional<User> findByRefreshToken(String refreshToken);
     @Modifying
     @Query("UPDATE User u SET u.refreshToken = :token WHERE u.username = :username")

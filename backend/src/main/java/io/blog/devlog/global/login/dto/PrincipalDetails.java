@@ -48,7 +48,7 @@ public class PrincipalDetails extends DefaultOAuth2User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
     @Override

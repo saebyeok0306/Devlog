@@ -30,21 +30,12 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("PrincipalDetailsService의 loadUserByUsername({}) 호출됨", username);
-        Optional<User> userEntity = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.info("PrincipalDetailsService의 loadUserByUsername({}) 호출됨", email);
+        Optional<User> userEntity = userRepository.findByEmail(email);
         if (userEntity.isPresent()) {
             return new PrincipalDetails(userEntity.get());
         }
-        throw new UsernameNotFoundException(username + " -> 없는 계정입니다.");
-    }
-
-    private org.springframework.security.core.userdetails.User createUser(String username, User user) {
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().name()));
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),
-                grantedAuthorities);
+        throw new UsernameNotFoundException(email + " -> 없는 계정입니다.");
     }
 }
