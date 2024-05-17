@@ -13,8 +13,8 @@ import Signup from 'pages/Signup';
 function App() {
   return (
     <div className={`wrapper`}>
-      <div className={`contentWrapper`}>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <div className={`contentWrapper`}>
           <AuthTokenInterceptor>
           <Routes>
             <Route element={<AnyRoute/>}>
@@ -36,9 +36,9 @@ function App() {
             </Route> */}
           </Routes>
           </AuthTokenInterceptor>
-        </BrowserRouter>
-      </div>
-      <FooterContainer/>
+        </div>
+        <FooterContainer/>
+      </BrowserRouter>
     </div>
   );
 }

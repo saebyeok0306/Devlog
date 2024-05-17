@@ -1,13 +1,62 @@
-import React from "react";
+import React, { useState } from "react";
 import Responsive from "components/common/Responsive";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { setCookie } from "utils/useCookie";
+import { decodeJWT } from "utils/useJWT";
 
 import "./Login.scss";
 import EmailIcon from "assets/icons/Email";
 import PasswordIcon from "assets/icons/Password";
+import { user_login_api } from "api/User";
+import { Auth, authAtom } from "recoil/authAtom";
+import { useRecoilState } from "recoil";
 
 
 function Login() {
+  const navigate = useNavigate();
+  const [, setAuthDto] = useRecoilState(authAtom);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      loginAction(event);
+    }
+  };
+
+  const loginAction = (e) => {
+    e.preventDefault();
+
+    user_login_api(email, password)
+    .then((res) => {
+      console.log(res);
+      const access_token = res.headers["authorization"];
+      const refresh_token = res.headers["authorization-refresh"];
+      if(access_token != null && refresh_token != null) {
+        setCookie("access_token", access_token);
+        setCookie("refresh_token", refresh_token);
+      }
+      else {
+        alert("로그인 실패!\n", res);
+        return;
+      }
+      const payload = decodeJWT(access_token);
+      setAuthDto(new Auth(payload.name, payload.role, true));
+      alert("로그인 성공!\n", res);
+      navigate("/");
+    })
+    .catch((err) => {
+      if (err.response?.data) {
+        alert(err.response.data.error);
+      }
+      else {
+        alert(err);
+      }
+      console.log(err);
+    });
+  };
+
   return (
     <Responsive className="login">
       <div className="login-box">
@@ -15,31 +64,44 @@ function Login() {
           로그인
           <div className="liner"/>
         </div>
-        <div className="inputs">
-          <div className="input">
-            <EmailIcon/>
-            <input type="email" placeholder="이메일"/>
+        <div className="login-align">
+          <div className="login-left">
+            <div className="inputs">
+              <div className="input">
+                <EmailIcon/>
+                <input
+                  type="email"
+                  placeholder="이메일"
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e)}
+                  tabIndex={1}
+                />
+              </div>
+              <div className="input">
+                <PasswordIcon/>
+                <input
+                  type="password"
+                  placeholder="비밀번호"
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e)}
+                  tabIndex={2}
+                />
+              </div>
+            </div>
+            <div className="etc">
+              <div className="find">비밀번호를 잊어버리셨나요?</div>
+              <Link tabIndex={3}>비밀번호 찾기</Link>
+            </div>
           </div>
-          <div className="input">
-            <PasswordIcon/>
-            <input type="password" placeholder="비밀번호"/>
+          <div className="login-right">
+            <div className="buttons col">
+              <div className="button" onClick={loginAction} tabIndex={4}>로그인 하기</div>
+              <div className="button oauth google" tabIndex={5}>구글 로그인</div>
+              <Link className="button pick" to="/signup" tabIndex={6}>
+                계정 만들기
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="etc">
-          <div className="find">비밀번호를 잊어버리셨나요?</div>
-          <Link>비밀번호 찾기</Link>
-        </div>
-        <div className="buttons row">
-          <Link className="button pick" to="/signup">
-            회원가입
-          </Link>
-          <div className="button">로그인하기</div>
-        </div>
-        <div className="liner">
-          <p className="or">OR</p>
-        </div>
-        <div className="buttons">
-          <div className="button oauth google">구글 로그인</div>
         </div>
       </div>
     </Responsive>

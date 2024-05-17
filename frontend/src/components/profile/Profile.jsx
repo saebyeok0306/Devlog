@@ -6,7 +6,9 @@ import './Profile.scss';
 function Profile() {
   return (
     <div className="profile">
-      <img src={"/assets/profile.jpg"} alt="profile" />
+      <div className="square-image">
+        <img src={"/assets/profile.jpg"} alt="profile" />
+      </div>
       <div>프로필</div>
     </div>
   );

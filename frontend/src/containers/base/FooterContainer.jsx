@@ -1,9 +1,28 @@
 import React from 'react';
-import Footer from "components/base/Footer/Footer";
+import FooterComponent from "components/base/Footer/FooterComponent";
+import { useLocation } from 'react-router-dom';
 
 function FooterContainer() {
+  // const pathname = window.location.pathname;
+  const { pathname } = useLocation();
+
+  const pathFilter = () => {
+    const paths = ["/login", "/signup"];
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      if(pathname.startsWith(path)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (pathFilter()) {
+    return <></>;
+  }
+
   return (
-    <Footer/>
+    <FooterComponent/>
   );
 }
 

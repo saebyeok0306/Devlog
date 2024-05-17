@@ -2,6 +2,7 @@ import React from "react";
 
 import './Category.scss';
 
+
 const test = [1,2,3,4,5];
 
 function Category() {

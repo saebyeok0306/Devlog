@@ -13,9 +13,7 @@ function Header({right, menu}) {
           <Link className='brand' to="/">
             {BLOG_NAME}
           </Link>
-          <div>
-            여기에 검색창 넣자. {window.innerWidth}
-          </div>
+          {/* 여기에 넣으면 중간에 컴포넌트 삽입 */}
           <div className="header-right">
             {right}
             {menu}
