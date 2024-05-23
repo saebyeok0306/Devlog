@@ -62,19 +62,16 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable); //Http basic Auth 기반
         http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowCredentials(true);
-                config.addAllowedOrigin("http://localhost:3000");
-                config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-                config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
-                config.setExposedHeaders(List.of(CorsConfiguration.ALL));
-                config.addExposedHeader("Authorization");
-                config.addExposedHeader("Authorization-Refresh");
-                return config;
-            }
+        http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true);
+            config.addAllowedOrigin("http://localhost:3000");
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+            config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+            config.setExposedHeaders(List.of(CorsConfiguration.ALL));
+            config.addExposedHeader("Authorization");
+            config.addExposedHeader("Authorization-Refresh");
+            return config;
         }));
         http
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -142,6 +139,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProcessingFilter authenticationProcessingFilter() {
-        return new AuthenticationProcessingFilter(objectMapper, errorResponse);
+        return new AuthenticationProcessingFilter(jwtService);
     }
 }

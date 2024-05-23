@@ -1,11 +1,10 @@
 package io.blog.devlog.global.jwt.service;
 
 import io.blog.devlog.domain.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -162,6 +161,15 @@ public class JwtService {
         response.setHeader(refreshHeader, refreshToken);
     }
 
+    public Claims extractClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 
     public boolean isTokenValid(String token) {
         try {
@@ -173,9 +181,17 @@ public class JwtService {
                     .getBody();
             log.info("isTokenValid 호출 : {}", claims);
             return true;
+        } catch (SecurityException | MalformedJwtException e) {
+            log.error("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            log.error("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            log.error("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.error("JWT 토큰이 잘못되었습니다.");
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 }
