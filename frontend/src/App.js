@@ -9,37 +9,46 @@ import { AuthTokenInterceptor } from 'api/Axios';
 import Editor from 'pages/Editor';
 import Login from 'pages/Login';
 import Signup from 'pages/Signup';
+import Callback from 'pages/Callback';
+import { useRecoilValue } from 'recoil';
+import { themeAtom } from 'recoil/themeAtom';
+import DarkModeProvider from 'utils/DarkModeProvider';
 
 function App() {
+  const isDark = useRecoilValue(themeAtom);
+
   return (
-    <div className={`wrapper`}>
-      <BrowserRouter basename={process.env.PUBLIC_URL}>
-        <div className={`contentWrapper`}>
-          <AuthTokenInterceptor>
-          <Routes>
-            <Route element={<AnyRoute/>}>
-              <Route path="/" element={<Home/>} />
-              <Route path="/editor" element={<Editor/>} />
-            </Route>
-            <Route element={<PublicRoute/>}>
-              <Route path="/login" element={<Login/>} />
-              <Route path="/signup" element={<Signup/>} />
-            </Route>
-            {/* <Route element={<PublicRoute/>}>
-              <Route path="/login" element={<LoginPage/>} />
-            </Route>
-            <Route element={<PrivateRoute role={"Admin"} />}>
-              <Route path="/admin" element={<AdminPage/>} />
-            </Route>
-            <Route element={<PrivateRoute role={"Guest"} />}>
-              <Route path="/guest" element={<GuestPage/>} />
-            </Route> */}
-          </Routes>
-          </AuthTokenInterceptor>
-        </div>
-        <FooterContainer/>
-      </BrowserRouter>
-    </div>
+    <DarkModeProvider>
+      <div className={`wrapper ${isDark ? "dark" : "light"}`}>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
+          <div className={`contentWrapper`}>
+            <AuthTokenInterceptor>
+            <Routes>
+              <Route element={<AnyRoute/>}>
+                <Route path="/" element={<Home/>} />
+                <Route path="/editor" element={<Editor/>} />
+              </Route>
+              <Route element={<PublicRoute/>}>
+                <Route path="/login" element={<Login/>} />
+                <Route path="/signup" element={<Signup/>} />
+                <Route path="/callback" element={<Callback/>} />
+              </Route>
+              {/* <Route element={<PublicRoute/>}>
+                <Route path="/login" element={<LoginPage/>} />
+              </Route>
+              <Route element={<PrivateRoute role={"Admin"} />}>
+                <Route path="/admin" element={<AdminPage/>} />
+              </Route>
+              <Route element={<PrivateRoute role={"Guest"} />}>
+                <Route path="/guest" element={<GuestPage/>} />
+              </Route> */}
+            </Routes>
+            </AuthTokenInterceptor>
+          </div>
+          <FooterContainer/>
+        </BrowserRouter>
+      </div>
+    </DarkModeProvider>
   );
 }
 

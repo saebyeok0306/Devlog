@@ -5,8 +5,8 @@ import "./Posts.scss";
 class Post {
   constructor (title) {
     this.title = title;
-    this.author = "JSH";
-    this.content = "얄리얄리샬라샬라콘텐츠입니다.";
+    this.author = "dev";
+    this.content = "콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠";
   }
 }
 

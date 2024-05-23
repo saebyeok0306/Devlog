@@ -2,9 +2,24 @@
 
 .header {
     width: 100%;
-    height: 50px;
+    height: 60px;
     background-color: $background-white-color;
     box-shadow: 0 5px 10px $shadow-color;
+
+    &:is(.dark *) {
+        color: $font-white-color;
+        background-color: $background-black-color;
+        box-shadow: 0 5px 10px $shadow-white-color;
+    }
+    
+    // &.light {
+    //     color: $font-black-color;
+    //     background-color: $background-white-color;
+    // }
+    // &.dark {
+    //     color: $font-white-color;
+    //     background-color: $background-black-color;
+    // }
 
     .header-menu {
         height: inherit;
@@ -12,6 +27,10 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+
+        a.brand {
+            font-family: 'SokchoBadaBatang';
+        }
 
 
         .header-right {

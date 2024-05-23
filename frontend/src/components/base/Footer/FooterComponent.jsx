@@ -25,7 +25,6 @@ function FooterComponent() {
       <Responsive className="footer-responsive">
           <Footer.Copyright href="https://github.com/westreed" by="SeHun.J" year={2024} />
           <Footer.LinkGroup>
-            <FooterLinker to="/">About</FooterLinker>
             <FooterLinker to="/">Privacy Policy</FooterLinker>
             <FooterLinker to="/">Licensing</FooterLinker>
             <FooterLinker to="/">Contact</FooterLinker>

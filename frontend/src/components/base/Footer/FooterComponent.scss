@@ -1,25 +1,18 @@
+@import "src/styles/commons";
 
 .footer {
     margin-top: 1rem;
+
+    footer {
+        &:is(.dark *) {
+            background-color: $background-black-color;
+        }
+    }
 
     .footer-responsive {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        font-family: 'SokchoBadaBatang';
     }
-    // align-items: center;
-    // margin-bottom: 1rem;
-    // box-shadow: 0px -10px 10px rgba(0, 0, 0, 0.05);
-    
-    // .liner {
-    //     margin-top: 1em;
-    //     width: 100%;
-    //     border-top: 1px solid darkslateblue;
-    // }
-
-    // .footer-responsive {
-    //     .footer-content {
-    //         text-align: center;
-    //     }
-    // }
 }

@@ -7,7 +7,7 @@ import './Header.scss';
 
 function Header({right, menu}) {
   return (
-    <div className="header">
+    <div className={`header`}>
       <Responsive>
         <div className="header-menu">
           <Link className='brand' to="/">

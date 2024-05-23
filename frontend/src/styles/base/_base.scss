@@ -4,18 +4,19 @@
 
 body {
     margin: 0;
-    font-size: 16px;
+    // user-select: none;
+    font-size: 15px;
     @include mediaquery(wide) {
         font-size: 14px;
     }
     @include mediaquery(x-large) {
-        font-size: 12px;
+        font-size: 13px;
     }
     @include mediaquery(large) {
-        font-size: 11px;
+        font-size: 12px;
     }
     @include mediaquery(medium) {
-        font-size: 10px;
+        font-size: 12px;
     }
 }
 
@@ -27,7 +28,14 @@ p {
 .wrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+
+    &.dark {
+        color: $font-white-color;
+        background-color: $background-deep-black-color;
+    }
+
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .contentWrapper {

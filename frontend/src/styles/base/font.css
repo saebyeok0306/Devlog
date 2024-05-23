@@ -1,0 +1,18 @@
+
+@font-face {
+    font-family: 'NanumGothic';
+    src: url('assets/fonts/NanumGothic.ttf') format('truetype');
+    font-weight: normal;
+}
+
+/* TODO: 저작권 표기하기 https://noonnu.cc/font_page/1337 */
+@font-face {
+    font-family: 'SokchoBadaBatang';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_1@1.0/SokchoBadaBatang.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'NanumGothic', sans-serif;
+}

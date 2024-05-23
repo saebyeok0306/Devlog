@@ -5,7 +5,7 @@ import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { getCookie } from "../utils/useCookie";
 
-const REFRESH_URL = '/user/reissue';
+const REFRESH_URL = '/reissue';
 
 
 export const API = axios.create({
@@ -38,6 +38,7 @@ export const AuthTokenInterceptor = ({children}) => {
       if(token){
         requestConfig.headers['Authorization'] = "Bearer " + token;
       }
+      // requestConfig.headers['Access-Control-Allow-Origin'] = "*";
       return requestConfig;
     });
   }
@@ -60,7 +61,7 @@ export const AuthTokenInterceptor = ({children}) => {
 
         if(status === 401){
           // await jwt_refresh_api()
-          // return API_INSTANCE_TO_INJECT_TOKEN(config);
+          // return API(config);
         }
 
         return Promise.reject(err);

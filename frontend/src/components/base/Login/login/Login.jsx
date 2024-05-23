@@ -7,9 +7,10 @@ import { decodeJWT } from "utils/useJWT";
 import "./Login.scss";
 import EmailIcon from "assets/icons/Email";
 import PasswordIcon from "assets/icons/Password";
-import { user_login_api } from "api/User";
+import { user_login_api, user_oauth_login_api } from "api/User";
 import { Auth, authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
+import { OAUTH2_URI } from "constants/api/oauth";
 
 
 function Login() {
@@ -57,6 +58,21 @@ function Login() {
     });
   };
 
+  const oauthLoginAction = (e) => {
+    e.preventDefault();
+    const provider = "google";
+    const link = `${process.env.REACT_APP_API_ENDPOINT}${OAUTH2_URI}${provider}`;
+    window.location.href = link;
+    // user_oauth_login_api("google")
+    // .then((res) => {
+    //   // window.location.href = res.data["kakao_oauth_url"];
+    //   console.log(res);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // })
+  }
+
   return (
     <Responsive className="login">
       <div className="login-box">
@@ -96,7 +112,7 @@ function Login() {
           <div className="login-right">
             <div className="buttons col">
               <div className="button" onClick={loginAction} tabIndex={4}>로그인 하기</div>
-              <div className="button oauth google" tabIndex={5}>구글 로그인</div>
+              <div className="button oauth google" onClick={oauthLoginAction} tabIndex={5}>구글 로그인</div>
               <Link className="button pick" to="/signup" tabIndex={6}>
                 계정 만들기
               </Link>

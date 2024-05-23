@@ -7,5 +7,9 @@
         a {
             color: $font-white-color;
         }
+
+        &:is(.dark *) {
+            background-color: $background-dark-blue-color;
+        }
     }
 }
