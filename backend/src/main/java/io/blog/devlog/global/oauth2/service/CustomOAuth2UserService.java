@@ -48,21 +48,23 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         Map<String, Object> userAttributes = oAuth2User.getAttributes();
         String provider = userRequest.getClientRegistration().getRegistrationId();
-        SocialType socialType = getSocialType(provider);
-        OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, userAttributes);
+        OAuthAttributes extractAttributes = OAuthAttributes.of(getSocialType(provider), userNameAttributeName, userAttributes);
         OAuth2UserInfo oauth2UserInfo = extractAttributes.getOauth2UserInfo();
         String providerId = oauth2UserInfo.getId();
-        String username = provider + "_" + providerId;
+        String username = oauth2UserInfo.getNickname();
+        String email = oauth2UserInfo.getEmail();
         User user = null;
-        Optional<User> userEntity = userRepository.findByUsername(username);
+        Optional<User> userEntity = userRepository.findByEmail(email);
         if (userEntity.isEmpty()) {
             user = User.builder()
                     .username(username)
-                    .email(oauth2UserInfo.getEmail())
+                    .email(email)
                     .provider(provider)
                     .providerId(providerId)
                     .role(Role.GUEST)
+                    .password("")
                     .build();
+            user.updateProfile(oauth2UserInfo.getImageUrl());
             userRepository.save(user);
         }
         else {
@@ -71,7 +73,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         log.info("CustomOAuth2UserService Username : {}", user.getUsername());
 //        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole());
 
-        log.info("userAttributes : {}", userAttributes);
+        log.info("userAttributes : {}", oauth2UserInfo);
         log.info("nameAttributesKey : {}", extractAttributes.getNameAttributeKey());
 
         return new PrincipalDetails(
