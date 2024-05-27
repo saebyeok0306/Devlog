@@ -1,8 +1,8 @@
 package io.blog.devlog.global.jwt.service;
 
-import io.blog.devlog.domain.model.User;
-import io.blog.devlog.domain.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
+import io.blog.devlog.domain.user.model.User;
+import io.blog.devlog.domain.user.repository.UserRepository;
+import io.blog.devlog.domain.user.service.UserService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -10,14 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.http.HttpEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Optional;
 
 @DataJpaTest // Component Scan을 하지 않아 컨테이너에 @Component 빈들이 등록되지 않는다.
@@ -31,9 +27,10 @@ public class JwtServiceTest {
     private static BCryptPasswordEncoder bCryptPasswordEncoder;
     private static User testUser;
     private static final String testUsername = "test name";
+    private static final String testEmail = "a@gmail.com";
 
     @BeforeAll
-    public static void setUp() {
+    public static void beforeAllSetUp() {
         jwtService = new JwtService();
         ReflectionTestUtils.setField(jwtService, "secret", "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgab");
         ReflectionTestUtils.setField(jwtService, "accessTokenExpiration", 3600);
@@ -44,7 +41,7 @@ public class JwtServiceTest {
         testUser = User.builder()
                 .username(testUsername)
                 .password("123")
-                .email("a@gmail.com")
+                .email(testEmail)
                 .build();
         testUser.authorizeUser();
         testUser.passwordEncode(bCryptPasswordEncoder);
@@ -90,11 +87,11 @@ public class JwtServiceTest {
         // given
         userRepository.save(testUser);
         String token = jwtService.createRefreshToken(testUser);
-        userRepository.updateRefreshTokenByUsername(testUsername, token);
+        userRepository.updateRefreshTokenByEmail(testEmail, token);
 
         // when
         String test_token = jwtService.createRefreshToken(testUser, 10000);
-        userRepository.updateRefreshTokenByUsername(testUsername, test_token);
+        userRepository.updateRefreshTokenByEmail(testEmail, test_token);
 
         // then
         Optional<User> optUser = userRepository.findByRefreshToken(test_token);

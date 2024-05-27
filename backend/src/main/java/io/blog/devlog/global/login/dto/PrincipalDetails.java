@@ -4,7 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import io.blog.devlog.domain.model.User;
+import io.blog.devlog.domain.user.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package io.blog.devlog.global.jwt.service;
 
-import io.blog.devlog.domain.model.User;
+import io.blog.devlog.domain.user.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

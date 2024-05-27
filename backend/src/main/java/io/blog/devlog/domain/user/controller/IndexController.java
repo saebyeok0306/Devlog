@@ -1,4 +1,4 @@
-package io.blog.devlog.domain.controller;
+package io.blog.devlog.domain.user.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

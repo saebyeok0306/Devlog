@@ -1,4 +1,4 @@
-package io.blog.devlog.domain.dto;
+package io.blog.devlog.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class UserDto {
     @NotNull
     private String username;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 직렬화(객체 > Json)할 때 제외됨.
     @NotNull
     private String password;
     @NotNull

@@ -1,4 +1,4 @@
-package io.blog.devlog.domain.model;
+package io.blog.devlog.domain.user.model;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+// 기본 생성자의 접근 수준을 Protected로 설정합니다.
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter

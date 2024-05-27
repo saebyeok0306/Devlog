@@ -1,7 +1,7 @@
 package io.blog.devlog.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.blog.devlog.domain.repository.UserRepository;
+import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.jwt.service.JwtService;
 import io.blog.devlog.global.login.filter.AuthenticationProcessingFilter;
 import io.blog.devlog.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
@@ -15,8 +15,8 @@ import io.blog.devlog.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import io.blog.devlog.global.oauth2.service.CustomOAuth2UserService;
 import io.blog.devlog.global.response.ErrorResponse;
 import io.blog.devlog.global.response.SuccessResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +31,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final SuccessResponse successResponse;
     private final ErrorResponse errorResponse;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtService jwtService;
     private final PrincipalDetailsService principalDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -51,6 +50,9 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Value("${frontend.url}")
+    private String frontendOriginUrl;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -65,7 +67,7 @@ public class SecurityConfig {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowCredentials(true);
-            config.addAllowedOrigin("http://localhost:3000");
+            config.addAllowedOrigin(frontendOriginUrl);
             config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
             config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
             config.setExposedHeaders(List.of(CorsConfiguration.ALL));
@@ -111,7 +113,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(successResponse, jwtService, userRepository);
+        return new LoginSuccessHandler(successResponse, jwtService, userService);
     }
 
     @Bean

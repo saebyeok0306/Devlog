@@ -1,8 +1,9 @@
-package io.blog.devlog.domain.controller;
+package io.blog.devlog.domain.user.controller;
 
-import io.blog.devlog.domain.dto.UserDto;
-import io.blog.devlog.domain.model.User;
-import io.blog.devlog.domain.repository.UserRepository;
+import io.blog.devlog.domain.user.dto.UserDto;
+import io.blog.devlog.domain.user.model.User;
+import io.blog.devlog.domain.user.repository.UserRepository;
+import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.response.ErrorResponse;
 import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +24,7 @@ import java.util.Optional;
 @RestController
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ErrorResponse errorResponse;
     private final SuccessResponse successResponse;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -32,7 +33,7 @@ public class AuthController {
     public void join(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody UserDto userDto) throws IOException {
         log.info("POST /join UserDto : {}", userDto);
 
-        Optional<User> userEntity = userRepository.findByEmail(userDto.getEmail());
+        Optional<User> userEntity = userService.getUserByEmail(userDto.getEmail());
         if (userEntity.isPresent()) {
             Integer status = HttpServletResponse.SC_BAD_REQUEST;
             String error = "이미 가입된 유저입니다.";
@@ -57,7 +58,7 @@ public class AuthController {
 
         user.authorizeUser();
         user.passwordEncode(bCryptPasswordEncoder);
-        userRepository.save(user);
+        userService.saveUser(user);
 
         Integer status = HttpServletResponse.SC_OK;
         String message = "가입 성공";

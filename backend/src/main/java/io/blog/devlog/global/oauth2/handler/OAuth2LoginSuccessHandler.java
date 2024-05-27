@@ -1,22 +1,22 @@
 package io.blog.devlog.global.oauth2.handler;
 
+import io.blog.devlog.domain.user.model.User;
+import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.jwt.service.JwtService;
+import io.blog.devlog.global.login.dto.PrincipalDetails;
+import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import io.blog.devlog.domain.model.User;
-import io.blog.devlog.domain.repository.UserRepository;
-import io.blog.devlog.global.jwt.service.JwtService;
-import io.blog.devlog.global.login.dto.PrincipalDetails;
-import io.blog.devlog.global.response.SuccessResponse;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -24,8 +24,11 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final SuccessResponse successResponse;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtService jwtService;
+
+    @Value("${frontend.url}")
+    private String frontendOriginUrl;
 
     @Override
     @Transactional
@@ -49,7 +52,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     // TODO : 소셜 로그인 시에도 무조건 토큰 생성하지 말고 JWT 인증 필터처럼 RefreshToken 유/무에 따라 다르게 처리해보기
     private boolean loginSuccess(HttpServletResponse response, PrincipalDetails oAuth2User) throws IOException {
         String email = oAuth2User.getUsername();
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userService.getUserByEmail(email).orElse(null);
         if(user == null) {
             log.error("로그인한 OAuth 유저의 정보가 없습니다! email : {}", email);
             return false;
@@ -60,10 +63,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //        response.addHeader(jwtService.getRefreshHeader(), jwtService.getBEARER() + refreshToken);
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        user.updateRefreshToken(refreshToken);
-        userRepository.saveAndFlush(user);
+        userService.updateRefreshToken(user, refreshToken);
 
-        response.sendRedirect(String.format("http://localhost:3000/callback?at=%s&rt=%s", accessToken, refreshToken));
+        response.sendRedirect(String.format("%s/callback?at=%s&rt=%s", frontendOriginUrl, accessToken, refreshToken));
         return true;
     }
 }
