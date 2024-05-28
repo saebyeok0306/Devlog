@@ -1,24 +1,24 @@
 @import "src/styles/commons";
 
 .posts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
 
-    @include mediaquery(large) {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  @include mediaquery(large) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    @include mediaquery(medium) {
-        grid-template-columns: repeat(1, 1fr);
-    }
+  @include mediaquery(medium) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 
-    .post {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        // background-color: aliceblue;
-        margin: 0.5rem;
-        padding: 0.5rem;
-    }
+  .post {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // background-color: aliceblue;
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
 }

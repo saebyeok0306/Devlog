@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import FooterComponent from "components/base/Footer/FooterComponent";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 function FooterContainer() {
   // const pathname = window.location.pathname;
@@ -10,20 +10,18 @@ function FooterContainer() {
     const paths = ["/login", "/signup"];
     for (let i = 0; i < paths.length; i++) {
       const path = paths[i];
-      if(pathname.startsWith(path)) {
+      if (pathname.startsWith(path)) {
         return true;
       }
     }
     return false;
-  }
+  };
 
   if (pathFilter()) {
     return <></>;
   }
 
-  return (
-    <FooterComponent/>
-  );
+  return <FooterComponent />;
 }
 
 export default FooterContainer;

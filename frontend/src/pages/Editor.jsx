@@ -5,7 +5,7 @@ import HeaderContainer from "containers/base/HeaderContainer";
 function Editor() {
   return (
     <PageTemplate>
-      <HeaderContainer/>
+      <HeaderContainer />
     </PageTemplate>
   );
 }

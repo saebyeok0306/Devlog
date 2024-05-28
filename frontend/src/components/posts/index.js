@@ -1,1 +1,1 @@
-import { default } from "./Posts";
+export { default } from "./Posts";

@@ -1,6 +1,6 @@
 import React from "react";
 
-import './UserMenu.scss';
+import "./UserMenu.scss";
 import { Auth, authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
@@ -15,14 +15,14 @@ function UserMenu() {
     setAuthDto(new Auth());
     removeCookie("access_token");
     removeCookie("refresh_token");
-  }
+  };
 
   if (authDto.isLogin === false) {
     return (
       <div className="usermenu button">
         <Link to="/login">로그인</Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -34,7 +34,7 @@ function UserMenu() {
         <Dropdown.Item onClick={() => handleLogout()}>Sign out</Dropdown.Item>
       </Dropdown>
     </div>
-  )
+  );
 }
 
 export default UserMenu;

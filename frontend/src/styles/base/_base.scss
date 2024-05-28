@@ -1,51 +1,52 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    // user-select: none;
-    font-size: 15px;
-    @include mediaquery(wide) {
-        font-size: 14px;
-    }
-    @include mediaquery(x-large) {
-        font-size: 13px;
-    }
-    @include mediaquery(large) {
-        font-size: 12px;
-    }
-    @include mediaquery(medium) {
-        font-size: 12px;
-    }
+  margin: 0;
+  // user-select: none;
+  font-size: 15px;
+  @include mediaquery(wide) {
+    font-size: 14px;
+  }
+  @include mediaquery(x-large) {
+    font-size: 13px;
+  }
+  @include mediaquery(large) {
+    font-size: 12px;
+  }
+  @include mediaquery(medium) {
+    font-size: 12px;
+  }
 }
 
 p {
-    margin-block: 0;
-    margin-inline: 0;
+  margin-block: 0;
+  margin-inline: 0;
 }
 
 .wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 
-    &.dark {
-        color: $font-white-color;
-        background-color: $background-deep-black-color;
-    }
+  &.dark {
+    color: $font-white-color;
+    background-color: $background-deep-black-color;
+  }
 
-    transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .contentWrapper {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .liner {
-    border-top: 1px solid black;
-    margin-bottom: 0.5rem;
+  border-top: 1px solid black;
+  margin-bottom: 0.5rem;
 }
-

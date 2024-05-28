@@ -1,14 +1,13 @@
-import React from 'react';
+import React from "react";
 import Header from "components/base/Header/Header";
-import UserMenu from 'components/base/UserMenu';
-import RightMenu from 'components/RightMenu';
-
+import UserMenu from "components/base/UserMenu";
+import RightMenu from "components/RightMenu";
 
 function HeaderContainer() {
   return (
     <Header
-      right={<RightMenu/>}
-      menu={<UserMenu/>}
+      right={<RightMenu />}
+      menu={<UserMenu />}
     />
   );
 }

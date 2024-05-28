@@ -14,7 +14,7 @@ function Callback() {
     const searchParams = new URLSearchParams(location.search);
     const access_token = searchParams.get("at");
     const refresh_token = searchParams.get("rt");
-    if(access_token != null && refresh_token != null) {
+    if (access_token != null && refresh_token != null) {
       setCookie("access_token", access_token);
       setCookie("refresh_token", refresh_token);
     }
@@ -23,9 +23,7 @@ function Callback() {
     navigate("/");
   }, []);
 
-  return (
-    <></>
-  );
+  return <></>;
 }
 
 export default Callback;

@@ -7,21 +7,20 @@ import { decodeJWT } from "utils/useJWT";
 import "./Login.scss";
 import EmailIcon from "assets/icons/Email";
 import PasswordIcon from "assets/icons/Password";
-import { user_login_api, user_oauth_login_api } from "api/User";
+import { user_login_api } from "api/User";
 import { Auth, authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { OAUTH2_URI } from "constants/api/oauth";
-
 
 function Login() {
   const navigate = useNavigate();
   const [, setAuthDto] = useRecoilState(authAtom);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       loginAction(event);
     }
   };
@@ -30,32 +29,30 @@ function Login() {
     e.preventDefault();
 
     user_login_api(email, password)
-    .then((res) => {
-      console.log(res);
-      const access_token = res.headers["authorization"];
-      const refresh_token = res.headers["authorization-refresh"];
-      if(access_token != null && refresh_token != null) {
-        setCookie("access_token", access_token);
-        setCookie("refresh_token", refresh_token);
-      }
-      else {
-        alert("로그인 실패!\n", res);
-        return;
-      }
-      const payload = decodeJWT(access_token);
-      setAuthDto(new Auth(payload.name, payload.role, true));
-      alert("로그인 성공!\n", res);
-      navigate("/");
-    })
-    .catch((err) => {
-      if (err.response?.data) {
-        alert(err.response.data.error);
-      }
-      else {
-        alert(err);
-      }
-      console.log(err);
-    });
+      .then((res) => {
+        console.log(res);
+        const access_token = res.headers["authorization"];
+        const refresh_token = res.headers["authorization-refresh"];
+        if (access_token != null && refresh_token != null) {
+          setCookie("access_token", access_token);
+          setCookie("refresh_token", refresh_token);
+        } else {
+          alert("로그인 실패!\n", res);
+          return;
+        }
+        const payload = decodeJWT(access_token);
+        setAuthDto(new Auth(payload.name, payload.role, true));
+        alert("로그인 성공!\n", res);
+        navigate("/");
+      })
+      .catch((err) => {
+        if (err.response?.data) {
+          alert(err.response.data.error);
+        } else {
+          alert(err);
+        }
+        console.log(err);
+      });
   };
 
   const oauthLoginAction = (e) => {
@@ -71,20 +68,20 @@ function Login() {
     // .catch((err) => {
     //   console.log(err);
     // })
-  }
+  };
 
   return (
     <Responsive className="login">
       <div className="login-box">
         <div className="title">
           로그인
-          <div className="liner"/>
+          <div className="liner" />
         </div>
         <div className="login-align">
           <div className="login-left">
             <div className="inputs">
               <div className="input">
-                <EmailIcon/>
+                <EmailIcon />
                 <input
                   type="email"
                   placeholder="이메일"
@@ -94,7 +91,7 @@ function Login() {
                 />
               </div>
               <div className="input">
-                <PasswordIcon/>
+                <PasswordIcon />
                 <input
                   type="password"
                   placeholder="비밀번호"
@@ -111,8 +108,16 @@ function Login() {
           </div>
           <div className="login-right">
             <div className="buttons col">
-              <div className="button" onClick={loginAction} tabIndex={4}>로그인 하기</div>
-              <div className="button oauth google" onClick={oauthLoginAction} tabIndex={5}>구글 로그인</div>
+              <div className="button" onClick={loginAction} tabIndex={4}>
+                로그인 하기
+              </div>
+              <div
+                className="button oauth google"
+                onClick={oauthLoginAction}
+                tabIndex={5}
+              >
+                구글 로그인
+              </div>
               <Link className="button pick" to="/signup" tabIndex={6}>
                 계정 만들기
               </Link>

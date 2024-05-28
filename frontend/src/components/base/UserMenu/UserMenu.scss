@@ -1,15 +1,15 @@
 @import "src/styles/commons";
 
 .usermenu {
-    &.button {
-        padding: 0.3em 1em 0.3em 1em;
-        
-        a {
-            color: $font-white-color;
-        }
+  &.button {
+    padding: 0.3em 1em 0.3em 1em;
 
-        &:is(.dark *) {
-            background-color: $background-dark-blue-color;
-        }
+    a {
+      color: $font-white-color;
     }
+
+    &:is(.dark *) {
+      background-color: $background-dark-blue-color;
+    }
+  }
 }

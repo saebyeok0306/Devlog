@@ -17,7 +17,8 @@ $button-gray-color: rgb(239, 239, 239);
 $button-google-color: rgb(222, 222, 222);
 $shadow-box-color: rgba(0, 0, 0, 0.3);
 $shadow-color: rgba(0, 0, 0, 0.05);
-$shadow-white-color: rgba(255, 255, 255, 0.05);
+$shadow-white-color: rgba(255, 255, 255, 0.04);
 
 // https://codepen.io/sosuke/pen/Pjoqqp
-$img-filter-white-color: invert(100%) sepia(34%) saturate(1152%) hue-rotate(301deg) brightness(122%) contrast(106%);
+$img-filter-white-color: invert(100%) sepia(34%) saturate(1152%)
+  hue-rotate(301deg) brightness(122%) contrast(106%);

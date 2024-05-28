@@ -5,8 +5,8 @@ import Category from "components/category";
 function LeftSideContainer() {
   return (
     <aside>
-      <Profile/>
-      <Category/>
+      <Profile />
+      <Category />
     </aside>
   );
 }

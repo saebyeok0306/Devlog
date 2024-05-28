@@ -1,23 +1,23 @@
 @import "src/styles/commons";
 
 .common.responsive {
-    width: 1600px;
-    height: 100%;
-    flex: 1;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    @include mediaquery(wide) {
-        width: $x-large-w;
-    }
-    @include mediaquery(x-large) {
-        width: $large-w;
-    }
-    @include mediaquery(large) {
-        width: $medium-w;
-    }
-    @include mediaquery(medium) {
-        width: 100%;
-    }
+  width: 1600px;
+  height: 100%;
+  flex: 1;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  @include mediaquery(wide) {
+    width: $x-large-w;
+  }
+  @include mediaquery(x-large) {
+    width: $large-w;
+  }
+  @include mediaquery(large) {
+    width: $medium-w;
+  }
+  @include mediaquery(medium) {
+    width: 100%;
+  }
 }

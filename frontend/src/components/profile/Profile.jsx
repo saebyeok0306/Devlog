@@ -1,6 +1,6 @@
 import React from "react";
 
-import './Profile.scss';
+import "./Profile.scss";
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {

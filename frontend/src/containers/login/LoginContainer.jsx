@@ -1,13 +1,12 @@
 import React from "react";
 import Login from "components/base/Login/login";
 
-
 function LoginContainer() {
   return (
     <>
-      <Login/>
+      <Login />
     </>
-  )
+  );
 }
 
 export default LoginContainer;

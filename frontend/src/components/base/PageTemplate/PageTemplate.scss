@@ -1,13 +1,12 @@
-
 .pageTemplate {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  main {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: inherit;
     flex: 1;
-    main {
-        display: flex;
-        flex-direction: column;
-        height: inherit;
-        flex: 1;
-    }
+  }
 }

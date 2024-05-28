@@ -1,18 +1,18 @@
 @import "src/styles/commons";
 
 .footer {
-    margin-top: 1rem;
+  margin-top: 1rem;
 
-    footer {
-        &:is(.dark *) {
-            background-color: $background-black-color;
-        }
+  footer {
+    &:is(.dark *) {
+      background-color: $background-black-color;
     }
+  }
 
-    .footer-responsive {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        font-family: 'SokchoBadaBatang';
-    }
+  .footer-responsive {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-family: "SokchoBadaBatang";
+  }
 }
