@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import "./Category.scss";
+import "./EditCategory.scss";
 import FolderIcon from "assets/icons/Folder";
 import { useRecoilState } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { get_categories_api } from "api/Category";
-
-const items = [
-  { layer: 1, name: "1번 카테고리" },
-  { layer: 2, name: "2번 카테고리" },
-  { layer: 3, name: "3번 카테고리123" },
-  { layer: 4, name: "4번 카테고리" },
-  { layer: 5, name: "5번 카테고리" },
-];
 
 const initialDnDState = {
   draggedFrom: null, // 드래그를 시작한 요소의(마우스를 클릭하여 움직인 요소) 인덱스
@@ -22,7 +14,7 @@ const initialDnDState = {
   updatedOrder: [], // 드롭한 후 순서가 바뀐 list
 };
 
-function Category() {
+function EditCategory() {
   // Reference https://romantech.net/1118?category=954568
   const [isDark] = useRecoilState(themeAtom);
   const [list, setList] = useState([]); // 렌더될 요소
@@ -139,4 +131,4 @@ function Category() {
   );
 }
 
-export default Category;
+export default EditCategory;
