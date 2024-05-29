@@ -4,6 +4,11 @@ import { authAtom } from "../recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { getCookie } from "../utils/useCookie";
+import { jwt_refresh_api } from "./User";
+import {
+  ACCESS_TOKEN_STRING,
+  REFRESH_TOKEN_STRING,
+} from "constants/user/login";
 
 const REFRESH_URL = "/reissue";
 
@@ -28,16 +33,15 @@ export const AuthTokenInterceptor = ({ children }) => {
     API.interceptors.request.use((requestConfig) => {
       if (!requestConfig.headers) return requestConfig;
 
-      const token = getCookie("access_token");
-      // if(!token){
-      //   const error = new Error('다시 로그인을 해주세요.');
-      //   resetUserData();
-      //   return Promise.reject(error);
-      // }
-      if (token) {
-        requestConfig.headers["Authorization"] = "Bearer " + token;
+      if (requestConfig.url !== REFRESH_URL) {
+        const token = getCookie(ACCESS_TOKEN_STRING);
+        if (token) {
+          requestConfig.headers["Authorization"] = "Bearer " + token;
+        }
+      } else {
+        requestConfig.headers["Authorization"] =
+          "Bearer " + getCookie(REFRESH_TOKEN_STRING);
       }
-      // requestConfig.headers['Access-Control-Allow-Origin'] = "*";
       return requestConfig;
     });
   };
@@ -62,12 +66,12 @@ export const AuthTokenInterceptor = ({ children }) => {
         }
 
         if (status === 401) {
-          // await jwt_refresh_api()
-          // return API(config);
+          await jwt_refresh_api();
+          return API(config);
         }
 
         return Promise.reject(err);
-      },
+      }
     );
   };
 
