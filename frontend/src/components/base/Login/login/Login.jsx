@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import Responsive from "components/common/Responsive";
 import { Link, useNavigate } from "react-router-dom";
-import { setCookie } from "utils/useCookie";
-import { decodeJWT } from "utils/useJWT";
 
 import "./Login.scss";
 import EmailIcon from "assets/icons/Email";
 import PasswordIcon from "assets/icons/Password";
 import { user_login_api } from "api/User";
-import { Auth, authAtom } from "recoil/authAtom";
+import { authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { OAUTH2_URI } from "constants/api/oauth";
+import { signIn } from "utils/authenticate";
 
 function Login() {
   const navigate = useNavigate();
@@ -33,16 +32,7 @@ function Login() {
         console.log(res);
         const access_token = res.headers["authorization"];
         const refresh_token = res.headers["authorization-refresh"];
-        if (access_token != null && refresh_token != null) {
-          setCookie("access_token", access_token);
-          setCookie("refresh_token", refresh_token);
-        } else {
-          alert("로그인 실패!\n", res);
-          return;
-        }
-        const payload = decodeJWT(access_token);
-        setAuthDto(new Auth(payload.name, payload.role, true));
-        alert("로그인 성공!\n", res);
+        signIn(access_token, refresh_token, setAuthDto);
         navigate("/");
       })
       .catch((err) => {
@@ -60,14 +50,6 @@ function Login() {
     const provider = "google";
     const link = `${process.env.REACT_APP_API_ENDPOINT}${OAUTH2_URI}${provider}`;
     window.location.href = link;
-    // user_oauth_login_api("google")
-    // .then((res) => {
-    //   // window.location.href = res.data["kakao_oauth_url"];
-    //   console.log(res);
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // })
   };
 
   return (

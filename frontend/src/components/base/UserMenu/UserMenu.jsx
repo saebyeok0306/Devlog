@@ -1,39 +1,36 @@
 import React from "react";
 
 import "./UserMenu.scss";
-import { Auth, authAtom } from "recoil/authAtom";
+import { authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
-import { removeCookie } from "utils/useCookie";
+import { signOut } from "utils/authenticate";
 
 function UserMenu() {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   const handleLogout = () => {
-    alert("로그아웃 했습니다.");
-    setAuthDto(new Auth());
-    removeCookie("access_token");
-    removeCookie("refresh_token");
+    signOut(setAuthDto);
   };
 
   if (authDto.isLogin === false) {
     return (
-      <div className="usermenu button">
+      <nav className="usermenu button">
         <Link to="/login">로그인</Link>
-      </div>
+      </nav>
     );
   }
 
   return (
-    <div className="usermenu">
+    <nav className="usermenu">
       <Dropdown label={`${authDto.username}님`} inline>
         <Dropdown.Item>Dashboard</Dropdown.Item>
         <Dropdown.Item>Settings</Dropdown.Item>
         <Dropdown.Item>Earnings</Dropdown.Item>
         <Dropdown.Item onClick={() => handleLogout()}>Sign out</Dropdown.Item>
       </Dropdown>
-    </div>
+    </nav>
   );
 }
 

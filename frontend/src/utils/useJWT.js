@@ -12,5 +12,6 @@ export const decodeJWT = (jwt) => {
         .join("")
     )
   );
+  console.log("jwt : ", decodedJWT);
   return decodedJWT;
 };
