@@ -3,7 +3,6 @@ import FooterComponent from "components/base/Footer/FooterComponent";
 import { useLocation } from "react-router-dom";
 
 function FooterContainer() {
-  // const pathname = window.location.pathname;
   const { pathname } = useLocation();
 
   const pathFilter = () => {

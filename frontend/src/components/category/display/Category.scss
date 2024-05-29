@@ -11,6 +11,10 @@
   font-family: "SokchoBadaBatang";
   padding: 1px;
 
+  &:is(.dark *) {
+    border-right: 1px solid $border-dark-blue-color;
+  }
+
   @include mediaquery(large) {
     border-right: none;
   }

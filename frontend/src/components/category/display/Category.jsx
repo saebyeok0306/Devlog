@@ -13,11 +13,10 @@ function Category() {
   useEffect(() => {
     get_categories_api()
       .then((res) => {
-        console.log(res);
         setList(res.data);
       })
       .catch((err) => {
-        alert(err);
+        console.error(err);
       });
   }, []);
 

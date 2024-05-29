@@ -27,6 +27,6 @@ export const setTheme = (flag) => {
 };
 
 export const themeAtom = atom({
-  key: "themeAtom",
+  key: "theme",
   default: getTheme(), // isDarkMode
 });

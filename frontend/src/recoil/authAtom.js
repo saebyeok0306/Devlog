@@ -15,7 +15,7 @@ export class Auth {
 }
 
 export const authAtom = atom({
-  key: "authAtom",
+  key: "author",
   /** @type {Auth} */
   default: new Auth(),
   effects_UNSTABLE: [persistAtom],
