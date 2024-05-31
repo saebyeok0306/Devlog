@@ -38,3 +38,9 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build -Dspring.profiles.active=test --console=plain
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: backend/build/reports/tests/test
