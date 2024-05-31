@@ -60,7 +60,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .provider(provider)
                     .providerId(providerId)
                     .role(Role.GUEST)
-                    .password("")
+                    .password(providerId)
                     .build();
             user.updateProfile(oauth2UserInfo.getImageUrl());
             userService.saveUser(user);

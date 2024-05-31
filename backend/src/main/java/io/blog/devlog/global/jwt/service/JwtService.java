@@ -87,20 +87,21 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
                 .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String createRefreshToken(User user, int salt) {
-        Date date = new Date();
+    public String createRefreshToken(User user, Date date) {
         long now = date.getTime();
-        Date validity = new Date(now + refreshTokenExpiration*1000 + salt);
+        Date validity = new Date(now + refreshTokenExpiration*1000);
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
                 .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -123,18 +124,11 @@ public class JwtService {
         response.setHeader(refreshHeader, refreshToken);
     }
 
-    public Optional<String> extractAccessToken(HttpServletRequest request) {
-        log.info("extractAccessToken() 호출");
+    public Optional<String> extractJWT(HttpServletRequest request) {
+        log.info("extractJWT() 호출");
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(accessToken -> accessToken.startsWith(BEARER))
                 .map(accessToken -> accessToken.replace(BEARER, ""));
-    }
-
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        log.info("extractRefreshToken() 호출");
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
     public Optional<String> extractUsername(String accessToken) {
@@ -182,16 +176,25 @@ public class JwtService {
             log.info("isTokenValid 호출 : {}", claims);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.error("잘못된 JWT 서명입니다.");
+            String message = "잘못된 JWT 서명입니다.";
+            log.error(message);
+            throw new JwtException(message, e);
         } catch (ExpiredJwtException e) {
-            log.error("만료된 JWT 토큰입니다.");
+            String message = "만료된 JWT 토큰입니다.";
+            log.error(message);
+            throw e;
         } catch (UnsupportedJwtException e) {
-            log.error("지원되지 않는 JWT 토큰입니다.");
+            String message = "지원되지 않는 JWT 토큰입니다.";
+            log.error(message);
+            throw new JwtException(message, e);
         } catch (IllegalArgumentException e) {
-            log.error("JWT 토큰이 잘못되었습니다.");
+            String message = "JWT 토큰이 잘못되었습니다.";
+            log.error(message);
+            throw new JwtException(message, e);
         } catch (Exception e) {
-            log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
+            String message = String.format("유효하지 않은 토큰입니다. %s", e.getMessage());
+            log.error(message);
+            throw new JwtException(message, e);
         }
-        return false;
     }
 }

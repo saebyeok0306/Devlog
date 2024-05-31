@@ -75,19 +75,17 @@ public class SecurityConfig {
             config.addExposedHeader("Authorization-Refresh");
             return config;
         }));
-        http
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/**").authenticated()
-                        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
-                );
+        http.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/user/**").authenticated()
+            .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .anyRequest().permitAll()
+        );
         // 승인되지 않은 접근(401)이나 접근 권한이 없는 경우(403)
         http.exceptionHandling(handler -> handler
-                .accessDeniedHandler(customAccessDeniedHandler)
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .accessDeniedHandler(customAccessDeniedHandler)
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
         );
         http.formLogin(AbstractHttpConfigurer::disable);
 //        http.formLogin(form -> form
@@ -141,6 +139,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProcessingFilter authenticationProcessingFilter() {
-        return new AuthenticationProcessingFilter(jwtService);
+        return new AuthenticationProcessingFilter(errorResponse, jwtService);
     }
 }
