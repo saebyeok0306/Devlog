@@ -1,4 +1,4 @@
-name: Backend Main branch Production Deploy Workflow
+name: backend deploy
 
 on:
   push:
@@ -19,6 +19,10 @@ env:
 jobs:
   test_and_deploy:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
       # 1. 환경 설정
       - name: Checkout source code
@@ -30,9 +34,6 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-
-      - name: project root
-        run: cd backend
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
