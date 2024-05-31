@@ -42,16 +42,23 @@ dependencies {
 
 	// JPA + MySQL
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	// JWT (JsonWebToken)
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	// Oracle Database
+	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+	implementation 'com.oracle.database.security:osdt_cert'
+	implementation 'com.oracle.database.security:oraclepki'
+	implementation 'com.oracle.database.security:osdt_core'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'com.h2database:h2'
 
 	implementation 'org.apache.commons:commons-lang3'
 }
@@ -65,3 +72,12 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// 특정 폴더 제외
+//sourceSets {
+//	main {
+//		resources {
+//			exclude '**/wallet/**'
+//		}
+//	}
+//}
