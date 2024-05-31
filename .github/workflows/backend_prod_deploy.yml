@@ -1,0 +1,38 @@
+name: Backend Main branch Production Deploy Workflow
+
+on:
+  push:
+    paths:
+      - "/backend/**"
+    branches:
+      - main
+  workflow_dispatch: # Run workflow(수동 실행) 기능 활성화
+    branches:
+      - main
+
+env:
+  DEVLOG_GOOGLE_CLIENT_ID: ${{DEVLOG_GOOGLE_CLIENT_ID}}
+  DEVLOG_GOOGLE_CLIENT_SECRET: ${{DEVLOG_GOOGLE_CLIENT_SECRET}}
+  ORACLE_USERNAME: ${{ORACLE_USERNAME}}
+  ORACLE_PASSWORD: ${{ORACLE_PASSWORD}}
+
+jobs:
+  test_and_deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      # 1. 환경 설정
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      # 2. JDK Setup
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
