@@ -1,9 +1,4 @@
-server:
-  port: 8000
-
 spring:
-  application:
-    name: backend
   security:
     oauth2:
       client:
