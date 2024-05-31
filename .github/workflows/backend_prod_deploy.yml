@@ -13,8 +13,6 @@ on:
 env:
   DEVLOG_GOOGLE_CLIENT_ID: ${{secrets.DEVLOG_GOOGLE_CLIENT_ID}}
   DEVLOG_GOOGLE_CLIENT_SECRET: ${{secrets.DEVLOG_GOOGLE_CLIENT_SECRET}}
-  ORACLE_USERNAME: ${{secrets.ORACLE_USERNAME}}
-  ORACLE_PASSWORD: ${{secrets.ORACLE_PASSWORD}}
 
 jobs:
   test_and_deploy:
@@ -39,4 +37,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build --console=verbose
