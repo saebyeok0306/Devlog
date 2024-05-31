@@ -3,7 +3,7 @@ name: backend deploy
 on:
   push:
     paths:
-      - "/backend/**"
+      - "backend/**"
     branches:
       - main
   workflow_dispatch: # Run workflow(수동 실행) 기능 활성화
