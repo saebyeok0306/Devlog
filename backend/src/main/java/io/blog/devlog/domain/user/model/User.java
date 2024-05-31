@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 // 기본 생성자의 접근 수준을 Protected로 설정합니다.
+@Table(name="USERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
