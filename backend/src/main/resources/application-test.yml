@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: test
   security:
     oauth2:
       client:
@@ -39,3 +42,6 @@ jwt:
   refresh:
     header: Authorization-Refresh
     expiration: 86400
+
+frontend:
+  url: http://localhost:3000
