@@ -12,7 +12,7 @@ public class DevlogApplication {
 //		SpringApplication.run(DevlogApplication.class, args);
 		SpringApplication application = new SpringApplicationBuilder()
 				.sources(DevlogApplication.class)
-				.listeners(new ApplicationPidFileWriter("./application.pid"))
+				.listeners(new ApplicationPidFileWriter("./server.pid"))
 				.build();
 		application.run(args);
 	}
