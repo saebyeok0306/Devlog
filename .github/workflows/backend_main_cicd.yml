@@ -93,7 +93,7 @@ jobs:
           script: |
             cd ${{ secrets.APP_FOLDER_PATH }}
             ls -al
-            kill -15 $(cat server.pid) || true
+            sh script/stop.sh
 
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
       - name: Modify permissions
@@ -117,7 +117,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.APP_FOLDER_PATH }}
-            nohup java -jar devlog.jar --spring.profiles.active=prod > ${{ needs.setup.outputs.current-datetime }}.log 2>&1 &
+            sh script/start.sh ${{ needs.setup.outputs.current-datetime }}
 
   unit-test:
     needs: setup
