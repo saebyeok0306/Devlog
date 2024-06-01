@@ -35,12 +35,15 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      # 3. gradlew 실행 권한 주기
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # 4. Spring Build
       - name: Build with Gradle
-        run: ./gradlew clean build -Dspring.profiles.active=test
+        run: ./gradlew clean build
 
+      # 5. build test 결과 업로드
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: always()
@@ -48,7 +51,13 @@ jobs:
           name: test-report
           path: backend/build/reports/tests/test
 
-      - name: Copy jar
+      # 6. 전송파일 권한 수정
+      #    (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
+      - name: Modify permissions
+        run: chmod o+rwx build/libs/devlog.jar
+
+      # 7. 서버로 빌드파일 전송하기
+      - name: Send jar
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
