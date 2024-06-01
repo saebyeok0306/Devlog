@@ -21,6 +21,9 @@ jobs:
   # 사전 작업
   setup:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend
     outputs:
       build-cache-key: ${{ steps.build-cache.outputs.key }}
     steps:
@@ -32,13 +35,12 @@ jobs:
         id: build-cache
         run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
 
-      - name: CI start time
-        shell: bash
-        run: echo "START_TIME=$(TZ=":Asia/Seoul" date -R|sed 's/.....$//')"
-
   build:
     needs: setup
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,7 +48,7 @@ jobs:
 
       - name: Gradle Caching
         id: cache-gradle
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -76,7 +78,7 @@ jobs:
         if: always()
         with:
           name: test-report
-          path: build/reports/tests/test
+          path: backend/build/reports/tests/test
 
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
       - name: Modify permissions
@@ -95,6 +97,12 @@ jobs:
   unit-test:
     needs: setup
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -132,16 +140,16 @@ jobs:
         if: always()
         with:
           name: unit-test-report
-          path: build/reports/tests/test
+          path: backend/build/reports/tests/test
 
       - name: publish unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: build/test-results/test/TEST-*.xml
+          files: backend/build/test-results/test/TEST-*.xml
 
       - name: add comments to a pull request
         uses: mikepenz/action-junit-report@v4
         if: github.event_name == 'pull_request' && always()
         with:
-          report_paths: build/test-results/test/TEST-*.xml
+          report_paths: backend/build/test-results/test/TEST-*.xml
