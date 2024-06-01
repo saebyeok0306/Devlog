@@ -117,7 +117,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.APP_FOLDER_PATH }}
-            nohup java -jar devlog.jar --spring.profiles.active=prod >> ${{ needs.setup.outputs.current-datetime }}.log 2>&1
+            nohup java -jar devlog.jar --spring.profiles.active=prod >> ${{ needs.setup.outputs.current-datetime }}.log 2>&1 &
 
   unit-test:
     needs: setup
