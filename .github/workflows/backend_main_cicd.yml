@@ -23,13 +23,11 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     outputs:
       build-cache-key: ${{ steps.build-cache.outputs.key }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: backend
 
       - name: check
         run: ls -al
@@ -43,11 +41,9 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: backend
 
       - name: Gradle Caching
         id: cache-gradle
@@ -102,11 +98,9 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: backend
 
       - name: Cache Gradle packages
         id: cache-gradle
