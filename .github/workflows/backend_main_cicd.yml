@@ -87,6 +87,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.APP_FOLDER_PATH }}
+            ls -al
             kill -15 $(cat server.pid)
 
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
