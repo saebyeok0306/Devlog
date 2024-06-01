@@ -47,3 +47,12 @@ jobs:
         with:
           name: test-report
           path: backend/build/reports/tests/test
+
+      - name: Copy jar
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "backend/build/libs/devlog.jar"
+          target: ${{ secrets.APP_FOLDER_PATH }}/
