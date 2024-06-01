@@ -63,5 +63,5 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "backend/build/libs/devlog.jar"
+          source: ${{ secrets.APP_TARGET_PATH }}
           target: ${{ secrets.APP_FOLDER_PATH }}
