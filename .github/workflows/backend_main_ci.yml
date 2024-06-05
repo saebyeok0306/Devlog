@@ -135,7 +135,7 @@ jobs:
         if: github.event_name == 'pull_request' && always()
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: backend/build/jacocoReport/test/jacocoTestReport.xml
+          paths: backend/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 80
           min-coverage-changed-files: 80
@@ -147,4 +147,4 @@ jobs:
         if: always()
         with:
           name: jacoco-html-report
-          path: backend/build/jacocoReport/test/html
+          path: backend/build/reports/jacoco/test/html
