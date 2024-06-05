@@ -18,7 +18,7 @@ jacoco {
 }
 
 jacocoTestReport {
-//    dependsOn test
+    dependsOn test
     reports {
         xml.required = true
     }
