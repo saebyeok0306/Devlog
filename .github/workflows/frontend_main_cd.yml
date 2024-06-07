@@ -63,14 +63,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Cache Check
+      - name: Cache Check & Install package
         if: steps.cache-npm.outputs.cache-hit == 'true'
         run: |
           echo 'Npm cache hit!'
-
-      - name: Install package
-        if: steps.cache-npm.outputs.cache-hit != 'true'
-        run: |
           npm ci
 
       - name: Build with Node.js
