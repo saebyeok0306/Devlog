@@ -7,7 +7,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
 
 permissions: write-all
 
@@ -64,12 +63,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Cache Check
+      - name: Cache Check & Install package
         if: steps.cache-npm.outputs.cache-hit == 'true'
-        run: echo 'Npm cache hit!'
-
-      - name: Install package
-        run: npm ci
+        run: |
+          echo 'Npm cache hit!'
+          npm ci
 
       - name: Build with Node.js
         run: CI=false npm run build

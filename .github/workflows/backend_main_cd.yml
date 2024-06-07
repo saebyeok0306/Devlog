@@ -7,13 +7,12 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
 
 permissions: write-all
 
 env:
-  DEVLOG_GOOGLE_CLIENT_ID: ${{secrets.DEVLOG_GOOGLE_CLIENT_ID}}
-  DEVLOG_GOOGLE_CLIENT_SECRET: ${{secrets.DEVLOG_GOOGLE_CLIENT_SECRET}}
+  DEVLOG_GOOGLE_CLIENT_ID: ${{ secrets.DEVLOG_GOOGLE_CLIENT_ID }}
+  DEVLOG_GOOGLE_CLIENT_SECRET: ${{ secrets.DEVLOG_GOOGLE_CLIENT_SECRET }}
   APP_TARGET_PATH: "backend/build/libs/devlog.jar"
   APP_FOLDER_PATH: "/home/app/backend"
 
