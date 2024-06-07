@@ -8,6 +8,7 @@ on:
     paths:
       - "backend/**"
   workflow_dispatch:
+    inputs:
 
 permissions: write-all
 
