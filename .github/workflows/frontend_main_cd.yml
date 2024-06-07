@@ -59,7 +59,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/node_modules
+            ~/.npm
           key: ${{ needs.setup.outputs.build-cache-key }}
           restore-keys: |
             ${{ runner.os }}-npm-
