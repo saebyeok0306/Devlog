@@ -5,17 +5,13 @@ import { Auth, authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { Dropdown } from "flowbite-react";
 import DarkIcon from "assets/icons/Dark";
-import { setTheme, themeAtom } from "recoil/themeAtom";
+import { setTheme, getThemeValue, themeAtom } from "recoil/themeAtom";
 import LightIcon from "assets/icons/Light";
 import ComputerIcon from "assets/icons/Computer";
 import DotIcon from "assets/icons/Dot";
 
-function getTheme() {
-  return Number(localStorage.getItem("theme"));
-}
-
 function RightMenu() {
-  const [select, SetSelect] = useState(getTheme());
+  const [select, SetSelect] = useState(getThemeValue());
   const [authDto, setAuthDto] = useRecoilState(authAtom);
   const [isDark, setThemeMode] = useRecoilState(themeAtom);
 
@@ -45,7 +41,7 @@ function RightMenu() {
 
   const SetThemeSetting = (flag) => {
     setThemeMode(setTheme(flag));
-    SetSelect(getTheme());
+    SetSelect(getThemeValue());
   };
 
   const CommonMenu = () => {

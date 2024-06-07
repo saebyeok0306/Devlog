@@ -16,8 +16,24 @@ const systemTheme = (theme) => {
   return theme;
 };
 
+export const getThemeValue = () => {
+  var theme = localStorage.getItem("theme");
+  if (theme == null) {
+    theme = 2; // system
+  } else {
+    theme = Number(theme);
+  }
+  return theme;
+};
+
 export const getTheme = () => {
-  const theme = Number(localStorage.getItem("theme"));
+  var theme = localStorage.getItem("theme");
+  if (theme == null) {
+    theme = 2; // system
+    localStorage.setItem("theme", 2);
+  } else {
+    theme = Number(theme);
+  }
   return systemTheme(theme);
 };
 
