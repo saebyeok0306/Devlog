@@ -24,6 +24,7 @@ jobs:
       run:
         working-directory: frontend
     outputs:
+      build-cache-key: ${{ steps.build-cache.outputs.key }}
       current-datetime: ${{ steps.datetime.outputs.datetime }}
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +35,10 @@ jobs:
       - name: Get current date and time
         id: datetime
         run: echo "datetime=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+
+      - name: Generate build cache key
+        id: build-cache
+        run: echo "key=$(echo ${{ runner.os }}-npm-${{ hashFiles('**//package-lock.json') }})" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -48,6 +53,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 16
+
+      - name: Cache Npm packages
+        id: cache-npm
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/node_modules
+          key: ${{ needs.setup.outputs.build-cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Cache Check
+        if: steps.cache-npm.outputs.cache-hit == 'true'
+        run: echo 'Npm cache hit!'
 
       - name: Install package
         run: npm install
