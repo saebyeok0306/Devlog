@@ -16,7 +16,7 @@
   }
 
   @include mediaquery(large) {
-    border-right: none;
+    border-right: none !important;
   }
 
   .title {

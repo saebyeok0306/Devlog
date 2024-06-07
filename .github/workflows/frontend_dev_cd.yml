@@ -1,11 +1,12 @@
-name: Frontend Continuous Delivery
+name: Frontend Continuous Delivery (dev)
+# 임시로 사용
 
 on:
   push:
     paths:
       - "frontend/**"
     branches:
-      - main
+      - devlop
   workflow_dispatch:
 
 permissions: write-all
