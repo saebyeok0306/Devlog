@@ -25,8 +25,7 @@ function FooterComponent() {
             by="SeHun.J"
             year={2024}
           />
-          <Footer.LinkGroup>
-            <FooterLinker to="/">Privacy Policy</FooterLinker>
+          <Footer.LinkGroup className="footer-items">
             <FooterLinker to="/">Licensing</FooterLinker>
             <FooterLinker to="/">Contact</FooterLinker>
           </Footer.LinkGroup>
