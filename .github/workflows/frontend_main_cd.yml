@@ -69,7 +69,7 @@ jobs:
         run: echo 'Npm cache hit!'
 
       - name: Install package
-        run: npm install
+        run: npm ci
 
       - name: Build with Node.js
         run: CI=false npm run build
