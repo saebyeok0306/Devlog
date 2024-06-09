@@ -31,7 +31,7 @@ public class CategoryController {
 
     @PostMapping
     public void updateCategories(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Category> categories) throws IOException {
-        int idx = 1;
+        int idx = 0;
         var isDuplic = false;
         for (Category category : categories) {
             System.out.println(category);

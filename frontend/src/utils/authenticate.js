@@ -5,6 +5,7 @@ import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "constants/user/login";
+import { EMPTY_AUTH } from "constants/user/auth";
 
 export const signIn = (
   accessToken,
@@ -23,7 +24,7 @@ export const signIn = (
       path: "/",
       expires: new Date(payload_refresh.exp * 1000),
     });
-    setAuthDto(new Auth(payload.name, payload.role, true));
+    setAuthDto(new Auth(payload.name, payload.email, true));
     alert(message);
 
     return true;
@@ -33,7 +34,7 @@ export const signIn = (
 
 export const signOut = (setAuthDto, message = "로그아웃 했습니다.") => {
   alert(message);
-  setAuthDto(new Auth());
+  setAuthDto(EMPTY_AUTH);
   removeCookie(ACCESS_TOKEN_STRING);
   removeCookie(REFRESH_TOKEN_STRING);
 };
@@ -48,4 +49,12 @@ export const reissueToken = (headers) => {
     path: "/",
     expires: new Date(payload_refresh.exp * 1000),
   });
+};
+
+export const getPayload = () => {
+  const token = getCookie(ACCESS_TOKEN_STRING);
+  if (token == null) {
+    return EMPTY_AUTH;
+  }
+  return decodeJWT(token);
 };

@@ -26,6 +26,7 @@ public class JwtService {
     private final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private final String CLAIM_NAME = "name";
+    private final String CLAIM_EMAIL = "email";
     private final String CLAIN_ROLE = "role";
 
     @Value("${jwt.secret}")
@@ -68,6 +69,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(ACCESS_TOKEN_SUBJECT) // Jwt Subject
                 .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity) // set Expire Time 해당 옵션 안넣으면 expire안함
                 .setIssuedAt(date)

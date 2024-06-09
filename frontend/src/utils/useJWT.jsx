@@ -1,6 +1,6 @@
 export const decodeJWT = (jwt) => {
-  const payloadBase64Url = jwt.split(".")[1];
-  const payloadBase64 = payloadBase64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const payload = jwt.substring(jwt.indexOf(".") + 1, jwt.lastIndexOf("."));
+  const payloadBase64 = payload.replace(/-/g, "+").replace(/_/g, "/");
   const decodedJWT = JSON.parse(
     decodeURIComponent(
       window

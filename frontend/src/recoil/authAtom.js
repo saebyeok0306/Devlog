@@ -7,9 +7,9 @@ const { persistAtom } = recoilPersist({
 });
 
 export class Auth {
-  constructor(username = null, role = null, isLogin = false) {
+  constructor(username = null, email = null, isLogin = false) {
     this.username = username;
-    this.role = role;
+    this.email = email;
     this.isLogin = isLogin;
   }
 }

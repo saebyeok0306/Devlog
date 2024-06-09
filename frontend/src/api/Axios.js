@@ -9,6 +9,7 @@ import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "constants/user/login";
+import { EMPTY_AUTH } from "constants/user/auth";
 
 const REFRESH_URL = "/reissue";
 
@@ -20,8 +21,7 @@ export const API = axios.create({
 export const AuthTokenInterceptor = ({ children }) => {
   const navigate = useNavigate();
 
-  // 유저의 로그인 여부를 관리하기 위한 전역상태변수
-  const [authDto, setAuthDto] = useRecoilState(authAtom);
+  const [, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
     requestAuthTokenInjector();
@@ -59,9 +59,10 @@ export const AuthTokenInterceptor = ({ children }) => {
         } = err;
 
         if (config.url === REFRESH_URL) {
+          navigate("/");
           alert("다시 로그인을 해주세요.");
+          setAuthDto(EMPTY_AUTH);
           // toast.info("다시 로그인을 해주세요.");
-          // resetUserData();
           return Promise.reject(err);
         }
 
