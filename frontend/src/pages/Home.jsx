@@ -1,5 +1,5 @@
 import React from "react";
-import PageTemplate from "components/base/pageTemplate_";
+import PageTemplate from "components/base/pageTemplate";
 import HeaderContainer from "containers/base/HeaderContainer";
 import MainContainer from "containers/main/MainContainer";
 

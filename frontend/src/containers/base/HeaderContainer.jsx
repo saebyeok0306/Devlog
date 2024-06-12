@@ -1,6 +1,6 @@
 import React from "react";
-import Header from "components/base/header_/Header";
-import UserMenu from "components/base/userMenu_";
+import Header from "components/base/header/Header";
+import UserMenu from "components/base/userMenu";
 import RightMenu from "components/rightMenu";
 
 function HeaderContainer() {
