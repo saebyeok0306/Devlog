@@ -1,22 +1,37 @@
 package io.blog.devlog.domain.info.controller;
 
-import io.blog.devlog.domain.info.model.Info;
-import io.blog.devlog.domain.info.repository.InfoRepository;
+import io.blog.devlog.domain.info.dto.InfoDto;
+import io.blog.devlog.domain.info.service.InfoService;
+import io.blog.devlog.global.response.ErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/info")
 public class InfoController {
-    private final InfoRepository infoRepository;
+    private final ErrorResponse errorResponse;
+    private final InfoService infoService;
 
-//    @GetMapping
-//    public Info getInfo() {
-//        // 이전 데이터는 남기고, 가장 마지막에 추가한 데이터를 넣자.
-//    }
+    @GetMapping
+    public InfoDto getInfo() {
+        return infoService.getBlogInfo();
+    }
+
+    @PostMapping
+    public void updateInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody InfoDto infoDto) throws IOException {
+        boolean isSuccess = infoService.createBlogInfo(infoDto);
+        if (!isSuccess) {
+            Integer status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            String error = "정보를 업로드하는데 실패했습니다.";
+            String path = request.getRequestURI();
+            errorResponse.setResponse(response, status, error, path);
+        }
+    }
 }
