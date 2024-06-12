@@ -1,5 +1,5 @@
 import React from "react";
-import FooterComponent from "components/base/Footer/FooterComponent";
+import FooterComponent from "components/base/footer/FooterComponent";
 import { useLocation } from "react-router-dom";
 
 function FooterContainer() {

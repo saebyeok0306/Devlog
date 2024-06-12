@@ -18,16 +18,16 @@ function RightMenu() {
   const fill = () => (isDark ? "#fff" : "#000");
 
   const Light = (prop) => {
-    return <LightIcon width="1.5em" height="1.5em" fill={fill()} {...prop} />;
+    return <LightIcon width="1.4em" height="1.4em" fill={fill()} {...prop} />;
   };
 
   const Dark = (prop) => {
-    return <DarkIcon width="1.5em" height="1.5em" stroke={fill()} {...prop} />;
+    return <DarkIcon width="1.4em" height="1.4em" stroke={fill()} {...prop} />;
   };
 
   const System = (prop) => {
     return (
-      <ComputerIcon width="1.5em" height="1.5em" fill={fill()} {...prop} />
+      <ComputerIcon width="1.4em" height="1.4em" fill={fill()} {...prop} />
     );
   };
 

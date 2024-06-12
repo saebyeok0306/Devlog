@@ -104,8 +104,8 @@ function EditCategory() {
   };
 
   return (
-    <div className="category">
-      <p className="title">Category</p>
+    <div className="edit-category">
+      <p className="title">Category Manager</p>
       <ul>
         <li>
           <CategoryIcon />
