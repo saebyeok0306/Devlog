@@ -15,4 +15,13 @@
       object-fit: cover;
     }
   }
+
+  div.profile-username {
+    display: flex;
+
+    a {
+      margin: auto;
+      margin-left: 5px;
+    }
+  }
 }
