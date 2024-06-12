@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.user.model;
 
+import io.blog.devlog.global.time.BaseTime;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -7,15 +8,17 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.time.LocalDateTime;
 
 // 기본 생성자의 접근 수준을 Protected로 설정합니다.
 @Table(name="USERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-public class User {
+public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -26,17 +29,18 @@ public class User {
     @NotNull
     private String email;
     @Nullable
+    @Column(name = "profile_url")
     private String profileUrl;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Nullable
     private String provider;
     @Nullable
+    @Column(name = "provider_id")
     private String providerId;
     @Nullable
+    @Column(name = "refresh_token")
     private String refreshToken;
-    @CreationTimestamp
-    private String timestamp;
 
     @Builder
     public User(String username, String password, String email, Role role, String provider, String providerId) {
