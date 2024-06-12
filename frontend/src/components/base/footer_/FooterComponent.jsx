@@ -3,7 +3,6 @@ import Responsive from "components/common/Responsive";
 
 import { Footer } from "flowbite-react";
 
-import { BLOG_NAME } from "constants/base/main";
 import "./FooterComponent.scss";
 import { Link } from "react-router-dom";
 
