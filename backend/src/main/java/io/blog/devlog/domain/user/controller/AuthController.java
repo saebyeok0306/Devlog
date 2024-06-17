@@ -75,7 +75,7 @@ public class AuthController {
 
     @GetMapping("/reissue")
     public void reissue(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String accessToken = userService.reissueAccessToken(request).orElse(null);
+        String accessToken = userService.reissueAccessToken(request);
         if (accessToken == null) {
             log.error("토큰 재발급 중 사용자 계정에 문제가 있음.");
             Integer status = HttpServletResponse.SC_BAD_REQUEST;

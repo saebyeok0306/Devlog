@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -198,5 +199,24 @@ public class JwtService {
             log.error(message);
             throw new JwtException(message, e);
         }
+    }
+
+    public boolean isAccessTokenValid(String token) {
+        Claims claims = this.extractClaims(token);
+        if (!Objects.equals(claims.getSubject(), ACCESS_TOKEN_SUBJECT)) {
+            String message = "AccessToken이 아닙니다.";
+            log.error(message);
+            return false;
+        }
+        return true;
+    }
+    public boolean isRefreshTokenValid(String token) {
+        Claims claims = this.extractClaims(token);
+        if (!Objects.equals(claims.getSubject(), REFRESH_TOKEN_SUBJECT)) {
+            String message = "RefreshToken이 아닙니다.";
+            log.error(message);
+            return false;
+        }
+        return true;
     }
 }
