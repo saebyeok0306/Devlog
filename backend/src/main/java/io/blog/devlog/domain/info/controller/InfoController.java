@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class InfoController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody InfoDto infoDto) throws IOException {
         boolean isSuccess = infoService.createBlogInfo(infoDto);
         if (!isSuccess) {

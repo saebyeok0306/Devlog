@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -30,11 +31,15 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateCategories(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Category> categories) throws IOException {
-        int idx = 0;
+        long idx = -1;
         var isDuplic = false;
         for (Category category : categories) {
             System.out.println(category);
+            if (idx == -1) {
+                idx = category.getLayer();
+            }
             if (category.getLayer() == idx) {
                 idx ++;
             }
