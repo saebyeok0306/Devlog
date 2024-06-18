@@ -1,4 +1,3 @@
-import { OAUTH2_URI } from "constants/api/oauth";
 import { API } from "./Axios";
 import { reissueToken } from "utils/authenticate";
 

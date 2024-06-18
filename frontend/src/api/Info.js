@@ -8,3 +8,16 @@ export const get_info_api = async () => {
       throw error;
     });
 };
+
+export const set_info_api = async (about, profile_url) => {
+  const requestBody = {
+    about: about,
+    profile_url: profile_url,
+  };
+  console.log("set_info_api post");
+  return await API.post("/info", requestBody)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
