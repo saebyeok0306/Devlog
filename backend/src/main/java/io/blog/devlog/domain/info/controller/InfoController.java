@@ -1,6 +1,7 @@
 package io.blog.devlog.domain.info.controller;
 
-import io.blog.devlog.domain.info.dto.InfoDto;
+import io.blog.devlog.domain.info.dto.RequestInfoDto;
+import io.blog.devlog.domain.info.dto.ResponseInfoDto;
 import io.blog.devlog.domain.info.service.InfoService;
 import io.blog.devlog.global.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,14 +22,14 @@ public class InfoController {
     private final InfoService infoService;
 
     @GetMapping
-    public InfoDto getInfo() {
+    public ResponseInfoDto getInfo() {
         return infoService.getBlogInfo();
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody InfoDto infoDto) throws IOException {
-        boolean isSuccess = infoService.createBlogInfo(infoDto);
+    public void updateInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestInfoDto requestInfoDto) throws IOException {
+        boolean isSuccess = infoService.createBlogInfo(requestInfoDto);
         if (!isSuccess) {
             Integer status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             String error = "정보를 업로드하는데 실패했습니다.";

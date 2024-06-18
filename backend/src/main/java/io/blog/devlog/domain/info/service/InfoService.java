@@ -1,6 +1,7 @@
 package io.blog.devlog.domain.info.service;
 
-import io.blog.devlog.domain.info.dto.InfoDto;
+import io.blog.devlog.domain.info.dto.RequestInfoDto;
+import io.blog.devlog.domain.info.dto.ResponseInfoDto;
 import io.blog.devlog.domain.info.model.Info;
 import io.blog.devlog.domain.info.repository.InfoRepository;
 import io.blog.devlog.domain.user.model.Role;
@@ -19,21 +20,18 @@ public class InfoService {
     private final InfoRepository infoRepository;
     private final UserRepository userRepository;
 
-    public InfoDto getBlogInfo() {
+    public ResponseInfoDto getBlogInfo() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, 1, sort);
         Info info = infoRepository.findAll(pageRequest).getContent().getFirst();
-        return InfoDto.toDto(info);
+        return ResponseInfoDto.toDto(info);
     }
 
-    public boolean createBlogInfo(InfoDto infoDto) {
+    public boolean createBlogInfo(RequestInfoDto requestInfoDto) {
+        // TODO: 관리자 계정을 가져오는 방법을 수정해야함.
         User user = userRepository.findByRole(Role.ADMIN).orElse(null);
         if (user == null) return false;
-        Info info = Info.builder()
-                .about(infoDto.getAbout())
-                .profileUrl(infoDto.getProfileUrl())
-                .user(user)
-                .build();
+        Info info = requestInfoDto.toEntity(user);
         infoRepository.save(info);
         return true;
     }
