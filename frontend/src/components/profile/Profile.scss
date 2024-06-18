@@ -16,12 +16,31 @@
     }
   }
 
-  div.profile-username {
-    display: flex;
+  .profile-username {
+    width: 100%;
+    text-align: center;
+  }
 
-    a {
-      margin: auto;
-      margin-left: 5px;
+  div.profile-about {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    word-break: break-all;
+    flex-direction: column;
+    width: 100%;
+    white-space: pre-wrap;
+
+    button {
+      margin-left: auto;
+      margin-right: 10px;
+    }
+
+    textarea {
+      font-size: inherit;
+      width: 100%;
+      padding: 0;
+      background-color: inherit;
+      border: 1px dashed white;
     }
   }
 }
