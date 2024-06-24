@@ -40,3 +40,4 @@ out/
 ### Private Data ###
 /src/main/resources/wallet
 *.sql
+server.pid
