@@ -136,7 +136,7 @@ function PostEditor() {
       <MDEditor
         ref={editorRef}
         preview={window.innerWidth > 768 ? "live" : "edit"}
-        style={{ flex: "1" }}
+        style={{ flex: "1", whiteSpace: "pre-wrap" }}
         value={value}
         onChange={setValue}
         onDrop={handleDrop}
