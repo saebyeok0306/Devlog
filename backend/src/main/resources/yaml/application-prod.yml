@@ -21,5 +21,10 @@ spring:
         format_sql: true
 frontend:
   url: http://westreed.kro.kr
+file:
+  upload:
+    path: /home/resource
+  request:
+    path: http://westreed.kro.kr/res
 
 # screen -S back java -jar devlog.jar --spring.profiles.active=prod
