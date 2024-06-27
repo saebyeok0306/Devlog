@@ -24,4 +24,4 @@ file:
   upload:
     path: C:\Programming\Blog\devlog\backend\src\main\resources\upload
   request:
-    path: http://localhost:8000/res
+    path: res

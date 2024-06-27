@@ -2,6 +2,8 @@ package io.blog.devlog.domain.file.handler;
 
 import io.blog.devlog.domain.file.dto.FileDto;
 import io.blog.devlog.domain.file.model.FileType;
+import io.blog.devlog.domain.file.model.TempFile;
+import io.blog.devlog.domain.file.service.TempFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class FileHandler {
+    private final TempFileService tempFileService;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Value("${file.request.path}")
@@ -35,7 +38,6 @@ public class FileHandler {
 
         String fileName = this.sanitizeFileName(file.getOriginalFilename());
         String saveFileName = UUID.randomUUID() + "_" + fileName;
-        String savePath = uploadPath + "/" + saveFileName;
 
         try {
             File saveFile = new File(uploadFolder, saveFileName);
@@ -58,11 +60,15 @@ public class FileHandler {
             fileType = FileType.FILES;
         }
 
+        String fileUrl = uploadFolderPath + "/" + saveFileName;
+        TempFile tempFile = tempFileService.addTempFile(fileUrl);
         return FileDto.builder()
                 .fileName(fileName)
                 .fileSize(file.getSize())
-                .fileUrl(requestPath + "/" + uploadFolderPath + "/" + saveFileName)
+                .fileUrl(fileUrl)
+                .filePath(requestPath)
                 .fileType(fileType)
+                .tempId(tempFile.getId())
                 .build();
     }
 
