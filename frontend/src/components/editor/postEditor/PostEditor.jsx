@@ -7,6 +7,7 @@ import { themeAtom } from "recoil/themeAtom";
 import { Dropdown } from "flowbite-react";
 import { get_categories_api } from "api/Category";
 import Responsive from "components/common/Responsive";
+import { upload_file_api } from "api/File";
 
 function PostEditor() {
   const editorRef = useRef(null);
@@ -60,7 +61,8 @@ function PostEditor() {
 
   const handleDrop = async (event) => {
     event.preventDefault();
-    console.log(event);
+
+    if (!editorRef.current) return;
 
     const className = event.target.className;
     if (
@@ -69,42 +71,50 @@ function PostEditor() {
     )
       return;
 
+    console.log(event, event.dataTransfer?.files.length);
     if (event.dataTransfer.files.length === 1) {
       const file = event.dataTransfer.files[0];
 
       // image type check
       if (file && file.type.startsWith("image")) {
         // TODO: backend upload image
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
-        const imageUrl = URL.createObjectURL(file);
-
-        if (editorRef.current) {
-          insertTextAtPosition(
-            editorRef.current.textarea,
-            `![${fileName}](${imageUrl})\n`
-          );
-        }
+        await upload_file_api(file)
+          .then((res) => {
+            console.log("파일전송 완료");
+            const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+            insertTextAtPosition(
+              editorRef.current.textarea,
+              `![${fileName}](${process.env.REACT_APP_API_ENDPOINT}/${res.data.filePath}/${res.data.fileUrl})\n`
+            );
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
     }
   };
 
   const handlePaste = async (event) => {
     event.preventDefault();
+    if (!editorRef.current) return;
     const clipboardData = event.clipboardData || window.clipboardData;
     if (clipboardData && clipboardData.items) {
       for (const item of clipboardData.items) {
         if (item.type.startsWith("image")) {
           // TODO: backend upload image
-          const blob = item.getAsFile();
-          const blobName = blob.name.replace(/\.[^/.]+$/, "");
-          const imageUrl = URL.createObjectURL(blob);
-
-          if (editorRef.current) {
-            insertTextAtPosition(
-              editorRef.current.textarea,
-              `![${blobName}](${imageUrl})\n`
-            );
-          }
+          const file = item.getAsFile();
+          await upload_file_api(file)
+            .then((res) => {
+              console.log("파일전송 완료");
+              const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+              insertTextAtPosition(
+                editorRef.current.textarea,
+                `![${fileName}](${process.env.REACT_APP_API_ENDPOINT}/${res.data.filePath}/${res.data.fileUrl})\n`
+              );
+            })
+            .catch((err) => {
+              console.error(err);
+            });
         }
       }
     }
