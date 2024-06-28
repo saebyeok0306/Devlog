@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -23,8 +25,11 @@ public class InfoService {
     public ResponseInfoDto getBlogInfo() {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, 1, sort);
-        Info info = infoRepository.findAll(pageRequest).getContent().getFirst();
-        return ResponseInfoDto.toDto(info);
+        List<Info> infoList = infoRepository.findAll(pageRequest).getContent();
+        for (Info info : infoList) {
+            return ResponseInfoDto.toDto(info);
+        }
+        throw new IllegalArgumentException("블로그 정보가 존재하지 않습니다.");
     }
 
     public boolean createBlogInfo(RequestInfoDto requestInfoDto) {
