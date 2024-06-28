@@ -14,7 +14,7 @@ import lombok.*;
 public class File extends CreateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String fileName;
     private String fileUrl; // year/month/day/fileName
     private long fileSize;

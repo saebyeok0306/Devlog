@@ -18,7 +18,7 @@ import java.util.List;
 public class Post extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String title;
     private String content;
     @ManyToOne

@@ -14,7 +14,7 @@ import lombok.*;
 public class Info extends CreateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @ManyToOne(cascade = CascadeType.MERGE, targetEntity = User.class)
     @JoinColumn(name="user_id", updatable = false)
     private User user;
