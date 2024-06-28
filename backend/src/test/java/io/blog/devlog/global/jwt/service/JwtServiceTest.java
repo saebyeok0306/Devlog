@@ -1,5 +1,6 @@
 package io.blog.devlog.global.jwt.service;
 
+import io.blog.devlog.config.JwtServiceConfig;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -35,11 +35,7 @@ public class JwtServiceTest {
 
     @BeforeAll
     public static void beforeAllSetUp() {
-        jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "secret", "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgab");
-        ReflectionTestUtils.setField(jwtService, "accessTokenExpiration", 3600);
-        ReflectionTestUtils.setField(jwtService, "refreshTokenExpiration", 86400);
-        jwtService.init();
+        jwtService = new JwtServiceConfig().createJwtService();
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         testUser = User.builder()
