@@ -3,23 +3,25 @@ spring:
     activate:
       on-profile: local
   datasource:
-    driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@testdb_high?TNS_ADMIN=./src/main/resources/wallet
-    username: ${ORACLE_USERNAME}
-    password: ${ORACLE_PASSWORD}
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
-#    username: root
-#    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: ${MYSQL_PASSWORD}
   sql:
     init:
-      mode: never
+      mode: always
   jpa:
+    defer-datasource-initialization: true # Hibernate 초기화 후 data.sql 실행
     hibernate:
-      ddl-auto: update # DDL (create/update/create-drop/validate/none)
+      ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
         show_sql: true
         format_sql: true
 frontend:
   url: http://localhost:3000
+file:
+  upload:
+    path: C:\Programming\Blog\devlog\backend\src\main\resources\upload
+  request:
+    path: res

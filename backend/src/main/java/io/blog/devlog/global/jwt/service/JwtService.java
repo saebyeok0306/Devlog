@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -26,6 +27,7 @@ public class JwtService {
     private final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private final String CLAIM_NAME = "name";
+    private final String CLAIM_EMAIL = "email";
     private final String CLAIN_ROLE = "role";
 
     @Value("${jwt.secret}")
@@ -68,6 +70,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(ACCESS_TOKEN_SUBJECT) // Jwt Subject
                 .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity) // set Expire Time 해당 옵션 안넣으면 expire안함
                 .setIssuedAt(date)
@@ -196,5 +199,24 @@ public class JwtService {
             log.error(message);
             throw new JwtException(message, e);
         }
+    }
+
+    public boolean isAccessTokenValid(String token) {
+        Claims claims = this.extractClaims(token);
+        if (!Objects.equals(claims.getSubject(), ACCESS_TOKEN_SUBJECT)) {
+            String message = "AccessToken이 아닙니다.";
+            log.error(message);
+            return false;
+        }
+        return true;
+    }
+    public boolean isRefreshTokenValid(String token) {
+        Claims claims = this.extractClaims(token);
+        if (!Objects.equals(claims.getSubject(), REFRESH_TOKEN_SUBJECT)) {
+            String message = "RefreshToken이 아닙니다.";
+            log.error(message);
+            return false;
+        }
+        return true;
     }
 }

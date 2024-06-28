@@ -1,0 +1,53 @@
+@import "src/styles/commons";
+
+.PostEditor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  .post-top {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+    input.post-title {
+      margin-right: 1em;
+      flex: 1;
+      font-size: 1.5em;
+      padding: 0.3em;
+      height: 2em;
+      background-color: $background-white-color;
+      border-radius: 10px;
+      &:is(.dark *) {
+        background-color: #0d1117;
+      }
+    }
+    .post-extra-menu {
+      display: flex;
+      gap: 0.5em;
+      margin: auto;
+      button {
+      }
+    }
+  }
+  .w-md-editor-content {
+    flex: 1;
+    .w-md-editor-text-pre > code,
+    .w-md-editor-text-input {
+      font-size: 1.3em !important;
+      line-height: 1.3em !important;
+    }
+    .w-md-editor-preview .wmde-markdown {
+      font-size: 1.3em !important;
+      line-height: 1.3em !important;
+    }
+  }
+  .w-md-editor-toolbar {
+    button {
+      width: 2em;
+      height: 2em;
+      svg {
+        width: 1.5em;
+        height: 1.5em;
+      }
+    }
+  }
+}

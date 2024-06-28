@@ -14,6 +14,8 @@ import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import DarkModeProvider from "utils/DarkModeProvider";
 import ObserverUser from "utils/ObserverUser";
+import PrivateRoute from "routes/PrivateRoute";
+import CategoryManager from "pages/CategoryManager";
 
 function App() {
   const isDark = useRecoilValue(themeAtom);
@@ -35,15 +37,13 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/callback" element={<Callback />} />
                   </Route>
-                  {/* <Route element={<PublicRoute/>}>
-                  <Route path="/login" element={<LoginPage/>} />
-                </Route>
-                <Route element={<PrivateRoute role={"Admin"} />}>
-                  <Route path="/admin" element={<AdminPage/>} />
-                </Route>
-                <Route element={<PrivateRoute role={"Guest"} />}>
-                  <Route path="/guest" element={<GuestPage/>} />
-                </Route> */}
+                  <Route
+                    path="/manager"
+                    element={<PrivateRoute roles={["ADMIN"]} />}
+                  >
+                    <Route path="category" element={<CategoryManager />} />
+                    <Route path="info" element={<div>info</div>} />
+                  </Route>
                 </Routes>
               </AuthTokenInterceptor>
             </div>

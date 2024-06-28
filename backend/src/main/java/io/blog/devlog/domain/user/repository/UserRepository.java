@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.user.repository;
 
+import io.blog.devlog.domain.user.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import io.blog.devlog.domain.user.model.User;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public Optional<User> findByUsername(String username); // JPA Query Methods
     public Optional<User> findByEmail(String email);
     public Optional<User> findByRefreshToken(String refreshToken);
+    public Optional<User> findByRole(Role role);
     @Modifying
     @Query("UPDATE User u SET u.refreshToken = :token WHERE u.email = :email")
     public void updateRefreshTokenByEmail(String email, String token);

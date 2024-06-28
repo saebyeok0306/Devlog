@@ -2,8 +2,7 @@ server:
   shutdown: graceful
 
 spring:
-  lifecycle:
-    timeout-per-shutdown-phase=30s
+  lifecycle: timeout-per-shutdown-phase=30s
   config:
     activate:
       on-profile: prod
@@ -20,6 +19,10 @@ spring:
         show_sql: true
         format_sql: true
 frontend:
-  url: http://westreed.kro.kr
-
+  url: http://devlog.run
+file:
+  upload:
+    path: /home/resource
+  request:
+    path: res
 # screen -S back java -jar devlog.jar --spring.profiles.active=prod

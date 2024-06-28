@@ -3,7 +3,6 @@ import Responsive from "components/common/Responsive";
 
 import { Footer } from "flowbite-react";
 
-import { BLOG_NAME } from "constants/base/main";
 import "./FooterComponent.scss";
 import { Link } from "react-router-dom";
 
@@ -25,8 +24,7 @@ function FooterComponent() {
             by="SeHun.J"
             year={2024}
           />
-          <Footer.LinkGroup>
-            <FooterLinker to="/">Privacy Policy</FooterLinker>
+          <Footer.LinkGroup className="footer-items">
             <FooterLinker to="/">Licensing</FooterLinker>
             <FooterLinker to="/">Contact</FooterLinker>
           </Footer.LinkGroup>

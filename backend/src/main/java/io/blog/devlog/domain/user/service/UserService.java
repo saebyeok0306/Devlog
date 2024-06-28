@@ -5,6 +5,8 @@ import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -37,10 +40,12 @@ public class UserService {
         userRepository.updateRefreshTokenByEmail(email, token);
     }
 
-    public Optional<String> reissueAccessToken(HttpServletRequest request) {
+    public String reissueAccessToken(HttpServletRequest request) throws BadRequestException {
         String refreshToken = jwtService.extractJWT(request).orElse(null);
+        if (!jwtService.isRefreshTokenValid(refreshToken)) throw new BadRequestException("Invalid refresh token");
         User user = userRepository.findByRefreshToken(refreshToken).orElse(null);
-        if (user == null) return Optional.empty();
-        return Optional.ofNullable(jwtService.createAccessToken(user));
+        log.info("Refresh token : {} User : {}", refreshToken, user);
+        if (user == null) throw new BadRequestException("Invalid refresh token");
+        return jwtService.createAccessToken(user);
     }
 }
