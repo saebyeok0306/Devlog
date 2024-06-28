@@ -90,7 +90,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ${{ secrets.APP_FOLDER_PATH }}
+            cd ${{ env.APP_FOLDER_PATH }}
             ls -al
             sh script/stop.sh
 
