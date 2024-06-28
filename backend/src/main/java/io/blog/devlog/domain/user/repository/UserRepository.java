@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 // CRUD 함수를 JpaRepository가 들고 있음.
@@ -17,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByUsername(String username); // JPA Query Methods
     public Optional<User> findByEmail(String email);
     public Optional<User> findByRefreshToken(String refreshToken);
-    public Optional<User> findByRole(Role role);
+    public List<User> findAllByRole(Role role);
     @Modifying
     @Query("UPDATE User u SET u.refreshToken = :token WHERE u.email = :email")
     public void updateRefreshTokenByEmail(String email, String token);
