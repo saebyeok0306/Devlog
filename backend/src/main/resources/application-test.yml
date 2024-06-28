@@ -45,3 +45,9 @@ jwt:
 
 frontend:
   url: http://localhost:3000
+
+file:
+  upload:
+    path: /home/resource
+  request:
+    path: res
