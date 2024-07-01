@@ -11,12 +11,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class DevlogApplication {
 
 	public static void main(String[] args) {
-//		SpringApplication.run(DevlogApplication.class, args);
 		SpringApplication application = new SpringApplicationBuilder()
 				.sources(DevlogApplication.class)
 				.listeners(new ApplicationPidFileWriter("./server.pid"))
 				.build();
 		application.run(args);
+//		SpringApplication.run(DevlogApplication.class, args);
+//		ConfigurableApplicationContext context = app.run(args);
+//		Environment environment = context.getEnvironment();
 	}
-
 }
