@@ -1,6 +1,6 @@
 package io.blog.devlog.domain.info.service;
 
-import io.blog.devlog.config.JwtServiceConfig;
+import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.info.dto.RequestInfoDto;
 import io.blog.devlog.domain.info.dto.ResponseInfoDto;
 import io.blog.devlog.domain.info.repository.InfoRepository;
@@ -30,7 +30,7 @@ public class InfoServiceTest {
 
     @BeforeEach
     public void beforeSetUp() {
-        JwtService jwtService = new JwtServiceConfig().createJwtService();
+        JwtService jwtService = new TestConfig().createJwtService();
         UserService userService = new UserService(userRepository, jwtService);
         infoService = new InfoService(infoRepository, userService);
     }

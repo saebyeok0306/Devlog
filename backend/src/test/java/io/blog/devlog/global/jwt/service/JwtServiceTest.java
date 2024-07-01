@@ -1,6 +1,6 @@
 package io.blog.devlog.global.jwt.service;
 
-import io.blog.devlog.config.JwtServiceConfig;
+import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,7 +35,7 @@ public class JwtServiceTest {
 
     @BeforeAll
     public static void beforeAllSetUp() {
-        jwtService = new JwtServiceConfig().createJwtService();
+        jwtService = new TestConfig().createJwtService();
         bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         testUser = User.builder()
