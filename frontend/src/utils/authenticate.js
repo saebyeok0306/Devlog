@@ -26,7 +26,7 @@ export const signIn = (
       // expires: new Date(payload_refresh.exp * 1000),
     });
     setAuthDto(new Auth(payload.name, payload.email, true));
-    alert(message);
+    if (message !== false) alert(message);
 
     return true;
   }
@@ -50,6 +50,7 @@ export const reissueToken = (headers) => {
     path: "/",
     // expires: new Date(payload_refresh.exp * 1000),
   });
+  return accessToken;
 };
 
 export const GetPayload = () => {
