@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import PrivateRoute from 'routes/PrivateRoute';
+import PrivateRoute from "routes/PrivateRoute";
 import PublicRoute from "routes/PublicRoute";
 import AnyRoute from "routes/AnyRoute";
 
@@ -13,8 +13,7 @@ import Callback from "pages/Callback";
 import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import DarkModeProvider from "utils/DarkModeProvider";
-import ObserverUser from "utils/ObserverUser";
-import PrivateRoute from "routes/PrivateRoute";
+import AuthProvider from "utils/AuthProvider";
 import CategoryManager from "pages/CategoryManager";
 
 function App() {
@@ -22,7 +21,7 @@ function App() {
 
   return (
     <DarkModeProvider>
-      <ObserverUser>
+      <AuthProvider>
         <div className={`wrapper ${isDark ? "dark" : "light"}`}>
           <BrowserRouter basename={process.env.PUBLIC_URL}>
             <div className={`contentWrapper`}>
@@ -50,7 +49,7 @@ function App() {
             <FooterContainer />
           </BrowserRouter>
         </div>
-      </ObserverUser>
+      </AuthProvider>
     </DarkModeProvider>
   );
 }
