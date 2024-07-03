@@ -23,6 +23,10 @@ const PrivateRoute = ({ roles = [], email = null }) => {
   }
 
   const payload = GetPayload();
+  if (payload.isLogin === false) {
+    alert("로그인이 필요한 서비스입니다.");
+    return <Navigate to="/login" />;
+  }
 
   if (roles !== null && checkRole(roles, payload.role)) {
     alert("해당 서비스를 이용하실 수 없습니다.");
