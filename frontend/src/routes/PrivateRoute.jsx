@@ -1,41 +1,32 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { authAtom } from "../recoil/authAtom";
 import { GetPayload } from "utils/authenticate";
+import { ROLE_TYPE } from "utils/RoleType";
 
-const checkRole = (roles, targetRole) => {
-  if (!Array.isArray(roles))
-    throw Error("PrivateRoute에서 roles는 배열이어야 합니다.");
-  for (var i = 0; i < roles.length; i++) {
-    if (targetRole === roles[i]) {
-      return false;
-    }
-  }
-  return true;
-};
-
-const PrivateRoute = ({ roles = [], email = null }) => {
-  const [authDto] = useRecoilState(authAtom);
+const PrivateRoute = ({ role = null, email = null }) => {
+  const authDto = useRecoilValue(authAtom);
+  // FIXME: Private 경로에서 로그아웃했을 때 오류 발생함.
   if (!authDto.isLogin) {
-    alert("로그인이 필요한 서비스입니다.");
-    return <Navigate to="/login" />;
+    alert("로그인이 필요한 서비스입니다.1");
+    return <Navigate replace to="/login" />;
   }
 
   const payload = GetPayload();
   if (payload.isLogin === false) {
-    alert("로그인이 필요한 서비스입니다.");
-    return <Navigate to="/login" />;
+    alert("로그인이 필요한 서비스입니다.2");
+    return <Navigate replace to="/login" />;
   }
 
-  if (roles !== null && checkRole(roles, payload.role)) {
+  if (role !== null && ROLE_TYPE[payload.role] > ROLE_TYPE[role]) {
     alert("해당 서비스를 이용하실 수 없습니다.");
-    return <Navigate to="/" />;
+    return <Navigate replace to="/" />;
   }
 
   if (email !== null && payload.email !== email) {
     alert("해당 서비스를 이용하실 수 없습니다.");
-    return <Navigate to="/" />;
+    return <Navigate replace to="/" />;
   }
 
   return <Outlet />;

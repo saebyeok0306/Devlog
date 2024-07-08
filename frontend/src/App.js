@@ -15,15 +15,16 @@ import { themeAtom } from "recoil/themeAtom";
 import DarkModeProvider from "utils/DarkModeProvider";
 import AuthProvider from "utils/AuthProvider";
 import CategoryManager from "pages/CategoryManager";
+import { ROLE_TYPE } from "utils/RoleType";
 
 function App() {
   const isDark = useRecoilValue(themeAtom);
 
   return (
     <DarkModeProvider>
-      <AuthProvider>
-        <div className={`wrapper ${isDark ? "dark" : "light"}`}>
-          <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <div className={`wrapper ${isDark ? "dark" : "light"}`}>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
+          <AuthProvider>
             <div className={`contentWrapper`}>
               <AuthTokenInterceptor>
                 <Routes>
@@ -38,7 +39,7 @@ function App() {
                   </Route>
                   <Route
                     path="/manager"
-                    element={<PrivateRoute roles={["ADMIN"]} />}
+                    element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}
                   >
                     <Route path="category" element={<CategoryManager />} />
                     <Route path="info" element={<div>info</div>} />
@@ -47,9 +48,9 @@ function App() {
               </AuthTokenInterceptor>
             </div>
             <FooterContainer />
-          </BrowserRouter>
-        </div>
-      </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </div>
     </DarkModeProvider>
   );
 }
