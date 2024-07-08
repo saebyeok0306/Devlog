@@ -9,6 +9,7 @@ import { setTheme, getThemeValue, themeAtom } from "recoil/themeAtom";
 import LightIcon from "assets/icons/Light";
 import ComputerIcon from "assets/icons/Computer";
 import DotIcon from "assets/icons/Dot";
+import { Link } from "react-router-dom";
 
 function RightMenu() {
   const [select, SetSelect] = useState(getThemeValue());
@@ -86,6 +87,14 @@ function RightMenu() {
     );
   };
 
+  const NewPost = () => {
+    return (
+      <nav>
+        <Link to="/editor">새글쓰기</Link>
+      </nav>
+    );
+  };
+
   if (authDto.isLogin === false) {
     return (
       <div className="rightmenu">
@@ -97,7 +106,7 @@ function RightMenu() {
   return (
     <div className="rightmenu">
       <CommonMenu />
-      <nav>로그인됨</nav>
+      <NewPost />
     </div>
   );
 }
