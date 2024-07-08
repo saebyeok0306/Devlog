@@ -6,9 +6,19 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Role {
-    GUEST("ROLE_GUEST"),
-    USER("ROLE_USER"),
-    PARTNER("ROLE_PARTNER"),
-    ADMIN("ROLE_ADMIN");
-    private final String key;
+    GUEST(0, "ROLE_GUEST"),
+    USER(1, "ROLE_USER"),
+    PARTNER(2, "ROLE_PARTNER"),
+    ADMIN(3, "ROLE_ADMIN");
+    private final int key;
+    private final String nameKey;
+
+    public static Role fromNameKey(String nameKey) {
+        for (Role role : Role.values()) {
+            if (role.getNameKey().equals(nameKey)) {
+                return role;
+            }
+        }
+        throw new IllegalArgumentException("Invalid string key: " + nameKey);
+    }
 }
