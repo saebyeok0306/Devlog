@@ -54,3 +54,23 @@ p {
 div[data-testid="flowbite-tooltip"] {
   font-family: "SokchoBadaBatang";
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  //글자색
+  -webkit-text-fill-color: white;
+  //배경색
+  transition: background-color 86400s ease-in-out 0s !important;
+  -webkit-transition: background-color 86400s ease-in-out 0s !important;
+}
+
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+  -webkit-text-fill-color: white;
+  transition: background-color 86400s ease-in-out 0s !important;
+  -webkit-transition: background-color 86400s ease-in-out 0s !important;
+}
