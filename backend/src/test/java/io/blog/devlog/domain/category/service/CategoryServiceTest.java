@@ -42,7 +42,7 @@ public class CategoryServiceTest {
             Category category = Category.builder()
                     .name(String.format("카테고리 테스트%d", i))
                     .layer(i)
-                    .writePostAuth(Role.ADMIN)
+                    .writePostAuth(Role.GUEST)
                     .readCategoryAuth(Role.GUEST)
                     .writeCommentAuth(Role.GUEST)
                     .build();
@@ -73,7 +73,7 @@ public class CategoryServiceTest {
             Category category = Category.builder()
                     .name(String.format("카테고리 테스트%d", i))
                     .layer(i)
-                    .writePostAuth(Role.ADMIN)
+                    .writePostAuth(Role.GUEST)
                     .readCategoryAuth(Role.GUEST)
                     .writeCommentAuth(Role.GUEST)
                     .build();
@@ -94,5 +94,36 @@ public class CategoryServiceTest {
         for (Category category : categories2) {
             Assertions.assertThat(category.getName()).isEqualTo(String.format("테스트%d", category.getId()));
         }
+    }
+
+    @Test
+    @DisplayName("카테고리 보기 권한 검증")
+    public void categoriesReadAuthTest() {
+        // given
+        int guest_category_size = 0;
+        List<Role> roles = List.of(Role.GUEST, Role.USER, Role.ADMIN);
+        List<Category> categories = new ArrayList<>();
+        for (var i=0; i<roles.size(); i++) {
+            Role role = roles.get(i);
+            if (role == Role.GUEST) {
+                guest_category_size += 1;
+            }
+            Category category = Category.builder()
+                    .name(String.format("%s 카테고리", role.name()))
+                    .layer(i)
+                    .writePostAuth(Role.GUEST)
+                    .readCategoryAuth(role)
+                    .writeCommentAuth(Role.GUEST)
+                    .build();
+            categories.add(category);
+        }
+        categoryRepository.saveAll(categories);
+
+        // when
+        // GUEST 권한으로 카테고리 조회
+        List<Category> test_categories = categoryService.getCategories();
+
+        // then
+        Assertions.assertThat(test_categories.size()).isEqualTo(guest_category_size);
     }
 }

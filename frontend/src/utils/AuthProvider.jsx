@@ -1,7 +1,7 @@
-import { user_check_api } from "api/User";
+import { jwt_refresh_api, user_check_api } from "api/User";
 import { useRecoilState } from "recoil";
 import { authAtom } from "recoil/authAtom";
-import { signOut } from "./authenticate";
+import { signIn, signOut } from "./authenticate";
 
 import murmurhash from "murmurhash";
 import { useInterval } from "./useInterval";
@@ -10,15 +10,17 @@ import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "constants/user/login";
+import { useEffect, useState } from "react";
 
-function ObserverUser({ children }) {
+function AuthProvider({ children }) {
+  const [refresh, setRefresh] = useState(0);
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   const authenticateUser = () => {
     if (!authDto?.isLogin) return;
 
     const verify_access_token = () => {
-      const curhash = murmurhash.v3(getCookie(ACCESS_TOKEN_STRING));
+      const curhash = murmurhash.v3(getCookie(ACCESS_TOKEN_STRING) || 0);
       const datahash = Number(sessionStorage.getItem("at"));
       if (datahash !== curhash) {
         sessionStorage.setItem("at", curhash);
@@ -28,7 +30,7 @@ function ObserverUser({ children }) {
     };
 
     const verify_refresh_token = () => {
-      const curhash = murmurhash.v3(getCookie(REFRESH_TOKEN_STRING));
+      const curhash = murmurhash.v3(getCookie(REFRESH_TOKEN_STRING) || 0);
       const datahash = Number(sessionStorage.getItem("rt"));
       if (datahash !== curhash) {
         sessionStorage.setItem("rt", curhash);
@@ -56,7 +58,27 @@ function ObserverUser({ children }) {
     authenticateUser();
   }, intervalTime);
 
+  useEffect(() => {
+    const access_token = getCookie(ACCESS_TOKEN_STRING);
+    const refresh_token = getCookie(REFRESH_TOKEN_STRING);
+    if (authDto.isLogin) return;
+    if (refresh_token == null) return;
+    if (access_token == null) {
+      jwt_refresh_api()
+        .then((res) => {
+          setRefresh(refresh + 1);
+        })
+        .catch((err) => {
+          console.log("err: ", err);
+          signOut(setAuthDto, "다시 로그인 해주세요.");
+        });
+    }
+    if (access_token == null || refresh_token == null) return;
+    signIn(access_token, refresh_token, setAuthDto, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authDto, refresh]);
+
   return <>{children}</>;
 }
 
-export default ObserverUser;
+export default AuthProvider;

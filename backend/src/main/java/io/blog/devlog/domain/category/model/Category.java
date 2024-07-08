@@ -15,7 +15,7 @@ import lombok.*;
 public class Category extends CreateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Setter
     @NotNull
     private long layer; // 카테고리 순서

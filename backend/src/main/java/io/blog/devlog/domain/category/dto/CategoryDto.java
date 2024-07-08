@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDto {
-    private long id;
+    private Long id;
     private long layer; // 카테고리 순서
     private String name;
 

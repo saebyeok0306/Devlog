@@ -26,7 +26,7 @@ public class JwtService {
     private final String BEARER = "Bearer ";
     private final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    private final String CLAIM_NAME = "name";
+    private final String CLAIM_NAME = "username";
     private final String CLAIM_EMAIL = "email";
     private final String CLAIN_ROLE = "role";
 

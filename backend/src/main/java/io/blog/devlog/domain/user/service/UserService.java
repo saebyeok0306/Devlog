@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.user.service;
 
+import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.global.jwt.service.JwtService;
@@ -10,6 +11,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,5 +49,11 @@ public class UserService {
         log.info("Refresh token : {} User : {}", refreshToken, user);
         if (user == null) throw new BadRequestException("Invalid refresh token");
         return jwtService.createAccessToken(user);
+    }
+
+    public User getAdmin() {
+        List<User> users = userRepository.findAllByRole(Role.ADMIN);
+        if (users.isEmpty()) return null;
+        return users.get(0);
     }
 }

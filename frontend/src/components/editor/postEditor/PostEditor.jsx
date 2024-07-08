@@ -95,12 +95,12 @@ function PostEditor() {
   };
 
   const handlePaste = async (event) => {
-    event.preventDefault();
     if (!editorRef.current) return;
     const clipboardData = event.clipboardData || window.clipboardData;
     if (clipboardData && clipboardData.items) {
       for (const item of clipboardData.items) {
         if (item.type.startsWith("image")) {
+          event.preventDefault();
           // TODO: backend upload image
           const file = item.getAsFile();
           await upload_file_api(file)
@@ -154,18 +154,26 @@ function PostEditor() {
         onPaste={handlePaste}
         height={"100%"}
         textareaProps={{
-          placeholder: "Please enter Markdown text",
+          placeholder: "내용을 입력하세요.",
         }}
         commands={[
           commands.bold,
           commands.italic,
           commands.strikethrough,
           commands.hr,
-          commands.group([commands.title2, commands.title3, commands.title4], {
-            name: "title",
-            groupName: "title",
-            buttonProps: { "aria-label": "Insert title" },
-          }),
+          commands.group(
+            [
+              commands.title1,
+              commands.title2,
+              commands.title3,
+              commands.title4,
+            ],
+            {
+              name: "title",
+              groupName: "title",
+              buttonProps: { "aria-label": "Insert title" },
+            }
+          ),
           commands.divider,
           commands.link,
           commands.quote,

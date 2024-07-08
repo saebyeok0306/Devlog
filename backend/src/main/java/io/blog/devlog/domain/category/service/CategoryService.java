@@ -2,12 +2,16 @@ package io.blog.devlog.domain.category.service;
 
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
+import io.blog.devlog.domain.user.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.blog.devlog.global.utils.SecurityUtils.getPrincipalRole;
 
 @Service
 @RequiredArgsConstructor
@@ -16,9 +20,15 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<Category> getCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        categories.sort(Comparator.comparingLong(Category::getLayer));
-        return categories;
+        Role role = getPrincipalRole();
+        if (role == null) {
+            return null;
+        }
+        return categoryRepository.findAll()
+                .stream()
+                .filter(category -> category.getReadCategoryAuth().getKey() <= role.getKey())
+                .sorted(Comparator.comparingLong(Category::getLayer))
+                .collect(Collectors.toList());
     }
 
     public void updateCategories(List<Category> categories) {

@@ -22,4 +22,12 @@ public class ResponseInfoDto {
                 .profileUrl(info.getProfileUrl())
                 .build();
     }
+
+    public static ResponseInfoDto toNullDto() {
+        return ResponseInfoDto.builder()
+                .username("devLog")
+                .about("오류로 인해 블로그 정보를 불러올 수 없습니다.")
+                .profileUrl("")
+                .build();
+    }
 }

@@ -26,7 +26,7 @@ export const signIn = (
       // expires: new Date(payload_refresh.exp * 1000),
     });
     setAuthDto(new Auth(payload.name, payload.email, true));
-    alert(message);
+    if (message !== false) alert(message);
 
     return true;
   }
@@ -34,10 +34,10 @@ export const signIn = (
 };
 
 export const signOut = (setAuthDto, message = "로그아웃 했습니다.") => {
-  alert(message);
   setAuthDto(EMPTY_AUTH);
   removeCookie(ACCESS_TOKEN_STRING);
   removeCookie(REFRESH_TOKEN_STRING);
+  alert(message);
 };
 
 export const reissueToken = (headers) => {
@@ -50,6 +50,7 @@ export const reissueToken = (headers) => {
     path: "/",
     // expires: new Date(payload_refresh.exp * 1000),
   });
+  return accessToken;
 };
 
 export const GetPayload = () => {

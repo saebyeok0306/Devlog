@@ -1,5 +1,6 @@
 package io.blog.devlog.global.login.filter;
 
+import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.global.jwt.service.JwtService;
 import io.blog.devlog.global.response.ErrorResponse;
 import io.jsonwebtoken.Claims;
@@ -13,13 +14,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,7 +43,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
             try {
                 if (jwtService.isTokenValid(token)) {
                     Claims claims = jwtService.extractClaims(token);
-                    saveAuthentication(claims);
+                    createUserDetails(claims);
                 }
             }
             catch (ExpiredJwtException e) {
@@ -56,19 +60,41 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
                 return;
             }
         }
+        else {
+            // GUEST
+            createUserDetails();
+        }
 
         filterChain.doFilter(request, response);
     }
 
-    private void saveAuthentication(Claims claims) throws IOException {
-        log.info("saveAuthentication() 호출");
-        log.info("getAuthentication() : ", SecurityContextHolder.getContext().getAuthentication());
+    private void createUserDetails(Claims claims) throws IOException {
+        log.info("saveAuthentication(Claims) 호출");
+        List<GrantedAuthority> authorities = new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + claims.get("role"))));
         UserDetails userDetails = User.builder()
-                .username((String) claims.get("name"))
+                .username((String) claims.get("email"))
                 .password("")
-                .roles((String) claims.get("role"))
+//                .roles((String) claims.get("role"))
+                .authorities(authorities)
                 .build();
 
+        saveAuthentication(userDetails);
+    }
+
+    private void createUserDetails() {
+        log.info("saveAuthentication() 호출");
+        List<GrantedAuthority> authorities = new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + Role.GUEST)));
+        UserDetails userDetails = User.builder()
+                .username("GUEST")
+                .password("")
+                .authorities(authorities)
+                .build();
+
+        saveAuthentication(userDetails);
+    }
+
+    private void saveAuthentication(UserDetails userDetails) {
+        log.info("saveAuthentication(UserDetails) 호출");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,

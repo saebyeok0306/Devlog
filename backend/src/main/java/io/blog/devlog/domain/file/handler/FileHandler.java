@@ -82,7 +82,7 @@ public class FileHandler {
     private String sanitizeFileName(String fileName) {
         String INVALID_CHARS_PATTERN = "[\\\\/:*?\"<>|()\\[\\] ]";
         String INVALID_KOREA_PATTERN = "[가-힣]";
-        if(fileName == null || fileName.isEmpty()) {
+        if (fileName == null || fileName.isEmpty()) {
             return "";
         }
         return fileName.replaceAll(INVALID_CHARS_PATTERN, "").replaceAll(INVALID_KOREA_PATTERN, "");
