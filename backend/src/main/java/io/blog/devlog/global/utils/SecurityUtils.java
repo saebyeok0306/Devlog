@@ -14,7 +14,7 @@ public class SecurityUtils {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
-            return null;
+            return Role.GUEST;
         }
 
         Object principal = authentication.getPrincipal();
