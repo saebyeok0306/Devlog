@@ -10,6 +10,8 @@ public class TestConfig {
     public JwtService createJwtService() {
         JwtService jwtService = new JwtService();
         ReflectionTestUtils.setField(jwtService, "secret", "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgab");
+        ReflectionTestUtils.setField(jwtService, "accessHeader", "Authorization");
+        ReflectionTestUtils.setField(jwtService, "refreshHeader", "Authorization-Refresh");
         ReflectionTestUtils.setField(jwtService, "accessTokenExpiration", 3600);
         ReflectionTestUtils.setField(jwtService, "refreshTokenExpiration", 86400);
         jwtService.init();
