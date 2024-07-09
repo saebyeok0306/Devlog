@@ -4,6 +4,8 @@ import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.info.dto.RequestInfoDto;
 import io.blog.devlog.domain.info.dto.ResponseInfoDto;
 import io.blog.devlog.domain.info.repository.InfoRepository;
+import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.jwt.service.JwtService;
@@ -57,5 +59,32 @@ public class InfoServiceTest {
         ResponseInfoDto blogInfo = infoService.getBlogInfo();
         // then
         Assertions.assertThat(blogInfo).isInstanceOf(ResponseInfoDto.class);
+    }
+
+    @Test
+    @DisplayName("블로그 정보 갱신")
+    public void setBlogInfoTest() {
+        // given
+        User adminUser = User.builder()
+                .email("westreed@naver.com")
+                .password("password")
+                .username("westreed")
+                .role(Role.ADMIN)
+                .build();
+        userRepository.save(adminUser);
+        RequestInfoDto requestInfoDto = RequestInfoDto.builder()
+                .about("블로그 소개")
+                .profileUrl("프로필 사진")
+                .build();
+
+        // when
+        boolean result = infoService.createBlogInfo(requestInfoDto);
+        ResponseInfoDto blogInfo = infoService.getBlogInfo();
+
+        // then
+        Assertions.assertThat(result).isTrue();
+        Assertions.assertThat(blogInfo.getAbout()).isEqualTo(requestInfoDto.getAbout());
+        Assertions.assertThat(blogInfo.getProfileUrl()).isEqualTo(requestInfoDto.getProfileUrl());
+        Assertions.assertThat(blogInfo.getUsername()).isEqualTo(adminUser.getUsername());
     }
 }

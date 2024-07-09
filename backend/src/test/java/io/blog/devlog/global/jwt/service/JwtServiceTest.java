@@ -49,7 +49,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("AccessToken 검증")
-    void jwtTest1() {
+    public void jwtTest1() {
         // given
         userRepository.save(testUser);
 
@@ -66,7 +66,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("RefreshToken 검증")
-    void jwtTest2() {
+    public void jwtTest2() {
         // given
         userRepository.save(testUser);
 
@@ -83,15 +83,17 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("UpdateRefreshToken 검증")
-    void updateRefreshTokenTest() {
+    public void updateRefreshTokenTest() {
         // given
-        userRepository.save(testUser);
+        User user = userRepository.save(testUser);
         String token = jwtService.createRefreshToken(testUser);
-        userRepository.updateRefreshTokenByEmail(testEmail, token);
+        user.updateRefreshToken(token);
+//        userRepository.updateRefreshTokenByEmail(testEmail, token);
 
         // when
-        String test_token = jwtService.createRefreshToken(testUser, new Date(pastTime));
-        userRepository.updateRefreshTokenByEmail(testEmail, test_token);
+        String test_token = jwtService.createRefreshToken(user, new Date(pastTime));
+        user.updateRefreshToken(test_token);
+//        userRepository.updateRefreshTokenByEmail(testEmail, test_token);
 
         // then
         Optional<User> optUser = userRepository.findByRefreshToken(test_token);
@@ -100,7 +102,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("isTokenValid 검증 - 유효하지 않은 JWT")
-    void isTokenValidTest1() {
+    public void isTokenValidTest1() {
         // given
         String token = "123";
 
@@ -112,7 +114,7 @@ public class JwtServiceTest {
 
     @Test
     @DisplayName("isTokenValid 검증 - 만료된 토큰")
-    void isTokenValidTest2() {
+    public void isTokenValidTest2() {
         // given
         userRepository.save(testUser);
 

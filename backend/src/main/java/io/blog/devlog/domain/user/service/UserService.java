@@ -22,8 +22,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
     public Optional<User> getUserByEmail(String email) {
@@ -34,19 +34,10 @@ public class UserService {
         return userRepository.findByRefreshToken(token);
     }
 
-    public void updateRefreshToken(User user, String token) {
-        userRepository.updateRefreshTokenByEmail(user.getEmail(), token);
-    }
-
-    public void updateRefreshToken(String email, String token) {
-        userRepository.updateRefreshTokenByEmail(email, token);
-    }
-
     public String reissueAccessToken(HttpServletRequest request) throws BadRequestException {
         String refreshToken = jwtService.extractJWT(request).orElse(null);
-        if (!jwtService.isRefreshTokenValid(refreshToken)) throw new BadRequestException("Invalid refresh token");
+        if (refreshToken == null || !jwtService.isRefreshTokenValid(refreshToken)) throw new BadRequestException("Invalid refresh token");
         User user = userRepository.findByRefreshToken(refreshToken).orElse(null);
-        log.info("Refresh token : {} User : {}", refreshToken, user);
         if (user == null) throw new BadRequestException("Invalid refresh token");
         return jwtService.createAccessToken(user);
     }

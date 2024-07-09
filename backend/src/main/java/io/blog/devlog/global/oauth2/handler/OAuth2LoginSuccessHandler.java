@@ -63,7 +63,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //        response.addHeader(jwtService.getRefreshHeader(), jwtService.getBEARER() + refreshToken);
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        userService.updateRefreshToken(user, refreshToken);
+//        userService.updateRefreshToken(user, refreshToken);
+        user.updateRefreshToken(refreshToken);
 
         response.sendRedirect(String.format("%s/callback?at=%s&rt=%s", frontendOriginUrl, accessToken, refreshToken));
         return true;
