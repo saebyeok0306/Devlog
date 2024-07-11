@@ -5,6 +5,7 @@ import FolderIcon from "assets/icons/Folder";
 import { useRecoilState } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { get_categories_api } from "api/Category";
+import { toast } from "react-toastify";
 
 const initialDnDState = {
   draggedFrom: null, // 드래그를 시작한 요소의(마우스를 클릭하여 움직인 요소) 인덱스
@@ -27,7 +28,7 @@ function EditCategory() {
         setList(res.data);
       })
       .catch((err) => {
-        alert(err);
+        toast.error(`${err.response?.data ? err.response.data.error : err}`);
       });
   }, []);
 

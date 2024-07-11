@@ -8,6 +8,7 @@ import App from "App";
 import "styles/main.scss";
 import "styles/base/font.css";
 import "styles/base/tailwind.css";
+import "react-toastify/dist/ReactToastify.css";
 
 function Index() {
   return (
