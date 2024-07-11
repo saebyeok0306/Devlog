@@ -8,13 +8,19 @@ import { Dropdown } from "flowbite-react";
 import { get_categories_api } from "api/Category";
 import Responsive from "components/common/Responsive";
 import { upload_file_api } from "api/File";
+import Publish from "./publish";
 
 function PostEditor() {
   const editorRef = useRef(null);
   const [isDark] = useRecoilState(themeAtom);
-  const [value, setValue] = useState();
+  const [title, setTitle] = useState();
+  const [content, setContent] = useState();
   const [categories, setCategories] = useState([]);
+  const [files, setFiles] = useState([]);
   const [selectCategory, setSelectCategory] = useState();
+  const [preview, setPreview] = useState();
+
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     get_categories_api()
@@ -26,6 +32,13 @@ function PostEditor() {
         console.error(err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!preview) {
+      setPreview(files[0]);
+    }
+    // eslint-disable-next-line
+  }, [files]);
 
   const selectCategoryHandler = (category) => {
     setSelectCategory(category);
@@ -77,15 +90,15 @@ function PostEditor() {
 
       // image type check
       if (file && file.type.startsWith("image")) {
-        // TODO: backend upload image
         await upload_file_api(file)
           .then((res) => {
             console.log("파일전송 완료");
             const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
             insertTextAtPosition(
               editorRef.current.textarea,
-              `![${fileName}](${process.env.REACT_APP_API_ENDPOINT}/${res.data.filePath}/${res.data.fileUrl})\n`
+              `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
             );
+            setFiles([...files, res.data]);
           })
           .catch((err) => {
             console.error(err);
@@ -101,7 +114,6 @@ function PostEditor() {
       for (const item of clipboardData.items) {
         if (item.type.startsWith("image")) {
           event.preventDefault();
-          // TODO: backend upload image
           const file = item.getAsFile();
           await upload_file_api(file)
             .then((res) => {
@@ -109,8 +121,9 @@ function PostEditor() {
               const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
               insertTextAtPosition(
                 editorRef.current.textarea,
-                `![${fileName}](${process.env.REACT_APP_API_ENDPOINT}/${res.data.filePath}/${res.data.fileUrl})\n`
+                `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
               );
+              setFiles([...files, res.data]);
             })
             .catch((err) => {
               console.error(err);
@@ -126,11 +139,13 @@ function PostEditor() {
       data-color-mode={isDark ? "dark" : "light"}
     >
       <div className="post-top">
-        <input className="post-title" placeholder="글 제목을 입력하세요." />
+        <input
+          className="post-title"
+          placeholder="글 제목을 입력하세요."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <div className="post-extra-menu">
-          <button onClick={() => insertTextAtCursor("Hello World!")}>
-            글쓰기
-          </button>
           <Dropdown className="dropdown" label={selectCategory?.name} inline>
             {categories.map((category, idx) => (
               <Dropdown.Item
@@ -141,14 +156,15 @@ function PostEditor() {
               </Dropdown.Item>
             ))}
           </Dropdown>
+          <button onClick={() => setOpenModal(true)}>발행하기</button>
         </div>
       </div>
       <MDEditor
         ref={editorRef}
         preview={window.innerWidth > 768 ? "live" : "edit"}
         style={{ flex: "1", whiteSpace: "pre-wrap" }}
-        value={value}
-        onChange={setValue}
+        value={content}
+        onChange={setContent}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onPaste={handlePaste}
@@ -188,6 +204,16 @@ function PostEditor() {
           commands.checkedListCommand,
           customButton,
         ]}
+      />
+      <Publish
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        selectCategory={selectCategory}
+        title={title}
+        content={content}
+        files={files}
+        preview={preview}
+        setPreview={setPreview}
       />
     </Responsive>
   );
