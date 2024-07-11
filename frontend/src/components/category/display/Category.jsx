@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 
 import "./Category.scss";
 import FolderIcon from "assets/icons/Folder";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { get_categories_api } from "api/Category";
 import { GetPayload } from "utils/authenticate";
 import EditIcon from "assets/icons/Edit";
 import { Tooltip } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { authAtom } from "recoil/authAtom";
 
 function Category() {
   const payload = GetPayload();
   const [isDark] = useRecoilState(themeAtom);
+  const authDto = useRecoilValue(authAtom);
   const [list, setList] = useState([]); // 렌더될 요소
 
   useEffect(() => {
@@ -23,7 +25,7 @@ function Category() {
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [authDto]);
 
   const CategoryIcon = () => {
     return (
