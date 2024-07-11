@@ -28,7 +28,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         String email = extractUsername(authentication); // 인증 정보에서 Username(email) 추출
-       User user = userService.getUserByEmail(email).orElse(null);
+        User user = userService.getUserByEmail(email).orElse(null);
 
         if(user == null) {
             log.error("로그인한 유저의 정보가 없습니다! email : {}", email);
@@ -40,6 +40,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken); // 응답 헤더에 AccessToken, RefreshToken 실어서 응답
 //        userService.updateRefreshToken(user, refreshToken);
         user.updateRefreshToken(refreshToken);
+        userService.saveUser(user);
+
 
         log.info("로그인에 성공하였습니다. Email : {}", email);
         log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);

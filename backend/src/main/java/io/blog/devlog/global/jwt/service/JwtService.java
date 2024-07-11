@@ -90,6 +90,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
                 .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)

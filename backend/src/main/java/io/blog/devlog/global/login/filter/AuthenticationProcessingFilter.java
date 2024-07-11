@@ -35,7 +35,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("AuthenticationProcessingFilter 호출됨");
+        log.info("AuthenticationProcessingFilter 호출됨 {}", request.getRequestURI());
 
         String token = jwtService.extractJWT(request).orElse(null);
 
@@ -82,7 +82,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void createUserDetails() {
-        log.info("saveAuthentication() 호출");
+        log.info("createUserDetails() 호출");
         List<GrantedAuthority> authorities = new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + Role.GUEST)));
         UserDetails userDetails = User.builder()
                 .username("GUEST")
