@@ -16,13 +16,26 @@ import DarkModeProvider from "utils/DarkModeProvider";
 import AuthProvider from "utils/AuthProvider";
 import CategoryManager from "pages/CategoryManager";
 import { ROLE_TYPE } from "utils/RoleType";
+import ToastContainerComponent from "utils/ToastContainer";
+import { useEffect } from "react";
 
 function App() {
   const isDark = useRecoilValue(themeAtom);
 
+  useEffect(() => {
+    if (isDark) {
+      if (!document.body.classList.contains("dark"))
+        document.body.classList.add("dark");
+    } else {
+      if (document.body.classList.contains("dark"))
+        document.body.classList.remove("dark");
+    }
+  }, [isDark]);
+
   return (
     <DarkModeProvider>
-      <div className={`wrapper ${isDark ? "dark" : "light"}`}>
+      <ToastContainerComponent />
+      <div className={`wrapper`}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
           <AuthProvider>
             <div className={`contentWrapper`}>

@@ -18,6 +18,14 @@ body {
   @include mediaquery(medium) {
     font-size: 12px;
   }
+
+  &.dark {
+    color: $font-white-color;
+  }
+
+  transition:
+    background-color 0.3s,
+    color 0.3s !important;
 }
 
 p {
@@ -30,14 +38,9 @@ p {
   flex-direction: column;
   min-height: 100vh;
 
-  &.dark {
-    color: $font-white-color;
+  &:is(.dark *) {
     background-color: $background-deep-black-color;
   }
-
-  transition:
-    background-color 0.3s,
-    color 0.3s !important;
 }
 
 .contentWrapper {
