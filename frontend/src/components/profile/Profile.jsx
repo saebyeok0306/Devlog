@@ -7,6 +7,7 @@ import EditIcon from "assets/icons/Edit";
 import { useRecoilState } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { Tooltip } from "flowbite-react";
+import { onErrorImg } from "utils/defaultImg";
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {
@@ -71,7 +72,11 @@ function Profile() {
   return (
     <div className="profile">
       <div className="profile-image">
-        <img src={"/assets/ryan-riggins-216051.jpg"} alt="profile" />
+        <img
+          src={"/assets/ryan-riggins-216051.jpg"}
+          alt="profile"
+          onError={onErrorImg}
+        />
       </div>
       <div className="profile-username">
         <p>{profile?.username}</p>

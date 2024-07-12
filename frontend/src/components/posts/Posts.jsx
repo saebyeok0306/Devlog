@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import "./Posts.scss";
+import { onErrorImg } from "utils/defaultImg";
 
 class Post {
   constructor(title) {
@@ -25,7 +26,7 @@ const post_list = [
 function PostCard(idx, post) {
   return (
     <div className="post" key={idx}>
-      <div className="post-img">image</div>
+      <img className="post-img" src="" alt="post" onError={onErrorImg} />
       <div className="post-title">{post.title}</div>
       <div className="post-bottom">
         <div className="post-category">{post.category}</div>
