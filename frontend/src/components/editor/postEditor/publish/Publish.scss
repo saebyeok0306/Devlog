@@ -22,6 +22,7 @@
       .publish-preview-img {
         height: 100%;
         img {
+          background-color: #f4f4f4;
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -67,9 +68,26 @@
       }
     }
 
+    .publish-category {
+      flex: 1;
+
+      & h3 {
+        margin-bottom: 0.5em;
+      }
+
+      div {
+        & button[aria-haspopup="menu"] {
+          width: 100%;
+          & svg {
+            margin-left: auto;
+          }
+        }
+      }
+    }
+
     .publish-url {
       display: flex;
-      flex: 1;
+      flex: 2;
       flex-direction: column;
 
       & h3 {

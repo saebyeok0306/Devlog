@@ -1,12 +1,15 @@
-import { Button, Carousel, Modal, TextInput } from "flowbite-react";
+import { Button, Carousel, Dropdown, Modal, TextInput } from "flowbite-react";
 
 import "./Publish.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onErrorImg } from "utils/defaultImg";
 
 function Publish({
   openModal,
   setOpenModal,
+  categories,
   selectCategory,
+  setSelectCategory,
   title,
   content,
   files,
@@ -14,6 +17,13 @@ function Publish({
   setPreview,
 }) {
   const [isPublic, setIsPublic] = useState(true);
+  const [postUrl, setPostUrl] = useState();
+
+  useEffect(() => {
+    if (openModal && !postUrl && title) {
+      setPostUrl(title.replace(/ /g, "-"));
+    }
+  }, [openModal]);
 
   const handlePublic = (e) => {
     e.preventDefault();
@@ -27,7 +37,12 @@ function Publish({
 
   const PreviewCarousel = () => {
     if (files.length === 0) {
-      return <></>;
+      return (
+        <div className="publish-preview-list">
+          <h3 className="text-xl font-medium">미리보기 선택</h3>
+          <p>미리보기 이미지가 없습니다.</p>
+        </div>
+      );
     }
 
     return (
@@ -63,10 +78,15 @@ function Publish({
               <div className="publish-preview">
                 <h3 className="text-xl font-medium">포스트 미리보기</h3>
                 <div className="publish-preview-img">
-                  <img
-                    src={`${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`}
-                    alt="preview"
-                  />
+                  {preview ? (
+                    <img
+                      src={`${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`}
+                      alt="preview"
+                      onError={onErrorImg}
+                    />
+                  ) : (
+                    <img src="" alt="preview" onError={onErrorImg} />
+                  )}
                 </div>
               </div>
               <PreviewCarousel />
@@ -89,9 +109,30 @@ function Publish({
                   </Button>
                 </div>
               </div>
+              <div className="publish-category">
+                <h3 className="text-xl font-medium">카테고리</h3>
+                <div className="border border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm rounded-lg">
+                  <Dropdown label={selectCategory?.name} inline>
+                    {categories.map((category, idx) => (
+                      <Dropdown.Item
+                        key={idx}
+                        onClick={() => setSelectCategory(category)}
+                      >
+                        {category?.name}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown>
+                </div>
+              </div>
               <div className="publish-url">
                 <h3 className="text-xl font-medium">포스트 URL</h3>
-                <TextInput placeholder="포스트 URL" required color="gray" />
+                <TextInput
+                  placeholder="포스트 URL"
+                  required
+                  color="gray"
+                  value={postUrl}
+                  onChange={(e) => console.log(e)}
+                />
               </div>
             </div>
           </div>
