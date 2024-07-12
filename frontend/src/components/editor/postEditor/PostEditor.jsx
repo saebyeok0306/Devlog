@@ -9,10 +9,15 @@ import { get_categories_api } from "api/Category";
 import Responsive from "components/common/Responsive";
 import { upload_file_api } from "api/File";
 import Publish from "./publish";
+import { toast } from "react-toastify";
+import FileUploader from "./fileUploader";
+import UploadIcon from "assets/icons/Upload";
 
 function PostEditor() {
   const editorRef = useRef(null);
   const [isDark] = useRecoilState(themeAtom);
+  const [openModal, setOpenModal] = useState(false);
+
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
   const [categories, setCategories] = useState([]);
@@ -20,7 +25,7 @@ function PostEditor() {
   const [selectCategory, setSelectCategory] = useState();
   const [preview, setPreview] = useState();
 
-  const [openModal, setOpenModal] = useState(false);
+  const [openLoader, setOpenLoader] = useState(false);
 
   useEffect(() => {
     get_categories_api()
@@ -36,33 +41,40 @@ function PostEditor() {
   useEffect(() => {
     if (!preview) {
       setPreview(files[0]);
+    } else {
+      // files 중 content에 없는 이미지가 preview인 경우 다시 files에서 첫번째 항목으로 선택.
+      if (
+        content.indexOf(
+          `(${process.env.REACT_APP_API_FILE_URL}/${preview.filePath}/${preview.fileUrl})`
+        ) === -1
+      ) {
+        setPreview(files[0]);
+      }
     }
     // eslint-disable-next-line
   }, [files]);
 
-  const selectCategoryHandler = (category) => {
-    setSelectCategory(category);
-  };
-
-  const customButton = {
-    name: "custom",
-    keyCommand: "custom",
-    buttonProps: { "aria-label": "custom" },
-    icon: (
-      <svg viewBox="0 0 1024 1024" width="12" height="12">
-        <path
-          fill="currentColor"
-          d="M716.8 921.6a51.2 51.2 0 1 1 0 102.4H307.2a51.2 51.2 0 1 1 0-102.4h409.6zM475.8016 382.1568a51.2 51.2 0 0 1 72.3968 0l144.8448 144.8448a51.2 51.2 0 0 1-72.448 72.3968L563.2 541.952V768a51.2 51.2 0 0 1-45.2096 50.8416L512 819.2a51.2 51.2 0 0 1-51.2-51.2v-226.048l-57.3952 57.4464a51.2 51.2 0 0 1-67.584 4.2496l-4.864-4.2496a51.2 51.2 0 0 1 0-72.3968zM512 0c138.6496 0 253.4912 102.144 277.1456 236.288l10.752 0.3072C924.928 242.688 1024 348.0576 1024 476.5696 1024 608.9728 918.8352 716.8 788.48 716.8a51.2 51.2 0 1 1 0-102.4l8.3968-0.256C866.2016 609.6384 921.6 550.0416 921.6 476.5696c0-76.4416-59.904-137.8816-133.12-137.8816h-97.28v-51.2C691.2 184.9856 610.6624 102.4 512 102.4S332.8 184.9856 332.8 287.488v51.2H235.52c-73.216 0-133.12 61.44-133.12 137.8816C102.4 552.96 162.304 614.4 235.52 614.4l5.9904 0.3584A51.2 51.2 0 0 1 235.52 716.8C105.1648 716.8 0 608.9728 0 476.5696c0-132.1984 104.8064-239.872 234.8544-240.2816C258.5088 102.144 373.3504 0 512 0z"
-        />
-      </svg>
+  const fileUploader = {
+    name: "FileUploader",
+    groupName: "FileUploader",
+    icon: <UploadIcon />,
+    children: (props) => (
+      <FileUploader
+        {...props}
+        openLoader={openLoader}
+        setOpenLoader={setOpenLoader}
+        files={files}
+        setFiles={setFiles}
+      />
     ),
     execute: (state, api) => {
-      let modifyText = `### ${state.selectedText}\n`;
-      if (!state.selectedText) {
-        modifyText = `### `;
-      }
-      api.replaceSelection(modifyText);
+      setOpenLoader(true);
     },
+    buttonProps: { "aria-label": "FileUploader" },
+  };
+
+  const selectCategoryHandler = (category) => {
+    setSelectCategory(category);
   };
 
   const insertTextAtCursor = (text) => {
@@ -133,6 +145,30 @@ function PostEditor() {
     }
   };
 
+  const publishHandler = (e) => {
+    e.preventDefault();
+    if (!title) {
+      toast.error("제목을 입력해주세요.");
+      return;
+    }
+    if (!content) {
+      toast.error("내용을 입력해주세요.");
+      return;
+    }
+
+    // files 중 content에 없는 파일은 files에서 제거
+    setFiles(
+      files.filter(
+        (file) =>
+          content.indexOf(
+            `(${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl})`
+          ) !== -1
+      )
+    );
+
+    setOpenModal(true);
+  };
+
   return (
     <Responsive
       className="PostEditor"
@@ -156,7 +192,7 @@ function PostEditor() {
               </Dropdown.Item>
             ))}
           </Dropdown>
-          <button onClick={() => setOpenModal(true)}>발행하기</button>
+          <button onClick={(e) => publishHandler(e)}>발행하기</button>
         </div>
       </div>
       <MDEditor
@@ -202,13 +238,16 @@ function PostEditor() {
           commands.unorderedListCommand,
           commands.orderedListCommand,
           commands.checkedListCommand,
-          customButton,
+          commands.divider,
+          commands.group([], fileUploader),
         ]}
       />
       <Publish
         openModal={openModal}
         setOpenModal={setOpenModal}
+        categories={categories}
         selectCategory={selectCategory}
+        setSelectCategory={setSelectCategory}
         title={title}
         content={content}
         files={files}
