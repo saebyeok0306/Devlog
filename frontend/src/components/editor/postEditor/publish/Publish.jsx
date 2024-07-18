@@ -3,10 +3,14 @@ import { Button, Carousel, Dropdown, Modal, TextInput } from "flowbite-react";
 import "./Publish.scss";
 import { useEffect, useState } from "react";
 import { onErrorImg } from "utils/defaultImg";
+import { upload_post_api } from "api/Posts";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function Publish({
   openModal,
   setOpenModal,
+  authDto,
   categories,
   selectCategory,
   setSelectCategory,
@@ -16,7 +20,8 @@ function Publish({
   preview,
   setPreview,
 }) {
-  const [isPublic, setIsPublic] = useState(true);
+  const navigate = useNavigate();
+  const [isPrivate, setIsPrivate] = useState(false);
   const [postUrl, setPostUrl] = useState();
 
   useEffect(() => {
@@ -25,14 +30,43 @@ function Publish({
     }
   }, [openModal]);
 
-  const handlePublic = (e) => {
-    e.preventDefault();
-    setIsPublic(true);
+  const closeHandler = () => {
+    setOpenModal(false);
   };
 
-  const handlePrivate = (e) => {
+  const publicHandler = (e) => {
     e.preventDefault();
-    setIsPublic(false);
+    setIsPrivate(false);
+    toast.info("전체공개로 설정되었습니다.");
+  };
+
+  const privateHandler = (e) => {
+    e.preventDefault();
+    setIsPrivate(true);
+    toast.info("비공개로 설정되었습니다.");
+  };
+
+  const publishHandler = async () => {
+    await upload_post_api(
+      postUrl,
+      title,
+      content,
+      preview
+        ? `${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`
+        : null,
+      authDto?.email,
+      selectCategory?.id,
+      files,
+      isPrivate
+    )
+      .then((res) => {
+        toast.info("게시글을 업로드했습니다!");
+      })
+      .catch((err) => {
+        toast.error("게시글 업로드에 실패했습니다!");
+      });
+    closeHandler();
+    navigate("/");
   };
 
   const PreviewCarousel = () => {
@@ -65,12 +99,7 @@ function Publish({
 
   return (
     <>
-      <Modal
-        show={openModal}
-        onClose={() => setOpenModal(false)}
-        size="4xl"
-        popup
-      >
+      <Modal show={openModal} onClose={closeHandler} size="4xl" popup>
         <Modal.Header />
         <Modal.Body>
           <div className="publish-modal">
@@ -96,14 +125,14 @@ function Publish({
                 <h3 className="text-xl font-medium">포스트 공개범위</h3>
                 <div>
                   <Button
-                    color={isPublic ? "blue" : "gray"}
-                    onClick={handlePublic}
+                    color={isPrivate ? "gray" : "blue"}
+                    onClick={publicHandler}
                   >
                     전체공개
                   </Button>
                   <Button
-                    color={isPublic ? "gray" : "warning"}
-                    onClick={handlePrivate}
+                    color={isPrivate ? "warning" : "gray"}
+                    onClick={privateHandler}
                   >
                     비공개
                   </Button>
@@ -138,8 +167,8 @@ function Publish({
           </div>
         </Modal.Body>
         <Modal.Footer className="publish-footer">
-          <Button onClick={() => setOpenModal(false)}>발행하기</Button>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
+          <Button onClick={publishHandler}>발행하기</Button>
+          <Button color="gray" onClick={closeHandler}>
             취소
           </Button>
         </Modal.Footer>
