@@ -38,6 +38,8 @@ p {
   flex-direction: column;
   min-height: 100vh;
 
+  background-color: #f9f9f9;
+
   &:is(.dark *) {
     background-color: $background-deep-black-color;
   }
