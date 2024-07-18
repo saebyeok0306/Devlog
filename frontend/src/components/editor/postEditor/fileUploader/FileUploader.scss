@@ -1,0 +1,13 @@
+.file-upload-files {
+  margin-top: 1em;
+  .file-upload-file {
+    display: flex;
+    flex-direction: row;
+
+    .file-upload-file-name {
+      margin-top: auto;
+      margin-bottom: auto;
+      margin-right: 0.5em;
+    }
+  }
+}
