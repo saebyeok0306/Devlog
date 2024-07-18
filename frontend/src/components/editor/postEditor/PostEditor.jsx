@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import MDEditor, { commands, insertTextAtPosition } from "@uiw/react-md-editor";
+import rehypeVideo from "rehype-video";
 
 import "./PostEditor.scss";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { Dropdown } from "flowbite-react";
 import { get_categories_api } from "api/Category";
@@ -12,9 +13,11 @@ import Publish from "./publish";
 import { toast } from "react-toastify";
 import FileUploader from "./fileUploader";
 import UploadIcon from "assets/icons/Upload";
+import { authAtom } from "recoil/authAtom";
 
 function PostEditor() {
   const editorRef = useRef(null);
+  const authDto = useRecoilValue(authAtom);
   const [isDark] = useRecoilState(themeAtom);
   const [openModal, setOpenModal] = useState(false);
 
@@ -90,9 +93,10 @@ function PostEditor() {
     if (!editorRef.current) return;
 
     const className = event.target.className;
+    console.log(event.dataTransfer?.files[0]);
     if (
       !className.startsWith("w-md-editor-content") ||
-      className.startsWith("w-md-editor-input")
+      className.startsWith("w-md-editor-preview")
     )
       return;
 
@@ -100,8 +104,10 @@ function PostEditor() {
     if (event.dataTransfer.files.length === 1) {
       const file = event.dataTransfer.files[0];
 
+      if (!file) return;
+
       // image type check
-      if (file && file.type.startsWith("image")) {
+      if (file.type.startsWith("image")) {
         await upload_file_api(file)
           .then((res) => {
             console.log("파일전송 완료");
@@ -208,6 +214,9 @@ function PostEditor() {
         textareaProps={{
           placeholder: "내용을 입력하세요.",
         }}
+        previewOptions={{
+          rehypePlugins: [[rehypeVideo, { test: /\/(.*)(.mp4|.mov)$/ }]],
+        }}
         commands={[
           commands.bold,
           commands.italic,
@@ -245,6 +254,7 @@ function PostEditor() {
       <Publish
         openModal={openModal}
         setOpenModal={setOpenModal}
+        authDto={authDto}
         categories={categories}
         selectCategory={selectCategory}
         setSelectCategory={setSelectCategory}
@@ -257,5 +267,11 @@ function PostEditor() {
     </Responsive>
   );
 }
+
+/*
+<MDEditor.Markdown
+  rehypePlugins={[[rehypeVideo]]}
+/>
+*/
 
 export default PostEditor;
