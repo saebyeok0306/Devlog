@@ -16,8 +16,9 @@ public class File extends CreateTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String fileName;
-    private String fileUrl; // year/month/day/fileName
     private long fileSize;
+    private String fileUrl; // year/month/day/fileName
+    private String filePath; // res
     @Enumerated(EnumType.STRING)
     private FileType fileType;
     @ManyToOne
