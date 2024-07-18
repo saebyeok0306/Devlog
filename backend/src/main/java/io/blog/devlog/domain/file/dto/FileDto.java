@@ -1,6 +1,8 @@
 package io.blog.devlog.domain.file.dto;
 
+import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.file.model.FileType;
+import io.blog.devlog.domain.post.model.Post;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -21,8 +23,14 @@ public class FileDto {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
-//    public static ResponseFileDto toDto(File file) {
-//        return ResponseFileDto.builder()
-//                .build();
-//    }
+    public File toEntity(Post post) {
+        return File.builder()
+                .fileName(this.fileName)
+                .fileSize(this.fileSize)
+                .fileUrl(this.fileUrl)
+                .filePath(this.filePath)
+                .fileType(this.fileType)
+                .post(post)
+                .build();
+    }
 }
