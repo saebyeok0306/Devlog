@@ -19,8 +19,10 @@ public class Post extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String url;
     private String title;
     private String content;
+    private String previewUrl;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -31,6 +33,7 @@ public class Post extends BaseTime {
     private List<File> files;
     private long views;
     private long likes;
+    private boolean isPrivate;
 //    private long comment;
 //    private String tag;
 }
