@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getPrincipalRole;
@@ -18,6 +19,10 @@ import static io.blog.devlog.global.utils.SecurityUtils.getPrincipalRole;
 @Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+
+    public Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
+    }
 
     public List<Category> getCategories() {
         Role role = getPrincipalRole();
