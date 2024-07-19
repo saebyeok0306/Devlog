@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class SecurityUtils {
 
@@ -28,6 +29,23 @@ public class SecurityUtils {
                     return null;
                 }
             }
+        }
+        return null;
+    }
+
+    public static String getUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            if (Objects.equals(username, "GUEST")) return null;
+            return username;
         }
         return null;
     }
