@@ -24,6 +24,7 @@ public class User extends BaseTime {
     @NotNull
     private String password;
     @NotNull
+    @Column(unique = true)
     private String email;
     @Nullable
     @Column(name = "profile_url")
