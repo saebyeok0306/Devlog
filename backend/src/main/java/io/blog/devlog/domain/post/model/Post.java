@@ -19,6 +19,7 @@ public class Post extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String url;
     private String title;
     private String content;
