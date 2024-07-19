@@ -24,6 +24,10 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
+    public Optional<Category> getCategoryByName(String name) {
+        return categoryRepository.findByName(name);
+    }
+
     public List<Category> getCategories() {
         Role role = getPrincipalRole();
         if (role == null) {
