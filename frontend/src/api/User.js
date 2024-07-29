@@ -1,3 +1,4 @@
+import mem from "mem";
 import { API } from "./Axios";
 import { reissueToken } from "utils/authenticate";
 
@@ -37,13 +38,17 @@ export const user_check_api = async () => {
     });
 };
 
-export const jwt_refresh_api = async () => {
-  console.log("get jwt_refresh_api");
-  return await API.get("/reissue")
-    .then((response) => {
-      reissueToken(response.headers);
-    })
-    .catch((error) => {
-      throw error;
-    });
-};
+export const jwt_refresh_api = mem(
+  async () => {
+    console.log("get jwt_refresh_api");
+    return await API.get("/reissue")
+      .then((response) => {
+        const t = reissueToken(response.headers);
+        console.log("success get jwt_refresh_api", t);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  },
+  { maxAge: 1000 }
+);
