@@ -39,16 +39,15 @@ export const user_check_api = async () => {
 };
 
 export const jwt_refresh_api = mem(
-  async () => {
-    console.log("get jwt_refresh_api");
+  async (email) => {
     return await API.get("/reissue")
       .then((response) => {
-        const t = reissueToken(response.headers);
-        console.log("success get jwt_refresh_api", t);
+        reissueToken(response.headers);
       })
       .catch((error) => {
         throw error;
       });
   },
-  { maxAge: 1000 }
+  // 유저별로 캐시를 따로 관리하기 위해 email을 cacheKey로 사용
+  { maxAge: 1000, cacheKey: (args) => args[0] }
 );

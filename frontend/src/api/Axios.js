@@ -1,6 +1,6 @@
 import axios from "axios";
 import { authAtom } from "../recoil/authAtom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { getCookie } from "../utils/hooks/useCookie";
 import { jwt_refresh_api } from "./User";
 import {
@@ -9,6 +9,7 @@ import {
 } from "constants/user/login";
 import { EMPTY_AUTH } from "constants/user/auth";
 import { toast } from "react-toastify";
+import { recoilStorageValue } from "utils/hooks/recoilStorageValue";
 
 const REFRESH_URL = "/reissue";
 
@@ -53,13 +54,16 @@ export const AuthTokenInterceptor = ({ children }) => {
         if (config.url === REFRESH_URL) {
           toast.error(`다시 로그인을 해주세요.`, {});
           setAuthDto(EMPTY_AUTH);
-          // toast.info("다시 로그인을 해주세요.");
+          window.location.href = "/login";
           return Promise.reject(err);
         }
 
         if (status === 401) {
-          await jwt_refresh_api();
-          return API(config);
+          const authDto = recoilStorageValue("auth", "author");
+          if (authDto?.isLogin) {
+            await jwt_refresh_api(authDto.email);
+            return API(config);
+          }
         }
 
         return Promise.reject(err);
