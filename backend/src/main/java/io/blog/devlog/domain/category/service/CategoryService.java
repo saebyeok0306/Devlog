@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +29,14 @@ public class CategoryService {
         return categoryRepository.findByName(name);
     }
 
+    public List<Category> sortCategories(List<Category> categories) {
+        return categories.stream().sorted(Comparator.comparingLong(Category::getLayer)).collect(Collectors.toList());
+    }
+
     public List<Category> getCategories() {
         Role role = getPrincipalRole();
         if (role == null) {
-            return null;
+            return Collections.emptyList();
         }
         return categoryRepository.findAll()
                 .stream()

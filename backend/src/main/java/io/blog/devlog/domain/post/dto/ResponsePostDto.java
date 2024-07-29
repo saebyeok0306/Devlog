@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -21,6 +23,8 @@ public class ResponsePostDto {
     private CategoryDto category;
     private long views;
     private long likes;
+    private LocalDateTime modifiedAt;
+    private LocalDateTime createdAt;
 
     public static ResponsePostDto of(Post post) {
         return ResponsePostDto.builder()
@@ -32,6 +36,8 @@ public class ResponsePostDto {
                 .category(CategoryDto.of(post.getCategory()))
                 .views(post.getViews())
                 .likes(post.getLikes())
+                .modifiedAt(post.getModifiedAt())
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 }
