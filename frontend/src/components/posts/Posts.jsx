@@ -1,36 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./Posts.scss";
 import { onErrorImg } from "utils/defaultImg";
+import { get_category_posts_api, get_posts_api } from "api/Posts";
+import { useRecoilState } from "recoil";
+import { categoryAtom } from "recoil/categoryAtom";
 
-class Post {
-  constructor(title) {
-    this.title = title;
-    this.author = "dev";
-    this.category = "카테고리";
-    this.createAt = "2024년 06월 03일";
-    this.content = "콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠";
+function PostCard(idx, post, setSelectCategory) {
+  const today = new Date();
+  const createdAt = new Date(post.createdAt);
+  const diff = (today - createdAt) / (1000 * 60 * 60);
+  var post_time;
+  if (diff >= 24) {
+    post_time = `${createdAt.getFullYear()}.${createdAt.getMonth() + 1}.${createdAt.getDate()}.`;
+  } else if (diff < 1) {
+    post_time = `${Math.floor(diff * 60)}분 전`;
+  } else {
+    post_time = `${Math.floor(diff)}시간 전`;
   }
-}
-
-const post_list = [
-  new Post("게시글1"),
-  new Post("게시글2"),
-  new Post("게시글3"),
-  new Post("게시글4"),
-  new Post("게시글5"),
-  new Post("게시글6"),
-  new Post("게시글7"),
-];
-
-function PostCard(idx, post) {
   return (
     <div className="post" key={idx}>
-      <img className="post-img" src="" alt="post" onError={onErrorImg} />
+      <img
+        className="post-img"
+        src={post.previewUrl}
+        alt="post"
+        onError={onErrorImg}
+      />
       <div className="post-title">{post.title}</div>
       <div className="post-bottom">
-        <div className="post-category">{post.category}</div>
-        <div className="post-create">{post.createAt}</div>
+        <button
+          className="post-category"
+          onClick={() => setSelectCategory(post.category.name)}
+        >
+          {post.category.name}
+        </button>
+        <div className="post-create">{post_time}</div>
       </div>
       {/* <div className="author">by {post.author}</div> */}
       {/* <div className="content">{post.content}</div> */}
@@ -39,11 +43,26 @@ function PostCard(idx, post) {
 }
 
 function Posts() {
-  const [posts, setPosts] = useState(post_list);
+  const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    get_posts_api(selectCategory)
+      .then((response) => {
+        console.log(response.data);
+        setPosts(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [selectCategory]);
+
   return (
     <>
       <h1 className="post-count">{posts.length} posts</h1>
-      <div className="posts">{posts.map((val, idx) => PostCard(idx, val))}</div>
+      <div className="posts">
+        {posts.map((val, idx) => PostCard(idx, val, setSelectCategory))}
+      </div>
     </>
   );
 }

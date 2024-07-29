@@ -27,3 +27,19 @@ export const upload_post_api = async (
       throw error;
     });
 };
+
+export const get_posts_api = async (categoryName = null) => {
+  if (categoryName === null || categoryName === "ALL") {
+    return await API.get("/posts", {})
+      .then((response) => response)
+      .catch((error) => {
+        throw error;
+      });
+  } else {
+    return await API.get(`/posts/category/${categoryName}`, {})
+      .then((response) => response)
+      .catch((error) => {
+        throw error;
+      });
+  }
+};
