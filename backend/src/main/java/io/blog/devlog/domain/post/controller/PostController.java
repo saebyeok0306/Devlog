@@ -1,7 +1,9 @@
 package io.blog.devlog.domain.post.controller;
 
 import io.blog.devlog.domain.post.dto.RequestPostDto;
+import io.blog.devlog.domain.post.dto.ResponsePageablePostDto;
 import io.blog.devlog.domain.post.dto.ResponsePostDto;
+import io.blog.devlog.domain.post.dto.ResponsePostNonContentDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +33,21 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponsePostDto>> getPosts(@RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+    public ResponseEntity<ResponsePageablePostDto> getPosts(@RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) throws BadRequestException {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPosts(pageable);
-        List<ResponsePostDto> responsePostDtos = new ArrayList<>();
+        List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
         for (Post post : posts) {
-            responsePostDtos.add(ResponsePostDto.of(post));
+            responsePostDtos.add(ResponsePostNonContentDto.of(post));
         }
-        return ResponseEntity.ok(responsePostDtos);
+        ResponsePageablePostDto responsePageablePostDto = ResponsePageablePostDto.builder()
+                .posts(responsePostDtos)
+                .currentPage(posts.getNumber())
+                .totalPages(posts.getTotalPages())
+                .totalElements(posts.getTotalElements())
+                .build();
+        return ResponseEntity.ok(responsePageablePostDto);
     }
 
     @GetMapping("/{url}")
@@ -51,16 +59,41 @@ public class PostController {
         return ResponseEntity.ok(ResponsePostDto.of(post));
     }
 
-    @GetMapping("/category/{categoryName}")
-    public ResponseEntity<List<ResponsePostDto>> getPostsByCategory(@PathVariable String categoryName,
+    @GetMapping("/category/v1/{categoryName}")
+    public ResponseEntity<ResponsePageablePostDto> getPostsByCategory(@PathVariable String categoryName,
                                                                     @RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "10") int size) throws BadRequestException {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPostsByCategory(categoryName, pageable);
-        List<ResponsePostDto> responsePostDtos = new ArrayList<>();
+        List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
         for (Post post : posts) {
-            responsePostDtos.add(ResponsePostDto.of(post));
+            responsePostDtos.add(ResponsePostNonContentDto.of(post));
         }
-        return ResponseEntity.ok(responsePostDtos);
+        ResponsePageablePostDto responsePageablePostDto = ResponsePageablePostDto.builder()
+                .posts(responsePostDtos)
+                .currentPage(posts.getNumber())
+                .totalPages(posts.getTotalPages())
+                .totalElements(posts.getTotalElements())
+                .build();
+        return ResponseEntity.ok(responsePageablePostDto);
+    }
+
+    @GetMapping("/category/v2/{categoryId}")
+    public ResponseEntity<ResponsePageablePostDto> getPostsByCategoryId(@PathVariable Long categoryId,
+                                                                    @RequestParam(defaultValue = "0") int page,
+                                                                    @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Post> posts = postService.getPostsByCategoryId(categoryId, pageable);
+        List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
+        for (Post post : posts) {
+            responsePostDtos.add(ResponsePostNonContentDto.of(post));
+        }
+        ResponsePageablePostDto responsePageablePostDto = ResponsePageablePostDto.builder()
+                .posts(responsePostDtos)
+                .currentPage(posts.getNumber())
+                .totalPages(posts.getTotalPages())
+                .totalElements(posts.getTotalElements())
+                .build();
+        return ResponseEntity.ok(responsePageablePostDto);
     }
 }

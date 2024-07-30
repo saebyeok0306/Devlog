@@ -96,4 +96,13 @@ public class PostService {
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
         return postRepository.findAllByCategory(categoryName, user.getId(), Objects.equals(user.getRole().getNameKey(), "ROLE_ADMIN"), pageable);
     }
+
+    public Page<Post> getPostsByCategoryId(Long categoryId, Pageable pageable) throws BadRequestException {
+        String email = getUserEmail();
+        if (email == null) {
+            return postRepository.findAllByCategoryId(categoryId, 0L, false, pageable);
+        }
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
+        return postRepository.findAllByCategoryId(categoryId, user.getId(), Objects.equals(user.getRole().getNameKey(), "ROLE_ADMIN"), pageable);
+    }
 }

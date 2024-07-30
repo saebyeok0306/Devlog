@@ -26,4 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category WHERE p.category.name = :categoryName AND (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllByCategory(@Param("categoryName") String categoryName, @Param("userId") Long userId, @Param("isAdmin") boolean isAdmin, Pageable pageable);
+    @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
+    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category WHERE p.category.id = :categoryId AND (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
+    Page<Post> findAllByCategoryId(@Param("categoryId") Long categoryId, @Param("userId") Long userId, @Param("isAdmin") boolean isAdmin, Pageable pageable);
 }
