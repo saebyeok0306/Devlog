@@ -1,3 +1,4 @@
+import mem from "mem";
 import { API } from "./Axios";
 
 export const upload_post_api = async (
@@ -28,18 +29,24 @@ export const upload_post_api = async (
     });
 };
 
-export const get_posts_api = async (categoryName = null) => {
-  if (categoryName === null || categoryName === "ALL") {
-    return await API.get("/posts", {})
-      .then((response) => response)
-      .catch((error) => {
-        throw error;
-      });
-  } else {
-    return await API.get(`/posts/category/${categoryName}`, {})
-      .then((response) => response)
-      .catch((error) => {
-        throw error;
-      });
-  }
-};
+export const get_posts_api = mem(
+  async (categoryId = null, page = 0, size = 10) => {
+    if (categoryId === null || categoryId === 0) {
+      return await API.get(`/posts?page=${page}&size=${size}`, {})
+        .then((response) => response)
+        .catch((error) => {
+          throw error;
+        });
+    } else {
+      return await API.get(
+        `/posts/category/v2/${categoryId}?page=${page}&size=${size}`,
+        {}
+      )
+        .then((response) => response)
+        .catch((error) => {
+          throw error;
+        });
+    }
+  },
+  { maxAge: 10000, cacheKey: (args) => JSON.stringify(args) }
+);
