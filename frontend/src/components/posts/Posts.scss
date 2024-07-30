@@ -1,53 +1,70 @@
 @import "src/styles/commons";
 
-.post-count {
-  margin: 0.5rem;
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-.posts {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-
-  @include mediaquery(large) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mediaquery(medium) {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .post {
+.posts-container {
+  .posts-header {
     display: flex;
-    flex-direction: column;
-    // align-items: center;
-    background-color: #f3f5f6;
-    border-radius: 1.5rem;
-    margin: 0.5rem;
-    padding: 1rem;
+    justify-content: space-between;
+    .post-count {
+      margin: 0.5rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
 
-    &:is(.dark *) {
-      background-color: #242424;
+    .post-detail {
+      margin: auto 0 auto 0;
     }
-    .post-img {
-      width: 100%;
-      height: 12rem;
-      text-align: center;
-      align-content: center;
-      object-fit: cover;
-      border-radius: 10px;
+  }
+
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+
+    @include mediaquery(large) {
+      grid-template-columns: repeat(2, 1fr);
     }
-    .post-title {
-      margin-top: 1em;
-      font-size: 1.2rem;
-      font-weight: 600;
+
+    @include mediaquery(medium) {
+      grid-template-columns: repeat(1, 1fr);
     }
-    .post-bottom {
+
+    .post {
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+      flex-direction: column;
+      // align-items: center;
+      background-color: #f3f5f6;
+      border-radius: 1.5rem;
+      margin: 0.5rem;
+      padding: 1rem;
+      // height: auto;
+
+      &:is(.dark *) {
+        background-color: #242424;
+      }
+      .post-img {
+        width: 100%;
+        height: 12rem;
+        text-align: center;
+        align-content: center;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+      .post-title {
+        margin-top: 1em;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      .post-bottom {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  .post-pageination {
+    li button {
+      line-height: inherit !important;
     }
   }
 }
