@@ -60,7 +60,7 @@ function Category() {
         <li className="category-all">
           <button
             className="category-item"
-            onClick={() => setSelectCategory("ALL")}
+            onClick={() => setSelectCategory(0)}
           >
             <CategoryIcon />
             <p>전체글보기</p>
@@ -77,7 +77,7 @@ function Category() {
           <li key={idx} draggable={false} data-position={idx}>
             <button
               className="category-item"
-              onClick={() => setSelectCategory(item?.name ? item.name : "ALL")}
+              onClick={() => setSelectCategory(item?.id ? item.id : 0)}
             >
               <CategoryIcon />
               <p>{`${item?.name}`}</p>
