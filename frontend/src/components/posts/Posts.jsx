@@ -7,19 +7,10 @@ import { useRecoilState } from "recoil";
 import { categoryAtom } from "recoil/categoryAtom";
 import { Dropdown, Pagination } from "flowbite-react";
 import { paginationCustomTheme } from "styles/theme/pagination";
+import { postDatetime } from "utils/postDatetime";
 
 function PostCard(idx, post, setSelectCategory) {
-  const today = new Date();
-  const createdAt = new Date(post.createdAt);
-  const diff = (today - createdAt) / (1000 * 60 * 60);
-  var post_time;
-  if (diff >= 24) {
-    post_time = `${createdAt.getFullYear()}.${createdAt.getMonth() + 1}.${createdAt.getDate()}.`;
-  } else if (diff < 1) {
-    post_time = `${Math.floor(diff * 60)}분 전`;
-  } else {
-    post_time = `${Math.floor(diff)}시간 전`;
-  }
+  const createdAtFormat = postDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
       {post.previewUrl !== null ? (
@@ -40,7 +31,7 @@ function PostCard(idx, post, setSelectCategory) {
         >
           {post.category.name}
         </button>
-        <div className="post-create">{post_time}</div>
+        <div className="post-create">{createdAtFormat}</div>
       </div>
       {/* <div className="author">by {post.author}</div> */}
       {/* <div className="content">{post.content}</div> */}
