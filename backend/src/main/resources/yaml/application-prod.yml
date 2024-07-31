@@ -19,7 +19,7 @@ spring:
         show_sql: true
         format_sql: true
 frontend:
-  url: http://devlog.run
+  url: https://devlog.run
 file:
   upload:
     path: /home/resource
