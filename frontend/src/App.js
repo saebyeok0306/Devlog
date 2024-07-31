@@ -10,6 +10,7 @@ import Editor from "pages/Editor";
 import Login from "pages/Login";
 import Signup from "pages/Signup";
 import Callback from "pages/Callback";
+import Post from "pages/Post";
 import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import DarkModeProvider from "utils/DarkModeProvider";
@@ -44,6 +45,7 @@ function App() {
                   <Route element={<AnyRoute />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/editor" element={<Editor />} />
+                    <Route path="/post/:postUrl" element={<Post />} />
                   </Route>
                   <Route element={<PublicRoute />}>
                     <Route path="/login" element={<Login />} />

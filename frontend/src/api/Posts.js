@@ -50,3 +50,11 @@ export const get_posts_api = mem(
   },
   { maxAge: 10000, cacheKey: (args) => JSON.stringify(args) }
 );
+
+export const get_post_url_api = async (postUrl) => {
+  return await API.get(`/posts/${postUrl}`, {})
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
