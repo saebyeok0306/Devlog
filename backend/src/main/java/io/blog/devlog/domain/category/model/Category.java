@@ -21,6 +21,7 @@ public class Category extends CreateTime {
     private long layer; // 카테고리 순서
     @Setter
     @NotNull
+    @Column(unique = true)
     private String name;
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -29,7 +30,7 @@ public class Category extends CreateTime {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "write_comment_auth")
-    private Role writeCommentAuth; // NOTE: 최소 필요권한, Atleast 개념
+    private Role writeCommentAuth;
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "read_category_auth")

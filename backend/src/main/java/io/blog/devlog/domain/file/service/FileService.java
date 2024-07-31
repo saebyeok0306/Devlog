@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.file.service;
 
+import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.file.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,4 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class FileService {
     private final FileRepository fileRepository;
+
+    public File addFile(File file) {
+        return fileRepository.save(file);
+    }
 }

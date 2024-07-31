@@ -20,6 +20,11 @@ spring:
             client-id: ${DEVLOG_GOOGLE_CLIENT_ID}
             client-secret: ${DEVLOG_GOOGLE_CLIENT_SECRET}
             scope: profile, email
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 jwt:
   #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.

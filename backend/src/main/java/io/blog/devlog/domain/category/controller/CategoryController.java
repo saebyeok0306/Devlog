@@ -33,9 +33,10 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public void updateCategories(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Category> categories) throws IOException {
+        List<Category> sortedCategories = categoryService.sortCategories(categories);
         long idx = -1;
         var isDuplic = false;
-        for (Category category : categories) {
+        for (Category category : sortedCategories) {
             System.out.println(category);
             if (idx == -1) {
                 idx = category.getLayer();
@@ -50,7 +51,7 @@ public class CategoryController {
         }
 
         if (!isDuplic) {
-            categoryService.cleanUpCategories();
+//            categoryService.cleanUpCategories();
             categoryService.updateCategories(categories);
         }
         else {

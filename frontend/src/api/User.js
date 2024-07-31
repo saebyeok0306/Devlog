@@ -1,3 +1,4 @@
+import mem from "mem";
 import { API } from "./Axios";
 import { reissueToken } from "utils/authenticate";
 
@@ -37,13 +38,16 @@ export const user_check_api = async () => {
     });
 };
 
-export const jwt_refresh_api = async () => {
-  console.log("get jwt_refresh_api");
-  return await API.get("/reissue")
-    .then((response) => {
-      reissueToken(response.headers);
-    })
-    .catch((error) => {
-      throw error;
-    });
-};
+export const jwt_refresh_api = mem(
+  async (email) => {
+    return await API.get("/reissue")
+      .then((response) => {
+        reissueToken(response.headers);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  },
+  // 유저별로 캐시를 따로 관리하기 위해 email을 cacheKey로 사용
+  { maxAge: 1000, cacheKey: (args) => args[0] }
+);

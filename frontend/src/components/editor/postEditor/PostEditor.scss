@@ -28,26 +28,42 @@
       }
     }
   }
-  .w-md-editor-content {
-    flex: 1;
-    .w-md-editor-text-pre > code,
-    .w-md-editor-text-input {
-      font-size: 1.3em !important;
-      line-height: 1.3em !important;
+  .w-md-editor {
+    border-radius: 15px;
+    &:is(.dark *) {
+      background-color: #252e3a;
     }
-    .w-md-editor-preview .wmde-markdown {
-      font-size: 1.3em !important;
-      line-height: 1.3em !important;
-    }
-  }
-  .w-md-editor-toolbar {
-    button {
-      width: 2em;
-      height: 2em;
-      svg {
-        width: 1.5em;
-        height: 1.5em;
+    .w-md-editor-content {
+      flex: 1;
+      .w-md-editor-text-pre > code,
+      .w-md-editor-text-input {
+        font-size: 1.3em !important;
+        line-height: 1.3em !important;
+      }
+      .w-md-editor-preview .wmde-markdown {
+        background-color: inherit;
+        font-size: 1.3em !important;
+        line-height: 1.3em !important;
       }
     }
+    .w-md-editor-toolbar {
+      border-radius: 15px;
+      button {
+        width: 2em;
+        height: 2em;
+        svg {
+          width: 1.5em;
+          height: 1.5em;
+        }
+      }
+    }
+    .w-md-editor-toolbar-divider {
+      height: 1.5em;
+      vertical-align: baseline;
+      margin: -12px 12px 0 12px !important;
+    }
+  }
+
+  .post-editor-file-uploader {
   }
 }

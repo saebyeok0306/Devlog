@@ -35,21 +35,25 @@
     li {
       display: flex;
       font-size: 1em;
-      div.icon {
-        width: 1em;
-        height: 1em;
-        margin-top: auto;
-        margin-bottom: auto;
-        margin-right: 0.5em;
-      }
-      p {
-        transition: margin-left 50ms;
-        pointer-events: none;
+      .category-item {
+        display: flex;
+
+        .icon {
+          width: 1em;
+          height: 1em;
+          margin-top: auto;
+          margin-bottom: auto;
+          margin-right: 0.5em;
+        }
+        p {
+          transition: margin-left 50ms;
+          pointer-events: none;
+        }
       }
 
       &.category-all {
         justify-content: space-between;
-        div.category-all-display {
+        .category-all-display {
           display: flex;
           width: 100%;
         }

@@ -1,12 +1,13 @@
 import { Auth, authAtom } from "recoil/authAtom";
-import { getCookie, removeCookie, setCookie } from "./useCookie";
-import { decodeJWT } from "./useJWT";
+import { getCookie, removeCookie, setCookie } from "./hooks/useCookie";
+import { decodeJWT } from "./hooks/useJWT";
 import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "constants/user/login";
 import { EMPTY_AUTH } from "constants/user/auth";
 import { useRecoilValue } from "recoil";
+import { toast } from "react-toastify";
 
 export const signIn = (
   accessToken,
@@ -25,8 +26,8 @@ export const signIn = (
       path: "/",
       // expires: new Date(payload_refresh.exp * 1000),
     });
-    setAuthDto(new Auth(payload.name, payload.email, true));
-    if (message !== false) alert(message);
+    setAuthDto(new Auth(payload.username, payload.email, true));
+    if (message !== false) toast.success(`${message}`, {});
 
     return true;
   }
@@ -37,7 +38,7 @@ export const signOut = (setAuthDto, message = "로그아웃 했습니다.") => {
   setAuthDto(EMPTY_AUTH);
   removeCookie(ACCESS_TOKEN_STRING);
   removeCookie(REFRESH_TOKEN_STRING);
-  alert(message);
+  toast.success(`${message}`, {});
 };
 
 export const reissueToken = (headers) => {

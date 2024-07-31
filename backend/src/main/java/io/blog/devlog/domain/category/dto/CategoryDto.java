@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.category.dto;
 
+import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.user.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,11 @@ public class CategoryDto {
     private long layer; // 카테고리 순서
     private String name;
 
-//    public ofCategory() {
-//
-//    }
+    public static CategoryDto of(Category category) {
+        return CategoryDto.builder()
+                .id(category.getId())
+                .layer(category.getLayer())
+                .name(category.getName())
+                .build();
+    }
 }

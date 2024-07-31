@@ -1,6 +1,5 @@
 package io.blog.devlog.domain.file.service;
 
-import io.blog.devlog.domain.file.dto.FileDto;
 import io.blog.devlog.domain.file.model.TempFile;
 import io.blog.devlog.domain.file.repository.TempFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +19,9 @@ public class TempFileService {
                 .fileUrl(fileUrl)
                 .build();
         return tempFileRepository.save(tempFile);
+    }
+
+    public void deleteTempFile(Long id) {
+        tempFileRepository.deleteById(id);
     }
 }

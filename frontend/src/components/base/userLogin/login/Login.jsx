@@ -10,6 +10,7 @@ import { authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { OAUTH2_URI } from "constants/api/oauth";
 import { signIn } from "utils/authenticate";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
@@ -36,11 +37,7 @@ function Login() {
         navigate("/");
       })
       .catch((err) => {
-        if (err.response?.data) {
-          alert(err.response.data.error);
-        } else {
-          alert(err);
-        }
+        toast.error(`${err.response?.data ? err.response.data.error : err}`);
         console.log(err);
       });
   };

@@ -1,13 +1,17 @@
+import mem from "mem";
 import { API } from "./Axios";
 
-export const get_info_api = async () => {
-  console.log("get_info_api get");
-  return await API.get("/info")
-    .then((response) => response)
-    .catch((error) => {
-      throw error;
-    });
-};
+export const get_info_api = mem(
+  async () => {
+    console.log("get_info_api get");
+    return await API.get("/info")
+      .then((response) => response)
+      .catch((error) => {
+        throw error;
+      });
+  },
+  { maxAge: 5000 }
+);
 
 export const set_info_api = async (about, profile_url) => {
   const requestBody = {

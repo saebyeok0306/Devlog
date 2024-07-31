@@ -7,6 +7,8 @@ import EmailIcon from "assets/icons/Email";
 import PasswordIcon from "assets/icons/Password";
 import UsernameIcon from "assets/icons/Username";
 import { user_join_api } from "api/User";
+import { toast } from "react-toastify";
+import { BLOG_NAME } from "constants/base/main";
 
 function Signup() {
   const navigate = useNavigate();
@@ -26,15 +28,11 @@ function Signup() {
 
     user_join_api(username, password, email)
       .then((res) => {
-        alert("가입 성공!\n", res);
+        toast.success(`${BLOG_NAME}에 가입하신 것을 환영합니다!`);
         navigate("/login");
       })
       .catch((err) => {
-        if (err.response?.data) {
-          alert(err.response.data.error);
-        } else {
-          alert(err);
-        }
+        toast.error(`${err.response?.data ? err.response.data.error : err}`);
         console.log(err);
       });
   };

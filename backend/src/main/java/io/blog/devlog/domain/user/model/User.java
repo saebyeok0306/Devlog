@@ -24,6 +24,7 @@ public class User extends BaseTime {
     @NotNull
     private String password;
     @NotNull
+    @Column(unique = true)
     private String email;
     @Nullable
     @Column(name = "profile_url")
@@ -36,7 +37,7 @@ public class User extends BaseTime {
     @Column(name = "provider_id")
     private String providerId;
     @Nullable
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", length = 500)
     private String refreshToken;
 
     @Builder

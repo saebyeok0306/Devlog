@@ -10,19 +10,33 @@ import Editor from "pages/Editor";
 import Login from "pages/Login";
 import Signup from "pages/Signup";
 import Callback from "pages/Callback";
+import Post from "pages/Post";
 import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import DarkModeProvider from "utils/DarkModeProvider";
 import AuthProvider from "utils/AuthProvider";
 import CategoryManager from "pages/CategoryManager";
 import { ROLE_TYPE } from "utils/RoleType";
+import ToastContainerComponent from "utils/ToastContainer";
+import { useEffect } from "react";
 
 function App() {
   const isDark = useRecoilValue(themeAtom);
 
+  useEffect(() => {
+    if (isDark) {
+      if (!document.body.classList.contains("dark"))
+        document.body.classList.add("dark");
+    } else {
+      if (document.body.classList.contains("dark"))
+        document.body.classList.remove("dark");
+    }
+  }, [isDark]);
+
   return (
     <DarkModeProvider>
-      <div className={`wrapper ${isDark ? "dark" : "light"}`}>
+      <ToastContainerComponent />
+      <div className={`wrapper`}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
           <AuthProvider>
             <div className={`contentWrapper`}>
@@ -31,6 +45,7 @@ function App() {
                   <Route element={<AnyRoute />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/editor" element={<Editor />} />
+                    <Route path="/post/:postUrl" element={<Post />} />
                   </Route>
                   <Route element={<PublicRoute />}>
                     <Route path="/login" element={<Login />} />

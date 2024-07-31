@@ -4,8 +4,8 @@ import { authAtom } from "recoil/authAtom";
 import { signIn, signOut } from "./authenticate";
 
 import murmurhash from "murmurhash";
-import { useInterval } from "./useInterval";
-import { getCookie } from "./useCookie";
+import { useInterval } from "./hooks/useInterval";
+import { getCookie } from "./hooks/useCookie";
 import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
