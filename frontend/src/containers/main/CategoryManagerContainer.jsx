@@ -1,9 +1,10 @@
 import React from "react";
 import LeftSideContainer from "containers/side/LeftSideContainer";
-import CategoryManager from "components/categoryManager";
+import Main from "components/base/main";
+import EditCategory from "components/category/edit/EditCategory";
 
 function CategoryManagerContainer() {
-  return <CategoryManager LeftSide={LeftSideContainer} />;
+  return <Main LeftSide={LeftSideContainer} MainContent={EditCategory} />;
 }
 
 export default CategoryManagerContainer;

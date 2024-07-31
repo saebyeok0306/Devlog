@@ -1,19 +1,18 @@
 import React from "react";
 import Responsive from "components/common/Responsive";
 
-import "./CategoryManager.scss";
-import EditCategory from "components/category/edit/EditCategory";
+import "./Main.scss";
 
-function CategoryManager({ LeftSide, RightSide }) {
+function Main({ LeftSide, MainContent, RightSide }) {
   return (
     <Responsive className="main">
       {LeftSide == null ? <aside /> : <LeftSide />}
       <section>
-        <EditCategory />
+        <MainContent />
       </section>
       {RightSide == null ? <aside /> : <RightSide />}
     </Responsive>
   );
 }
 
-export default CategoryManager;
+export default Main;
