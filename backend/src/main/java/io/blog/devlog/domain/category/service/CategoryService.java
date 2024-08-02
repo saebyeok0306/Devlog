@@ -45,8 +45,8 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public void updateCategories(List<Category> categories) {
-        categoryRepository.saveAll(categories);
+    public List<Category> updateCategories(List<Category> categories) {
+        return categoryRepository.saveAll(categories);
     }
 
     public void cleanUpCategories() {
