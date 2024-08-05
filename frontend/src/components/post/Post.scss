@@ -1,6 +1,9 @@
 @import "src/styles/commons";
 
 .post-container {
+  hr {
+    margin: 1em 0 1em 0;
+  }
   header {
     display: flex;
     flex-direction: column;
@@ -29,6 +32,15 @@
     margin: 2em 0 2em 0;
     .wmde-markdown {
       background-color: inherit;
+    }
+  }
+
+  footer {
+    display: flex;
+    font-size: 1.1em;
+    gap: 5px;
+    * {
+      margin: auto 0 auto 0;
     }
   }
 }
