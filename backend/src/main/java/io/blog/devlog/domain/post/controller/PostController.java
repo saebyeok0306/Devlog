@@ -34,7 +34,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<ResponsePageablePostDto> getPosts(@RequestParam(defaultValue = "0") int page,
-                                                                  @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+                                                            @RequestParam(defaultValue = "10") int size) throws BadRequestException {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPosts(pageable);
         List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
