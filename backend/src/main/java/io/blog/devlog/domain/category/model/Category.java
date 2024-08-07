@@ -1,6 +1,7 @@
 package io.blog.devlog.domain.category.model;
 
 import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.domain.user.model.RoleConverter;
 import io.blog.devlog.global.time.CreateTime;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,15 +25,15 @@ public class Category extends CreateTime {
     @Column(unique = true)
     private String name;
     @NotNull
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
     @Column(name = "write_post_auth")
     private Role writePostAuth;
     @NotNull
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
     @Column(name = "write_comment_auth")
     private Role writeCommentAuth;
     @NotNull
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
     @Column(name = "read_category_auth")
     private Role readCategoryAuth;
 }
