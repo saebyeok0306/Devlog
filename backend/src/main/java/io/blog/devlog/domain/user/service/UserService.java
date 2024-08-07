@@ -47,4 +47,8 @@ public class UserService {
         if (users.isEmpty()) return null;
         return users.get(0);
     }
+
+    public boolean isAdmin(User user) {
+        return user.getRole() == Role.ADMIN;
+    }
 }
