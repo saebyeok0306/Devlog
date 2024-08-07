@@ -22,6 +22,7 @@ public class Post extends BaseTime {
     @Column(unique = true)
     private String url;
     private String title;
+    @Column(length = 50000)
     private String content;
     private String previewUrl;
     @ManyToOne
