@@ -21,7 +21,20 @@ public class File extends CreateTime {
     private String filePath; // res
     @Enumerated(EnumType.STRING)
     private FileType fileType;
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+//    @ManyToOne
+//    @JoinColumn(name = "post_id")
+//    private Post post;
+    @Enumerated(EnumType.STRING)
+    private EntityType entityType;
+    private Long entityId;
+
+    public File setEntity(EntityType entityType, Long entityId) {
+        this.entityType = entityType;
+        this.entityId = entityId;
+        return this;
+    }
 }
+
+/* Post나 Comment이 삭제되는 경우, 종속되어 있던 File은 엔티티 삭제처리를 할 때,
+*  따로 Select * From File Where entity.file.id = file.id 로 Repository를 통해 조회 후
+*  파일삭제와 함께 처리됨. 고로 특정 Entity 타입을 기록할 필요없이, Type + id로 기록하면 됨. */
