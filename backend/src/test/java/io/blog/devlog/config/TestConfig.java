@@ -12,11 +12,21 @@ public class TestConfig {
     public String password = "password";
     public String email = "test@gmail.com";
     public Role role = Role.ADMIN;
+    public String guestUsername = "guest";
+    public String guestPassword = "password";
+    public String guestEmail = "guest@gmail.com";
+    public Role guestRole = Role.GUEST;
     public User adminUser = User.builder()
             .email(email)
             .password(password)
             .username(username)
             .role(role)
+            .build();
+    public User GeustUser = User.builder()
+            .email(guestEmail)
+            .password(guestPassword)
+            .username(guestUsername)
+            .role(guestRole)
             .build();
 
     public JwtService createJwtService() {
