@@ -55,6 +55,7 @@ public class PostServiceTest {
     @Autowired
     private TempFileRepository tempFileRepository;
     private PostService postService;
+    private PostUploadService postUploadService;
     private UserService userService;
     private JwtService jwtService;
     private CategoryService categoryService;
@@ -69,17 +70,18 @@ public class PostServiceTest {
         categoryService = new CategoryService(categoryRepository);
         fileService = new FileService(fileRepository);
         tempFileService = new TempFileService(tempFileRepository);
-        postService = new PostService(postRepository, userService, categoryService, fileService, tempFileService);
+        postService = new PostService(postRepository, userService);
+        postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService, tempFileService);
     }
 
-    public List<Category> createCategory() {
+    public static List<Category> createCategory() {
         List<Category> categories = new ArrayList<>();
         for (var i=0; i<3; i++) {
             Category category = Category.builder()
                     .name(String.format("카테고리%d", i))
                     .layer(i)
                     .writePostAuth(Role.USER)
-                    .readCategoryAuth(Role.USER)
+                    .readCategoryAuth(Role.GUEST)
                     .writeCommentAuth(Role.USER)
                     .build();
             categories.add(category);
@@ -102,7 +104,7 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(false)
                 .build();
-        postService.savePost(requestPostDto);
+        postUploadService.savePost(requestPostDto);
 
         // when
         List<Post> posts = postRepository.findAll();
@@ -126,7 +128,7 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(false)
                 .build();
-        Post uploadedPost = postService.savePost(requestPostDto);
+        Post uploadedPost = postUploadService.savePost(requestPostDto);
 
         // when
         Post post = postService.getPostById(uploadedPost.getId());
@@ -151,7 +153,7 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(false)
                 .build();
-        postService.savePost(requestPostDto);
+        postUploadService.savePost(requestPostDto);
 
         // when
         Post post = postService.getPostByUrl("url");
@@ -175,9 +177,9 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(false)
                 .build();
-        postService.savePost(requestPostDto.setUrl("url1"));
-        postService.savePost(requestPostDto.setUrl("url2"));
-        postService.savePost(requestPostDto.setUrl("url3"));
+        postUploadService.savePost(requestPostDto.setUrl("url1"));
+        postUploadService.savePost(requestPostDto.setUrl("url2"));
+        postUploadService.savePost(requestPostDto.setUrl("url3"));
 
         // when
         int page = 0;
@@ -205,9 +207,9 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(true)
                 .build();
-        postService.savePost(requestPostDto.setUrl("url1"));
-        postService.savePost(requestPostDto.setUrl("url2"));
-        postService.savePost(requestPostDto.setUrl("url3"));
+        postUploadService.savePost(requestPostDto.setUrl("url1"));
+        postUploadService.savePost(requestPostDto.setUrl("url2"));
+        postUploadService.savePost(requestPostDto.setUrl("url3"));
 
         // when
         int page = 0;
@@ -235,9 +237,9 @@ public class PostServiceTest {
                 .files(Collections.emptyList())
                 .isPrivate(true)
                 .build();
-        postService.savePost(requestPostDto.setUrl("url1"));
-        postService.savePost(requestPostDto.setUrl("url2"));
-        postService.savePost(requestPostDto.setUrl("url3"));
+        postUploadService.savePost(requestPostDto.setUrl("url1"));
+        postUploadService.savePost(requestPostDto.setUrl("url2"));
+        postUploadService.savePost(requestPostDto.setUrl("url3"));
 
         // when
         int page = 0;
