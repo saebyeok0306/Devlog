@@ -16,7 +16,7 @@ spring:
       ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
-        show_sql: true
+#        show_sql: true
         format_sql: true
         hightlight_sql: true
 frontend:
