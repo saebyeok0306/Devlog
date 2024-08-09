@@ -36,35 +36,6 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
-    private final CategoryService categoryService;
-    private final FileService fileService;
-    private final TempFileService tempFileService;
-
-    public Post savePost(RequestPostDto requestPostDto) throws BadRequestException {
-        String email = requestPostDto.getEmail();
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
-        Category category = categoryService.getCategoryById(requestPostDto.getCategoryId())
-                .orElseThrow(() -> new BadRequestException("Category not found : " + requestPostDto.getCategoryId()));
-
-        Post post = postRepository.save(requestPostDto.toEntity(user, category));
-
-        List<File> files = new ArrayList<>();
-        for (int i = 0; i < requestPostDto.getFiles().size(); i++) {
-            try {
-                tempFileService.deleteTempFile(requestPostDto.getFiles().get(i).getTempId());
-                File file = fileService.addFile(requestPostDto.getFiles().get(i).toEntity(post));
-                files.add(file);
-            }
-            catch (Exception e) {
-                log.error("Temp file not found : " + requestPostDto.getFiles().get(i).getTempId());
-            }
-        }
-        
-        // TODO: 남아있는 TempFile 삭제
-
-        return post;
-    }
 
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);

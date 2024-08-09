@@ -1,11 +1,11 @@
 package io.blog.devlog.domain.post.controller;
 
-import io.blog.devlog.domain.post.dto.RequestPostDto;
-import io.blog.devlog.domain.post.dto.ResponsePageablePostDto;
-import io.blog.devlog.domain.post.dto.ResponsePostDto;
-import io.blog.devlog.domain.post.dto.ResponsePostNonContentDto;
+import io.blog.devlog.domain.comment.model.Comment;
+import io.blog.devlog.domain.comment.service.CommentService;
+import io.blog.devlog.domain.post.dto.*;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.service.PostService;
+import io.blog.devlog.domain.post.service.PostUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -25,11 +25,13 @@ import java.util.List;
 @Slf4j
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
+    private final PostUploadService postUploadService;
 
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
         log.info("Post uploaded : " + requestPostDto.getTitle());
-        postService.savePost(requestPostDto);
+        postUploadService.savePost(requestPostDto);
     }
 
     @GetMapping
@@ -51,12 +53,13 @@ public class PostController {
     }
 
     @GetMapping("/{url}")
-    public ResponseEntity<ResponsePostDto> getPost(@PathVariable String url) throws BadRequestException {
+    public ResponseEntity<ResponsePostCommentDto> getPost(@PathVariable String url) throws BadRequestException {
         Post post = postService.getPostByUrl(url);
         if (post == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(ResponsePostDto.of(post));
+        List<Comment> comments = commentService.getCommentsFromPost(post);
+        return ResponseEntity.ok(ResponsePostCommentDto.of(post, comments));
     }
 
     @GetMapping("/category/v1/{categoryName}")

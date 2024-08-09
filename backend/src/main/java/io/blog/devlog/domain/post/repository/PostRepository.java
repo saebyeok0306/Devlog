@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category " +
+    @Query("SELECT p FROM Post p " +
             "WHERE p.url = :url and p.category.readCategoryAuth <= :role and (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     public Optional<Post> findByUrl(
             @Param("url") String url,
@@ -24,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("role") Role role);
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category " +
+    @Query("SELECT p FROM Post p " +
             "WHERE p.category.readCategoryAuth <= :role and (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllUserPosts(
             Pageable pageable,
@@ -33,12 +33,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("role") Role role);
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category " +
+    @Query("SELECT p FROM Post p " +
             "WHERE p.isPrivate = false and p.category.readCategoryAuth <= :role")
     Page<Post> findAllPublicPosts(Pageable pageable, @Param("role") Role role);
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category " +
+    @Query("SELECT p FROM Post p " +
             "WHERE p.category.readCategoryAuth <= :role and p.category.name = :categoryName AND " +
             "(p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllByCategory(
@@ -49,7 +49,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("role") Role role);
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT p FROM Post p LEFT JOIN p.user LEFT JOIN p.category " +
+    @Query("SELECT p FROM Post p " +
             "WHERE p.category.readCategoryAuth <= :role and p.category.id = :categoryId AND " +
             "(p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllByCategoryId(

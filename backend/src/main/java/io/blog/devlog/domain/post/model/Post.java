@@ -31,8 +31,8 @@ public class Post extends BaseTime {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @OneToMany(mappedBy = "post")
-    private List<File> files;
+//    @OneToMany(mappedBy = "post")
+//    private List<File> files;
     private long views;
     private long likes;
     private boolean isPrivate;
