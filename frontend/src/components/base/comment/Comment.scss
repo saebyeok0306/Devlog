@@ -1,0 +1,12 @@
+.comment-container {
+  .comments {
+    .comment-user {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      .comment-menu {
+        display: flex;
+      }
+    }
+  }
+}
