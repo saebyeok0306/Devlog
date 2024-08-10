@@ -1,34 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "./Post.scss";
-import { useParams } from "react-router-dom";
-import { get_post_url_api } from "api/Posts";
-import { toast } from "react-toastify";
 import { postDatetime } from "utils/postDatetime";
 
 import { HiCalendar, HiHeart } from "react-icons/hi";
 import MDEditor from "@uiw/react-md-editor";
 import RehypeVideo from "rehype-video";
 import { themeAtom } from "recoil/themeAtom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { postAtom } from "recoil/postAtom";
 
 function Post({ ...props }) {
-  const { postUrl } = useParams();
   const [isDark] = useRecoilState(themeAtom);
-  const [postContent, setPostContent] = useRecoilState(postAtom);
-
-  useEffect(() => {
-    get_post_url_api(postUrl)
-      .then((res) => {
-        console.log(res.data);
-        setPostContent(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error("잘못된 접근입니다.");
-      });
-  }, [postUrl]);
+  const postContent = useRecoilValue(postAtom);
 
   if (postContent === null) {
     return <div></div>;
