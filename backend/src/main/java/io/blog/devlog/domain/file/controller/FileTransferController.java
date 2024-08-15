@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/res")
-@Profile("local")
+@Profile({"local", "dev"})
 public class FileTransferController {
     @Value("${file.upload.path}")
     private String uploadPath;
