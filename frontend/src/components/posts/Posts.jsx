@@ -7,11 +7,11 @@ import { useRecoilState } from "recoil";
 import { categoryAtom } from "recoil/categoryAtom";
 import { Dropdown, Pagination } from "flowbite-react";
 import { paginationCustomTheme } from "styles/theme/pagination";
-import { postDatetime } from "utils/postDatetime";
+import { getDatetime } from "utils/getDatetime";
 import { Link } from "react-router-dom";
 
 function PostCard(idx, post, setSelectCategory) {
-  const createdAtFormat = postDatetime(post.createdAt);
+  const createdAtFormat = getDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
       <Link className="post-top" to={`/post/${post.url}`}>

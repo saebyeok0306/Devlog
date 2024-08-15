@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./Post.scss";
-import { postDatetime } from "utils/postDatetime";
+import { getDatetime } from "utils/getDatetime";
 
 import { HiCalendar, HiHeart } from "react-icons/hi";
 import MDEditor from "@uiw/react-md-editor";
@@ -9,16 +9,17 @@ import RehypeVideo from "rehype-video";
 import { themeAtom } from "recoil/themeAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { postAtom } from "recoil/postAtom";
+import { Navigate } from "react-router-dom";
 
 function Post({ ...props }) {
   const [isDark] = useRecoilState(themeAtom);
   const postContent = useRecoilValue(postAtom);
 
   if (postContent === null) {
-    return <div></div>;
+    return <Navigate replace to="/" />;
   }
 
-  const createdAtFormat = postDatetime(postContent?.createdAt);
+  const createdAtFormat = getDatetime(postContent?.createdAt);
   return (
     <div className="post-container" data-color-mode={isDark ? "dark" : "light"}>
       <header>
