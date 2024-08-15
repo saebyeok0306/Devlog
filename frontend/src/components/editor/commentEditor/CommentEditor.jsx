@@ -1,8 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 
 import "./CommentEditor.scss";
-import RehypeVideo from "rehype-video";
-import MDEditor, { commands, EditorContext } from "@uiw/react-md-editor";
+import MDEditor, {
+  commands,
+  EditorContext,
+  insertTextAtPosition,
+} from "@uiw/react-md-editor";
+import { upload_file_api } from "api/File";
 
 const Button = () => {
   const { preview, dispatch } = useContext(EditorContext);
@@ -51,24 +55,88 @@ const codePreview = {
 };
 
 function CommentEditor() {
-  const [content, setContent] = React.useState("");
+  const editorRef = useRef(null);
+  const [content, setContent] = useState("");
+  const [files, setFiles] = useState([]);
+
+  const handleDrop = async (event) => {
+    event.preventDefault();
+
+    if (!editorRef.current) return;
+
+    const className = event.target.className;
+    console.log(event.dataTransfer?.files[0]);
+    if (
+      !className.startsWith("w-md-editor-content") ||
+      className.startsWith("w-md-editor-preview")
+    )
+      return;
+
+    console.log(event, event.dataTransfer?.files.length);
+    if (event.dataTransfer.files.length === 1) {
+      const file = event.dataTransfer.files[0];
+
+      if (!file) return;
+
+      // image type check
+      if (file.type.startsWith("image")) {
+        await upload_file_api(file)
+          .then((res) => {
+            console.log("파일전송 완료");
+            const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+            insertTextAtPosition(
+              editorRef.current.textarea,
+              `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
+            );
+            setFiles([...files, res.data]);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    }
+  };
+
+  const handlePaste = async (event) => {
+    if (!editorRef.current) return;
+    const clipboardData = event.clipboardData || window.clipboardData;
+    if (clipboardData && clipboardData.items) {
+      for (const item of clipboardData.items) {
+        if (item.type.startsWith("image")) {
+          event.preventDefault();
+          const file = item.getAsFile();
+          await upload_file_api(file)
+            .then((res) => {
+              console.log("파일전송 완료");
+              const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+              insertTextAtPosition(
+                editorRef.current.textarea,
+                `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
+              );
+              setFiles([...files, res.data]);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
+      }
+    }
+  };
+
   return (
     <div className="comment-editor">
       <MDEditor
-        // ref={editorRef}
+        ref={editorRef}
         preview="edit"
         style={{ flex: "1", whiteSpace: "pre-wrap" }}
         value={content}
         onChange={setContent}
-        // onDrop={handleDrop}
+        onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        // onPaste={handlePaste}
+        onPaste={handlePaste}
         height={"100%"}
         textareaProps={{
           placeholder: "댓글을 입력하세요.",
-        }}
-        previewOptions={{
-          rehypePlugins: [[RehypeVideo, { test: /\/(.*)(.mp4|.mov)$/ }]],
         }}
         commands={[
           commands.bold,
@@ -92,6 +160,9 @@ function CommentEditor() {
         ]}
         extraCommands={[codePreview]}
       />
+      <div className="comment-editor-bottom">
+        <button>등록</button>
+      </div>
     </div>
   );
 }
