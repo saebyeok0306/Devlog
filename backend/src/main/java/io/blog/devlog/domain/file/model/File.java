@@ -5,6 +5,7 @@ import io.blog.devlog.global.time.CreateTime;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Table(name="FILES")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
