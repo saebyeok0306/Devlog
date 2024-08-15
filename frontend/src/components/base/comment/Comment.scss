@@ -1,5 +1,31 @@
 .comment-container {
   .comments {
+    .reply {
+      div[data-testid="timeline-point"] {
+        .comment-reply-line {
+          position: relative;
+          div {
+            position: absolute;
+            width: 20px;
+          }
+        }
+        span {
+          margin-left: 20px;
+        }
+      }
+      div[data-testid="timeline-content"] {
+        margin-left: 20px;
+        .comment-content {
+          div {
+            display: flex;
+            gap: 5px;
+            p {
+              color: gray;
+            }
+          }
+        }
+      }
+    }
     .comment-user {
       display: flex;
       flex-direction: row;
