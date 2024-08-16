@@ -28,72 +28,59 @@ public class JwtServiceTest {
     private UserRepository userRepository;
     private static JwtService jwtService;
     private static BCryptPasswordEncoder bCryptPasswordEncoder;
-    private static User testUser;
-    private static final String testUsername = "test name";
-    private static final String testEmail = "a@gmail.com";
     private static final long pastTime = 826038000; // 1996년 3월 6일
+    private static final TestConfig testConfig = new TestConfig();
 
     @BeforeAll
     public static void beforeAllSetUp() {
-        jwtService = new TestConfig().createJwtService();
-        bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-        testUser = User.builder()
-                .username(testUsername)
-                .password("123")
-                .email(testEmail)
-                .build();
-        testUser.authorizeUser();
-        testUser.passwordEncode(bCryptPasswordEncoder);
+        jwtService = testConfig.createJwtService();
     }
 
     @Test
     @DisplayName("AccessToken 검증")
     public void jwtTest1() {
         // given
-        userRepository.save(testUser);
+        userRepository.save(testConfig.adminUser);
 
         // when
-        String token = jwtService.createAccessToken(testUser);
+        String token = jwtService.createAccessToken(testConfig.adminUser);
         System.out.println("token : " + token);
 
         // then
         Assertions.assertThat(jwtService.isTokenValid(token)).isTrue();
         String name = jwtService.extractUsername(token).orElse(null);
         Assertions.assertThat(name).isNotEqualTo(null);
-        Assertions.assertThat(name).isEqualTo(testUsername);
+        Assertions.assertThat(name).isEqualTo(testConfig.username);
     }
 
     @Test
     @DisplayName("RefreshToken 검증")
     public void jwtTest2() {
         // given
-        userRepository.save(testUser);
+        userRepository.save(testConfig.adminUser);
 
         // when
-        String token = jwtService.createRefreshToken(testUser);
+        String token = jwtService.createRefreshToken(testConfig.adminUser);
         System.out.println("token : " + token);
 
         // then
         Assertions.assertThat(jwtService.isTokenValid(token)).isTrue();
         String name = jwtService.extractUsername(token).orElse(null);
         Assertions.assertThat(name).isNotEqualTo(null);
-        Assertions.assertThat(name).isEqualTo(testUsername);
+        Assertions.assertThat(name).isEqualTo(testConfig.username);
     }
 
     @Test
     @DisplayName("UpdateRefreshToken 검증")
     public void updateRefreshTokenTest() {
         // given
-        User user = userRepository.save(testUser);
-        String token = jwtService.createRefreshToken(testUser);
+        User user = userRepository.save(testConfig.adminUser);
+        String token = jwtService.createRefreshToken(testConfig.adminUser);
         user.updateRefreshToken(token);
-//        userRepository.updateRefreshTokenByEmail(testEmail, token);
 
         // when
         String test_token = jwtService.createRefreshToken(user, new Date(pastTime));
         user.updateRefreshToken(test_token);
-//        userRepository.updateRefreshTokenByEmail(testEmail, test_token);
 
         // then
         Optional<User> optUser = userRepository.findByRefreshToken(test_token);
@@ -116,10 +103,10 @@ public class JwtServiceTest {
     @DisplayName("isTokenValid 검증 - 만료된 토큰")
     public void isTokenValidTest2() {
         // given
-        userRepository.save(testUser);
+        userRepository.save(testConfig.adminUser);
 
         // when
-        String token = jwtService.createRefreshToken(testUser, new Date(pastTime));
+        String token = jwtService.createRefreshToken(testConfig.adminUser, new Date(pastTime));
 
         // then
         Assertions.assertThatThrownBy(() -> jwtService.isTokenValid(token)).isInstanceOf(ExpiredJwtException.class);

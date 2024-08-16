@@ -1,5 +1,7 @@
 package io.blog.devlog.domain.file.dto;
 
+import io.blog.devlog.domain.comment.model.Comment;
+import io.blog.devlog.domain.file.model.EntityType;
 import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.file.model.FileType;
 import io.blog.devlog.domain.post.model.Post;
@@ -23,14 +25,21 @@ public class FileDto {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
-    public File toEntity(Post post) {
+    public File toEntity() {
         return File.builder()
                 .fileName(this.fileName)
                 .fileSize(this.fileSize)
                 .fileUrl(this.fileUrl)
                 .filePath(this.filePath)
                 .fileType(this.fileType)
-                .post(post)
                 .build();
+    }
+
+    public File toEntity(Post post) {
+        return this.toEntity().setEntity(EntityType.POST, post.getId());
+    }
+
+    public File toEntity(Comment comment) {
+        return this.toEntity().setEntity(EntityType.COMMENT, comment.getId());
     }
 }

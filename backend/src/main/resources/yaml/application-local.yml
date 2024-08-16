@@ -16,8 +16,9 @@ spring:
       ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
-        show_sql: true
+#        show_sql: true
         format_sql: true
+        hightlight_sql: true
 frontend:
   url: http://localhost:3000
 file:
@@ -25,3 +26,10 @@ file:
     path: C:\Programming\Blog\devlog\backend\src\main\resources\upload
   request:
     path: res
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm.jdbc.bind: TRACE

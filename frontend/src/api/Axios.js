@@ -1,6 +1,6 @@
 import axios from "axios";
 import { authAtom } from "../recoil/authAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { getCookie } from "../utils/hooks/useCookie";
 import { jwt_refresh_api } from "./User";
 import {
@@ -10,6 +10,7 @@ import {
 import { EMPTY_AUTH } from "constants/user/auth";
 import { toast } from "react-toastify";
 import { recoilStorageValue } from "utils/hooks/recoilStorageValue";
+import { useNavigate } from "react-router-dom";
 
 const REFRESH_URL = "/reissue";
 
@@ -19,6 +20,7 @@ export const API = axios.create({
 });
 
 export const AuthTokenInterceptor = ({ children }) => {
+  const navigate = useNavigate();
   const [, setAuthDto] = useRecoilState(authAtom);
 
   const requestAuthTokenInjector = () => {
@@ -38,7 +40,7 @@ export const AuthTokenInterceptor = ({ children }) => {
     });
   };
 
-  const requestRejectHandler = () => {
+  const requestRejectHandler = (navigate) => {
     if (API.interceptors.response.handlers.length > 0) return;
     API.interceptors.response.use(
       (res) => res,
@@ -54,7 +56,8 @@ export const AuthTokenInterceptor = ({ children }) => {
         if (config.url === REFRESH_URL) {
           toast.error(`다시 로그인을 해주세요.`, {});
           setAuthDto(EMPTY_AUTH);
-          window.location.href = "/login";
+          // window.location.href = "/login";
+          navigate("/login");
           return Promise.reject(err);
         }
 
@@ -72,7 +75,7 @@ export const AuthTokenInterceptor = ({ children }) => {
   };
 
   requestAuthTokenInjector();
-  requestRejectHandler();
+  requestRejectHandler(navigate);
 
   return children;
 };

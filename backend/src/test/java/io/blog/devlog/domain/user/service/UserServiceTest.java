@@ -26,15 +26,7 @@ public class UserServiceTest {
     private UserRepository userRepository;
     private JwtService jwtService;
     private UserService userService;
-    private String email = "westreed@naver.com";
-    private String password = "password";
-    private String username = "westreed";
-    private User user = User.builder()
-            .email(email)
-            .password(password)
-            .username(username)
-            .role(Role.ADMIN)
-            .build();
+    private static final TestConfig testConfig = new TestConfig();
 
     @BeforeEach
     public void beforeSetUp() {
@@ -46,14 +38,14 @@ public class UserServiceTest {
     @DisplayName("회원 추가")
     public void addUserTest() {
         // given
-        userService.saveUser(user);
+        userService.saveUser(testConfig.adminUser);
 
         // when
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userRepository.findByEmail(testConfig.email).orElse(null);
 
         // then
         Assertions.assertThat(user).isNotNull();
-        Assertions.assertThat(user.getEmail()).isEqualTo(email);
+        Assertions.assertThat(user.getEmail()).isEqualTo(testConfig.email);
     }
     
     @Test
@@ -62,9 +54,9 @@ public class UserServiceTest {
         // given
         String token = "imToken";
         User refresh_user = User.builder()
-                .email(email)
-                .password(password)
-                .username(username)
+                .email(testConfig.email)
+                .password(testConfig.password)
+                .username(testConfig.username)
                 .build();
         refresh_user.updateRefreshToken("123");
         userService.saveUser(refresh_user);
@@ -73,7 +65,7 @@ public class UserServiceTest {
         refresh_user.updateRefreshToken(token); // dirty checking
 
         // then
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userRepository.findByEmail(testConfig.email).orElse(null);
         Assertions.assertThat(user).isNotNull();
         Assertions.assertThat(user.getRefreshToken()).isEqualTo(token);
     }
@@ -82,7 +74,7 @@ public class UserServiceTest {
     @DisplayName("Reissue Token 검증")
     public void reissueAccessTokenTest() throws BadRequestException {
         // given
-        User testUser = userService.saveUser(user);
+        User testUser = userService.saveUser(testConfig.adminUser);
         String refreshToken = jwtService.createRefreshToken(testUser);
         testUser.updateRefreshToken(refreshToken);
 
@@ -99,18 +91,18 @@ public class UserServiceTest {
         Assertions.assertThat(accessToken).isNotNull();
         Assertions.assertThat(jwtService.isTokenValid(accessToken)).isTrue();
         Claims claims = jwtService.extractClaims(accessToken);
-        Assertions.assertThat(claims.get("email")).isEqualTo(email);
+        Assertions.assertThat(claims.get("email")).isEqualTo(testConfig.email);
     }
 
     @Test
     @DisplayName("ADMIN 계정 가져오기 검증")
     public void getAdminTest() {
         // given
-        userService.saveUser(user);
+        userService.saveUser(testConfig.adminUser);
         User guestUser = User.builder()
-                .email(email)
-                .password(password)
-                .username(username)
+                .email("test2@naver.com")
+                .password(testConfig.password)
+                .username(testConfig.username)
                 .role(Role.GUEST)
                 .build();
         userService.saveUser(guestUser);

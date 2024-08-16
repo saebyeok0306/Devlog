@@ -3,14 +3,14 @@ import Responsive from "components/common/Responsive";
 
 import "./Main.scss";
 
-function Main({ LeftSide, MainContent, RightSide }) {
+function Main({ LeftSide, MainContent, RightSide, ...props }) {
   return (
     <Responsive className="main">
-      {LeftSide == null ? <aside /> : <LeftSide />}
+      {LeftSide == null ? <aside /> : <LeftSide {...props} />}
       <section>
-        <MainContent />
+        <MainContent {...props} />
       </section>
-      {RightSide == null ? <aside /> : <RightSide />}
+      {RightSide == null ? <aside /> : <RightSide {...props} />}
     </Responsive>
   );
 }

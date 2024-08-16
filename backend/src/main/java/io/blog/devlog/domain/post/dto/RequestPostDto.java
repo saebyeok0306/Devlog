@@ -2,14 +2,12 @@ package io.blog.devlog.domain.post.dto;
 
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.file.dto.FileDto;
-import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.user.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -23,8 +21,15 @@ public class RequestPostDto {
     private String previewUrl;
     private String email;
     private Long categoryId;
-    private List<FileDto> files;
+    @Builder.Default
+    private List<FileDto> files = Collections.emptyList();
+    @ColumnDefault("false")
     private boolean isPrivate;
+
+    public RequestPostDto setUrl(String url) {
+        this.url = url;
+        return this;
+    }
 
     public Post toEntity(User user, Category category) {
         return Post.builder()

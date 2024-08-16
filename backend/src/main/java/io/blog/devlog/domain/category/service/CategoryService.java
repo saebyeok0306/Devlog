@@ -36,20 +36,42 @@ public class CategoryService {
     public List<Category> getCategories() {
         Role role = getPrincipalRole();
         if (role == null) {
-            return Collections.emptyList();
+            role = Role.GUEST;
         }
+        Role finalRole = role;
         return categoryRepository.findAll()
                 .stream()
-                .filter(category -> category.getReadCategoryAuth().getKey() <= role.getKey())
+                .filter(category -> this.hasReadCategoryAuth(category, finalRole))
                 .sorted(Comparator.comparingLong(Category::getLayer))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public void updateCategories(List<Category> categories) {
-        categoryRepository.saveAll(categories);
+    public List<Category> updateCategories(List<Category> categories) {
+        return categoryRepository.saveAll(categories);
     }
 
     public void cleanUpCategories() {
         categoryRepository.truncate();
+    }
+
+    public boolean hasReadCategoryAuth(Category category) {
+        Role role = getPrincipalRole();
+        if (role == null) role = Role.GUEST;
+        return category.getReadCategoryAuth().getKey() <= role.getKey();
+    }
+
+    public boolean hasReadCategoryAuth(Category category, Role role) {
+        if (role == null) role = Role.GUEST;
+        return category.getReadCategoryAuth().getKey() <= role.getKey();
+    }
+
+    public boolean hasReadWriteCategoryAuth(Category category, Role role) {
+        if (role == null) role = Role.GUEST;
+        return category.getReadCategoryAuth().getKey() <= role.getKey() && category.getWritePostAuth().getKey() <= role.getKey();
+    }
+
+    public boolean hasCommentCategoryAuth(Category category, Role role) {
+        if (role == null) role = Role.GUEST;
+        return category.getWriteCommentAuth().getKey() <= role.getKey();
     }
 }

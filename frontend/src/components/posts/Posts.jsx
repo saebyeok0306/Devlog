@@ -7,23 +7,26 @@ import { useRecoilState } from "recoil";
 import { categoryAtom } from "recoil/categoryAtom";
 import { Dropdown, Pagination } from "flowbite-react";
 import { paginationCustomTheme } from "styles/theme/pagination";
-import { postDatetime } from "utils/postDatetime";
+import { getDatetime } from "utils/getDatetime";
+import { Link } from "react-router-dom";
 
 function PostCard(idx, post, setSelectCategory) {
-  const createdAtFormat = postDatetime(post.createdAt);
+  const createdAtFormat = getDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
-      {post.previewUrl !== null ? (
-        <img
-          className="post-img"
-          src={post.previewUrl}
-          alt="post"
-          onError={onErrorImg}
-        />
-      ) : (
-        <div className="post-img"></div>
-      )}
-      <div className="post-title">{post.title}</div>
+      <Link className="post-top" to={`/post/${post.url}`}>
+        {post.previewUrl !== null ? (
+          <img
+            className="post-img"
+            src={post.previewUrl}
+            alt="post"
+            onError={onErrorImg}
+          />
+        ) : (
+          <div className="post-img"></div>
+        )}
+        <div className="post-title">{post.title}</div>
+      </Link>
       <div className="post-bottom">
         <button
           className="post-category"

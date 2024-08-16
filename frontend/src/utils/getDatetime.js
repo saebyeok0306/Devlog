@@ -1,4 +1,4 @@
-export const postDatetime = (datetime) => {
+export const getDatetime = (datetime) => {
   const today = new Date();
   const createdAt = new Date(datetime);
   const diff = (today - createdAt) / (1000 * 60 * 60);

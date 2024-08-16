@@ -2,10 +2,32 @@ package io.blog.devlog.config;
 
 import io.blog.devlog.domain.file.handler.FileHandler;
 import io.blog.devlog.domain.file.service.TempFileService;
+import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.global.jwt.service.JwtService;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestConfig {
+    public String username = "admin";
+    public String password = "password";
+    public String email = "test@gmail.com";
+    public Role role = Role.ADMIN;
+    public String guestUsername = "guest";
+    public String guestPassword = "password";
+    public String guestEmail = "guest@gmail.com";
+    public Role guestRole = Role.GUEST;
+    public User adminUser = User.builder()
+            .email(email)
+            .password(password)
+            .username(username)
+            .role(role)
+            .build();
+    public User GeustUser = User.builder()
+            .email(guestEmail)
+            .password(guestPassword)
+            .username(guestUsername)
+            .role(guestRole)
+            .build();
 
     public JwtService createJwtService() {
         JwtService jwtService = new JwtService();
