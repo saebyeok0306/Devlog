@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo, useCallback, useState } from "react";
 
 import "./Comment.scss";
-import { Timeline } from "flowbite-react";
+import { Dropdown, Timeline } from "flowbite-react";
 import { HiAnnotation } from "react-icons/hi";
 import { timelineCustomTheme } from "styles/theme/timeline";
 import CommentEditor from "components/editor/commentEditor";
@@ -15,9 +15,7 @@ function Comment({ ...props }) {
   const [isDark] = useRecoilState(themeAtom);
   const [authDto] = useRecoilState(authAtom);
 
-  console.log(comments);
-
-  const Comments = () => {
+  const Comments = memo(() => {
     return (
       <>
         {comments.map((comment, idx) => (
@@ -31,23 +29,16 @@ function Comment({ ...props }) {
         ))}
       </>
     );
-  };
+  });
 
-  const CommentBox = (comment) => {
-    const isReply = comment.comment.parent ? true : false;
-    const CommentToolbar = () => {
-      if (comment.comment.user.email === authDto.email) {
-        return (
-          <>
-            <p>｜</p>
-            <button>수정</button>
-            <p>｜</p>
-            <button>삭제</button>
-          </>
-        );
-      }
-      return null;
-    };
+  const CommentBox = ({ comment }) => {
+    const [editComment, setEditComment] = useState(false);
+    const isReply = comment.parent ? true : false;
+
+    const toggleEditHandler = useCallback(() => {
+      setEditComment((prev) => !prev);
+    }, []);
+
     return (
       <Timeline.Item className={isReply ? "comment reply" : "comment"}>
         <Timeline.Point
@@ -61,29 +52,72 @@ function Comment({ ...props }) {
           ) : null}
         </Timeline.Point>
         <Timeline.Content>
-          <Timeline.Time className="comment-user">
-            <div>{`${comment.comment.user?.username}님`}</div>
-            <div className="text-gray-900 dark:text-gray-400 comment-menu">
-              <p>{getDatetime(comment.comment.createdAt)}</p>
-              <p>｜</p>
-              <button>답글</button>
-              <CommentToolbar />
-            </div>
-          </Timeline.Time>
-          <Timeline.Body className="comment-content">
-            {isReply ? (
-              <div>
-                <p>@{comment.comment.parentName}</p>
-                {comment.comment.content}
-              </div>
-            ) : (
-              <div>{comment.comment.content}</div>
-            )}
-          </Timeline.Body>
+          {!editComment ? (
+            <CommentView comment={comment} onEdit={toggleEditHandler} />
+          ) : (
+            <CommentEdit comment={comment} onCancel={toggleEditHandler} />
+          )}
         </Timeline.Content>
       </Timeline.Item>
     );
   };
+
+  const CommentView = memo(({ comment, onEdit }) => {
+    const CommentToolbar = () => {
+      if (comment.user.email === authDto.email) {
+        return (
+          <>
+            <Dropdown label="" inline>
+              <Dropdown.Item onClick={onEdit}>수정</Dropdown.Item>
+              <Dropdown.Item>삭제</Dropdown.Item>
+            </Dropdown>
+          </>
+        );
+      }
+      return null;
+    };
+    return (
+      <>
+        <Timeline.Time className="comment-user">
+          <div>{`${comment.user?.username}님`}</div>
+          <div className="text-gray-900 dark:text-gray-400 comment-menu">
+            <CommentToolbar />
+          </div>
+        </Timeline.Time>
+        <Timeline.Body className="comment-content">
+          {comment?.parent ? (
+            <div className="comment-content-body">
+              <p>@{comment.parentName}</p>
+              {comment.content}
+            </div>
+          ) : (
+            <div className="comment-content-body">{comment.content}</div>
+          )}
+          <div className="comment-content-footer">
+            <time dateTime={comment.createdAt}>
+              {getDatetime(comment.createdAt)}
+            </time>
+            <button>답글</button>
+          </div>
+        </Timeline.Body>
+      </>
+    );
+  });
+
+  const CommentEdit = ({ comment, onCancel }) => {
+    const [content, setContent] = useState(comment.content);
+    return (
+      <>
+        <CommentEditor
+          content={content}
+          setContent={setContent}
+          onCancel={onCancel}
+        />
+      </>
+    );
+  };
+
+  const [editorContent, setEditorContent] = useState("");
 
   return (
     <div
@@ -95,7 +129,7 @@ function Comment({ ...props }) {
         <Comments />
       </Timeline>
 
-      <CommentEditor />
+      <CommentEditor content={editorContent} setContent={setEditorContent} />
     </div>
   );
 }

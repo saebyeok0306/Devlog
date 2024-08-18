@@ -34,5 +34,14 @@
         display: flex;
       }
     }
+    .comment-content {
+      div.comment-content-footer {
+        display: flex;
+        gap: 5px;
+        font-size: 0.8rem;
+        time {
+        }
+      }
+    }
   }
 }
