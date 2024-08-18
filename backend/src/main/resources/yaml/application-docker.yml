@@ -1,10 +1,10 @@
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: docker
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://database:3306/devlog?serverTimezone=Asia/Seoul
     username: root
     password: ${MYSQL_PASSWORD}
   sql:
