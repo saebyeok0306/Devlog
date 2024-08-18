@@ -54,9 +54,8 @@ const codePreview = {
   icon: <Button />,
 };
 
-function CommentEditor() {
+function CommentEditor({ content, setContent, onCancel, onSave }) {
   const editorRef = useRef(null);
-  const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
 
   const handleDrop = async (event) => {
@@ -161,7 +160,8 @@ function CommentEditor() {
         extraCommands={[codePreview]}
       />
       <div className="comment-editor-bottom">
-        <button>등록</button>
+        {onCancel ? <button onClick={onCancel}>취소</button> : null}
+        {onSave ? <button onClick={onSave}>등록</button> : null}
       </div>
     </div>
   );
