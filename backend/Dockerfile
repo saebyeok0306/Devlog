@@ -1,6 +1,12 @@
-FROM openjdk:21-slim
+FROM gradle:jdk21
 
 WORKDIR /app
-COPY /build/libs/ .
+ADD build.gradle .
+RUN gradle build -x test --parallel --continue > /dev/null 2>&1 || true
 
-ENTRYPOINT ["java", "-jar", "user-service.jar", "--spring.profiles.active=dev"]
+COPY . .
+RUN gradle build
+
+WORKDIR /app/build/libs
+
+ENTRYPOINT ["java", "-jar", "devlog.jar", "--spring.profiles.active=docker"]
