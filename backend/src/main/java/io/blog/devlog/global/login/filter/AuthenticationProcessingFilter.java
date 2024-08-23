@@ -82,7 +82,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void createUserDetails() {
-        log.info("createUserDetails() 호출");
+        log.info("createUserDetails(GUEST) 호출");
         List<GrantedAuthority> authorities = new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + Role.GUEST)));
         UserDetails userDetails = User.builder()
                 .username("GUEST")
