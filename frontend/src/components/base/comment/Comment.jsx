@@ -9,11 +9,24 @@ import { useRecoilState } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { getDatetime } from "utils/getDatetime";
 import { authAtom } from "recoil/authAtom";
+import { replyAtom } from "recoil/replyAtom";
 
 function Comment({ ...props }) {
   const { commentRef, comments } = props;
   const [isDark] = useRecoilState(themeAtom);
   const [authDto] = useRecoilState(authAtom);
+  const [replyEditId, setReplyEditId] = useState(null);
+  // const [replyComment, setReplyComment] = useState("");
+
+  const toggleEditHandler = useCallback((comment, setContent) => {
+    setReplyEditId(comment.id);
+    setContent(comment.content);
+  }, []);
+
+  const cancelEditHandler = useCallback(() => {
+    setReplyEditId(null);
+    // setReplyComment("");
+  }, []);
 
   const Comments = memo(() => {
     return (
@@ -32,13 +45,8 @@ function Comment({ ...props }) {
   });
 
   const CommentBox = ({ comment }) => {
-    const [editComment, setEditComment] = useState(false);
+    const [content, setContent] = useRecoilState(replyAtom);
     const isReply = comment.parent ? true : false;
-
-    const toggleEditHandler = useCallback(() => {
-      setEditComment((prev) => !prev);
-    }, []);
-
     return (
       <Timeline.Item className={isReply ? "comment reply" : "comment"}>
         <Timeline.Point
@@ -52,23 +60,34 @@ function Comment({ ...props }) {
           ) : null}
         </Timeline.Point>
         <Timeline.Content>
-          {!editComment ? (
-            <CommentView comment={comment} onEdit={toggleEditHandler} />
+          {replyEditId !== comment.id ? (
+            <CommentView
+              comment={comment}
+              onEdit={toggleEditHandler}
+              setContent={setContent}
+            />
           ) : (
-            <CommentEdit comment={comment} onCancel={toggleEditHandler} />
+            <CommentEdit
+              comment={comment}
+              onCancel={cancelEditHandler}
+              content={content}
+              setContent={setContent}
+            />
           )}
         </Timeline.Content>
       </Timeline.Item>
     );
   };
 
-  const CommentView = memo(({ comment, onEdit }) => {
+  const CommentView = memo(({ comment, onEdit, setContent }) => {
     const CommentToolbar = () => {
       if (comment.user.email === authDto.email) {
         return (
           <>
             <Dropdown label="" inline>
-              <Dropdown.Item onClick={onEdit}>수정</Dropdown.Item>
+              <Dropdown.Item onClick={() => onEdit(comment, setContent)}>
+                수정
+              </Dropdown.Item>
               <Dropdown.Item>삭제</Dropdown.Item>
             </Dropdown>
           </>
@@ -104,8 +123,7 @@ function Comment({ ...props }) {
     );
   });
 
-  const CommentEdit = ({ comment, onCancel }) => {
-    const [content, setContent] = useState(comment.content);
+  const CommentEdit = memo(({ comment, onCancel, content, setContent }) => {
     return (
       <>
         <CommentEditor
@@ -115,7 +133,7 @@ function Comment({ ...props }) {
         />
       </>
     );
-  };
+  });
 
   const [editorContent, setEditorContent] = useState("");
 
@@ -128,7 +146,7 @@ function Comment({ ...props }) {
       <Timeline className="comments" theme={timelineCustomTheme}>
         <Comments />
       </Timeline>
-
+      {/* Post Comment Editor */}
       <CommentEditor content={editorContent} setContent={setEditorContent} />
     </div>
   );
