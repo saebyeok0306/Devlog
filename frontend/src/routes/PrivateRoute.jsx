@@ -1,22 +1,14 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { authAtom } from "../recoil/authAtom";
 import { GetPayload } from "utils/authenticate";
 import { ROLE_TYPE } from "utils/RoleType";
 import { toast } from "react-toastify";
 
 const PrivateRoute = ({ role = null, email = null }) => {
-  const authDto = useRecoilValue(authAtom);
-  // FIXME: Private 경로에서 로그아웃했을 때 오류 발생함.
-  if (!authDto.isLogin) {
-    toast.warning("로그인이 필요한 서비스입니다.1");
-    return <Navigate replace to="/login" />;
-  }
-
   const payload = GetPayload();
+
   if (payload.isLogin === false) {
-    toast.warning("로그인이 필요한 서비스입니다.2");
+    toast.warning("로그인이 필요한 서비스입니다.");
     return <Navigate replace to="/login" />;
   }
 
