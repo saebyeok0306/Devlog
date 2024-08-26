@@ -54,10 +54,16 @@ const codePreview = {
   icon: <Button />,
 };
 
-function CommentEditor({ content, setContent, onCancel, onSave }) {
+function CommentEditor({
+  content,
+  setContent,
+  files,
+  setFiles,
+  onCancel,
+  onSave,
+}) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
-  const [files, setFiles] = useState([]);
   console.log(content, files);
 
   const handleDrop = async (event) => {
@@ -171,8 +177,8 @@ function CommentEditor({ content, setContent, onCancel, onSave }) {
         <span>
           {content.length}/{MAX_LENGTH}
         </span>
-        {onCancel ? <button onClick={onCancel}>취소</button> : null}
         {onSave ? <button onClick={onSave}>등록</button> : null}
+        {onCancel ? <button onClick={onCancel}>취소</button> : null}
       </div>
     </div>
   );

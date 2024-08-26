@@ -1,6 +1,8 @@
 package io.blog.devlog.domain.comment.controller;
 
 import io.blog.devlog.domain.comment.dto.RequestCommentDto;
+import io.blog.devlog.domain.comment.dto.RequestEditCommentDto;
+import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +19,18 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
     @PostMapping
-    public void uploadComment(@RequestBody RequestCommentDto requestCommentDto) {
-        commentService.saveComment(requestCommentDto);
+    public ResponseCommentDto uploadComment(@RequestBody RequestCommentDto requestCommentDto) throws BadRequestException {
+        return commentService.saveComment(requestCommentDto);
+    }
 
+    @PostMapping("/{commentId}")
+    public void updateComment(@RequestBody RequestEditCommentDto requestEditCommentDto, @PathVariable Long commentId) throws BadRequestException {
+        Comment comment = commentService.updateComment(requestEditCommentDto, commentId);
+        log.info("Update comment : " + comment);
     }
 
     @GetMapping("/post/{postUrl}")
-    public List<Comment> getComments(@PathVariable String postUrl) throws BadRequestException {
+    public List<ResponseCommentDto> getComments(@PathVariable String postUrl) throws BadRequestException {
         log.info("Get comments of post : " + postUrl);
         return commentService.getCommentsByPostUrl(postUrl);
     }

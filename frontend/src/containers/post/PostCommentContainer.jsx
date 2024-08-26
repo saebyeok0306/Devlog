@@ -22,7 +22,9 @@ function PostCommentContainer({ ...props }) {
       .then((res) => {
         console.log(res.data);
         setPostContent(res.data?.post);
-        setComments(sortComments(res.data?.comments));
+        const sortedComments = sortComments(res.data?.comments);
+        console.log(sortedComments);
+        setComments(sortedComments);
       })
       .catch((error) => {
         console.log(error);

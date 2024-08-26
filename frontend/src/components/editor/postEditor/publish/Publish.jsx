@@ -54,7 +54,6 @@ function Publish({
       preview
         ? `${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`
         : null,
-      authDto?.email,
       selectCategory?.id,
       files,
       isPrivate

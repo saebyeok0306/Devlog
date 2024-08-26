@@ -11,7 +11,7 @@
     input.post-title {
       margin-right: 1em;
       flex: 1;
-      font-size: 1.5em;
+      font-size: 1.3rem;
       padding: 0.3em;
       height: 2em;
       background-color: $background-white-color;
@@ -21,6 +21,7 @@
       }
     }
     .post-extra-menu {
+      width: auto;
       display: flex;
       gap: 0.5em;
       margin: auto;

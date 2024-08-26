@@ -6,6 +6,10 @@ import io.blog.devlog.domain.category.repository.CategoryRepository;
 import io.blog.devlog.domain.category.service.CategoryService;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
+import io.blog.devlog.domain.file.repository.FileRepository;
+import io.blog.devlog.domain.file.repository.TempFileRepository;
+import io.blog.devlog.domain.file.service.FileService;
+import io.blog.devlog.domain.file.service.TempFileService;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.post.service.PostService;
@@ -39,11 +43,17 @@ public class CommentServiceTest {
     private PostRepository postRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private TempFileRepository tempFileRepository;
+    @Autowired
+    private FileRepository fileRepository;
     private CommentService commentService;
     private UserService userService;
     private PostService postService;
     private CategoryService categoryService;
     private JwtService jwtService;
+    private TempFileService tempFileService;
+    private FileService fileService;
     private static final TestConfig testConfig = new TestConfig();
 
     private User guestUser;
@@ -55,7 +65,9 @@ public class CommentServiceTest {
         userService = new UserService(userRepository, jwtService);
         postService = new PostService(postRepository, userService);
         categoryService = new CategoryService(categoryRepository);
-        commentService = new CommentService(commentRepository, userService, postService);
+        tempFileService = new TempFileService(tempFileRepository);
+        fileService = new FileService(fileRepository, tempFileService);
+        commentService = new CommentService(commentRepository, userService, postService, fileService);
     }
 
     public void setupUserAndCategoryAndPost() {

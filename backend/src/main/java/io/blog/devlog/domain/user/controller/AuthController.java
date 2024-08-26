@@ -70,7 +70,7 @@ public class AuthController {
 
     @GetMapping("/check")
     public void check() {
-
+        log.info("GET /check");
     }
 
     @GetMapping("/reissue")

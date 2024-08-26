@@ -68,10 +68,10 @@ public class PostServiceTest {
         jwtService = testConfig.createJwtService();
         userService = new UserService(userRepository, jwtService);
         categoryService = new CategoryService(categoryRepository);
-        fileService = new FileService(fileRepository);
         tempFileService = new TempFileService(tempFileRepository);
+        fileService = new FileService(fileRepository, tempFileService);
         postService = new PostService(postRepository, userService);
-        postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService, tempFileService);
+        postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService);
     }
 
     public static List<Category> createCategory() {

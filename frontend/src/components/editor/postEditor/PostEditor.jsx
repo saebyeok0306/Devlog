@@ -14,9 +14,11 @@ import { toast } from "react-toastify";
 import FileUploader from "./fileUploader";
 import UploadIcon from "assets/icons/Upload";
 import { authAtom } from "recoil/authAtom";
+import { useNavigate } from "react-router-dom";
 
 function PostEditor() {
   const editorRef = useRef(null);
+  const navigate = useNavigate();
   const authDto = useRecoilValue(authAtom);
   const [isDark] = useRecoilState(themeAtom);
   const [openModal, setOpenModal] = useState(false);
@@ -33,6 +35,11 @@ function PostEditor() {
   useEffect(() => {
     get_categories_api()
       .then((res) => {
+        const response_categories = res.data;
+        if (response_categories.length === 0) {
+          toast.warning("글을 작성할 수 있는 카테고리가 없습니다!");
+          return navigate(-1);
+        }
         setCategories(res.data);
         setSelectCategory(res.data[0]);
       })

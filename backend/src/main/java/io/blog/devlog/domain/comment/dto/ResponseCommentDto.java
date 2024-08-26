@@ -17,6 +17,7 @@ public class ResponseCommentDto {
     private ResponseUserDto user;
     private Long parent; // 대댓글
     private String content;
+    private boolean isPrivate;
     private LocalDateTime createdAt;
 
     public static ResponseCommentDto of(Comment comment) {

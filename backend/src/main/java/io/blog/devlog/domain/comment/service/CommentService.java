@@ -1,8 +1,11 @@
 package io.blog.devlog.domain.comment.service;
 
 import io.blog.devlog.domain.comment.dto.RequestCommentDto;
+import io.blog.devlog.domain.comment.dto.RequestEditCommentDto;
+import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
+import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
@@ -25,12 +28,26 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final PostService postService;
+    private final FileService fileService;
 
-    public void saveComment(RequestCommentDto requestCommentDto) {
-        commentRepository.save(requestCommentDto.toEntity());
+    public ResponseCommentDto saveComment(RequestCommentDto requestCommentDto) throws BadRequestException {
+        String email = getUserEmail();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+
+        Comment comment = commentRepository.save(requestCommentDto.toEntity(user));
+        fileService.uploadFileAndDeleteTempFile(comment, requestCommentDto.getFiles());
+        return ResponseCommentDto.of(comment);
     }
 
-    public List<Comment> getCommentsFromPost(Post post) throws BadRequestException {
+    public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) throws BadRequestException {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
+        comment = commentRepository.save(comment.toEdit(requestEditCommentDto));
+        fileService.uploadFileAndDeleteTempFile(comment, requestEditCommentDto.getFiles());
+        return comment;
+    }
+
+    public List<ResponseCommentDto> getCommentsFromPost(Post post) throws BadRequestException {
         String email = getUserEmail();
         Long userId = null;
         boolean isAdmin = false;
@@ -41,10 +58,13 @@ public class CommentService {
             userId = user.getId();
             isAdmin = userService.isAdmin(user);
         }
-        return commentRepository.findAllByPostId(post.getId(), userId, isAdmin);
+        List<Comment> comments = commentRepository.findAllByPostId(post.getId(), userId, isAdmin);
+        return comments.stream()
+                .map(ResponseCommentDto::of)
+                .toList();
     }
 
-    public List<Comment> getCommentsByPostUrl(String postUrl) throws BadRequestException {
+    public List<ResponseCommentDto> getCommentsByPostUrl(String postUrl) throws BadRequestException {
         Post post = postService.getPostByUrl(postUrl); // 여기서 카테고리 읽기 권한까지 확인함.
         return this.getCommentsFromPost(post);
     }

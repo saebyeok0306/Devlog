@@ -6,12 +6,19 @@ export const sortComments = (comments) => {
       .map((comment) => {
         if (comment.parent) {
           const parentComment = comments.find((c) => c.id === comment.parent);
-          if (parentComment) {
-            comment["parentName"] = parentComment.user.username;
-            if (parentComment.children) {
-              parentComment.children.push(comment);
+          let lootComment = parentComment;
+          while (lootComment.parent > 0) {
+            const parentId = lootComment.parent;
+            lootComment = comments.find((c) => c.id === parentId);
+          }
+          // const parentComment = comments.find((c) => c.id === comment.parent);
+          if (lootComment) {
+            comment["parentData"] = parentComment;
+            comment["root"] = lootComment.id;
+            if (lootComment.children) {
+              lootComment.children.push(comment);
             } else {
-              parentComment.children = [comment];
+              lootComment.children = [comment];
             }
           }
           return null;
