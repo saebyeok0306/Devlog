@@ -38,32 +38,32 @@ function App() {
       <ToastContainerComponent />
       <div className={`wrapper`}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
-          <AuthProvider>
-            <div className={`contentWrapper`}>
-              <AuthTokenInterceptor>
-                <Routes>
-                  <Route element={<AnyRoute />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/editor" element={<Editor />} />
-                    <Route path="/post/:postUrl" element={<Post />} />
-                  </Route>
-                  <Route element={<PublicRoute />}>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                    <Route path="/callback" element={<Callback />} />
-                  </Route>
-                  <Route
-                    path="/manager"
-                    element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}
-                  >
-                    <Route path="category" element={<CategoryManager />} />
-                    <Route path="info" element={<div>info</div>} />
-                  </Route>
-                </Routes>
-              </AuthTokenInterceptor>
-            </div>
-            <FooterContainer />
-          </AuthProvider>
+          {/* <AuthProvider> */}
+          <div className={`contentWrapper`}>
+            <AuthTokenInterceptor>
+              <Routes>
+                <Route element={<AnyRoute />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/editor" element={<Editor />} />
+                  <Route path="/post/:postUrl" element={<Post />} />
+                </Route>
+                <Route element={<PublicRoute />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/callback" element={<Callback />} />
+                </Route>
+                <Route
+                  path="/manager"
+                  element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}
+                >
+                  <Route path="category" element={<CategoryManager />} />
+                  <Route path="info" element={<div>info</div>} />
+                </Route>
+              </Routes>
+            </AuthTokenInterceptor>
+          </div>
+          <FooterContainer />
+          {/* </AuthProvider> */}
         </BrowserRouter>
       </div>
     </DarkModeProvider>
