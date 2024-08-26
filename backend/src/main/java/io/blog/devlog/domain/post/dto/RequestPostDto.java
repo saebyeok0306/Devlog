@@ -19,7 +19,6 @@ public class RequestPostDto {
     private String title;
     private String content;
     private String previewUrl;
-    private String email;
     private Long categoryId;
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();

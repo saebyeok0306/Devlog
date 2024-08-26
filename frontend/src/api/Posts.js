@@ -6,7 +6,6 @@ export const upload_post_api = async (
   title,
   content,
   previewUrl,
-  email,
   categoryId,
   files,
   isPrivate
@@ -17,7 +16,6 @@ export const upload_post_api = async (
     title: title,
     content: content,
     previewUrl: previewUrl,
-    email: email,
     categoryId: categoryId,
     files: files,
     isPrivate: isPrivate,
