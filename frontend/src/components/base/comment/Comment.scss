@@ -19,9 +19,6 @@
           div {
             display: flex;
             gap: 5px;
-            p {
-              color: gray;
-            }
           }
         }
       }
@@ -33,6 +30,19 @@
       .comment-menu {
         display: flex;
       }
+    }
+    .comment-content {
+      div.comment-content-footer {
+        display: flex;
+        gap: 5px;
+        font-size: 0.8rem;
+        time {
+        }
+      }
+    }
+    p.comment-reply-name {
+      user-select: none;
+      color: gray;
     }
   }
 }

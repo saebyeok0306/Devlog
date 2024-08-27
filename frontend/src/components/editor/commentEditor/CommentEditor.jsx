@@ -54,10 +54,17 @@ const codePreview = {
   icon: <Button />,
 };
 
-function CommentEditor() {
+function CommentEditor({
+  content,
+  setContent,
+  files,
+  setFiles,
+  onCancel,
+  onSave,
+}) {
+  const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
-  const [content, setContent] = useState("");
-  const [files, setFiles] = useState([]);
+  console.log(content, files);
 
   const handleDrop = async (event) => {
     event.preventDefault();
@@ -123,14 +130,20 @@ function CommentEditor() {
     }
   };
 
+  const handleChangeContent = (change_text) => {
+    if (change_text.length <= MAX_LENGTH) {
+      setContent(change_text);
+    }
+  };
+
   return (
     <div className="comment-editor">
       <MDEditor
         ref={editorRef}
         preview="edit"
-        style={{ flex: "1", whiteSpace: "pre-wrap" }}
+        style={{ flex: "1", whiteSpace: "pre-wrap", paddingBottom: "10px" }}
         value={content}
-        onChange={setContent}
+        onChange={handleChangeContent}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onPaste={handlePaste}
@@ -148,7 +161,6 @@ function CommentEditor() {
           commands.quote,
           commands.code,
           commands.codeBlock,
-          commands.comment,
           commands.image,
           commands.table,
           commands.divider,
@@ -156,12 +168,17 @@ function CommentEditor() {
           commands.orderedListCommand,
           commands.checkedListCommand,
           commands.divider,
+          codePreview,
           // commands.group([], fileUploader),
         ]}
-        extraCommands={[codePreview]}
+        extraCommands={[]}
       />
       <div className="comment-editor-bottom">
-        <button>등록</button>
+        <span>
+          {content.length}/{MAX_LENGTH}
+        </span>
+        {onSave ? <button onClick={onSave}>등록</button> : null}
+        {onCancel ? <button onClick={onCancel}>취소</button> : null}
       </div>
     </div>
   );

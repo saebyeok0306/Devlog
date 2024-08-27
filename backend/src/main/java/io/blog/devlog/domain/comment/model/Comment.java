@@ -1,12 +1,12 @@
 package io.blog.devlog.domain.comment.model;
 
+import io.blog.devlog.domain.comment.dto.RequestEditCommentDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.global.time.BaseTime;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Table(name="COMMENTS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,4 +31,10 @@ public class Comment extends BaseTime {
     @Column(length = 5000)
     private String content;
     private boolean isPrivate;
+
+    public Comment toEdit(RequestEditCommentDto requestEditCommentDto) {
+        this.content = requestEditCommentDto.getContent();
+        this.isPrivate = requestEditCommentDto.isPrivate();
+        return this;
+    }
 }

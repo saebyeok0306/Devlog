@@ -68,10 +68,10 @@ public class PostServiceTest {
         jwtService = testConfig.createJwtService();
         userService = new UserService(userRepository, jwtService);
         categoryService = new CategoryService(categoryRepository);
-        fileService = new FileService(fileRepository);
         tempFileService = new TempFileService(tempFileRepository);
+        fileService = new FileService(fileRepository, tempFileService);
         postService = new PostService(postRepository, userService);
-        postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService, tempFileService);
+        postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService);
     }
 
     public static List<Category> createCategory() {
@@ -94,10 +94,11 @@ public class PostServiceTest {
     public void savePostTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
                 .url("url")
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")
@@ -118,10 +119,11 @@ public class PostServiceTest {
     public void findPostIdTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
                 .url("url")
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")
@@ -143,10 +145,11 @@ public class PostServiceTest {
     public void findPostUrlTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
                 .url("url")
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")
@@ -168,9 +171,10 @@ public class PostServiceTest {
     public void findPostAllPageableTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")
@@ -198,9 +202,11 @@ public class PostServiceTest {
     public void findPrivateExceptionPostAllPageableTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        userService.saveUser(testConfig.geustUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")
@@ -212,6 +218,8 @@ public class PostServiceTest {
         postUploadService.savePost(requestPostDto.setUrl("url3"));
 
         // when
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.geustUser);
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
@@ -228,9 +236,10 @@ public class PostServiceTest {
     public void findPrivatePostAllPageableTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         RequestPostDto requestPostDto = RequestPostDto.builder()
-                .email(testConfig.email)
                 .categoryId(categories.get(0).getId())
                 .title("제목")
                 .content("내용")

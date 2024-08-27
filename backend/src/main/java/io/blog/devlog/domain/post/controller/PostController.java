@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.post.controller;
 
+import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.service.CommentService;
 import io.blog.devlog.domain.post.dto.*;
@@ -58,7 +59,7 @@ public class PostController {
         if (post == null) {
             return ResponseEntity.notFound().build();
         }
-        List<Comment> comments = commentService.getCommentsFromPost(post);
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(post);
         return ResponseEntity.ok(ResponsePostCommentDto.of(post, comments));
     }
 

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePostDto {
+    private Long id;
     private String url;
     private String title;
     private String content;
@@ -28,6 +29,7 @@ public class ResponsePostDto {
 
     public static ResponsePostDto of(Post post) {
         return ResponsePostDto.builder()
+                .id(post.getId())
                 .url(post.getUrl())
                 .title(post.getTitle())
                 .content(post.getContent())
