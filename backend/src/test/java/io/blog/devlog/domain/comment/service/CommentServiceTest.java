@@ -4,6 +4,7 @@ import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
 import io.blog.devlog.domain.category.service.CategoryService;
+import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
 import io.blog.devlog.domain.file.repository.FileRepository;
@@ -72,7 +73,7 @@ public class CommentServiceTest {
 
     public void setupUserAndCategoryAndPost() {
         userService.saveUser(testConfig.adminUser);
-        User guestUser = userService.saveUser(testConfig.GeustUser);
+        User guestUser = userService.saveUser(testConfig.geustUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         Post post = Post.builder()
                         .url("url")
@@ -103,8 +104,8 @@ public class CommentServiceTest {
         // when
 
         // then
-        List<Comment> comments = commentService.getCommentsByPostUrl("url");
-        for (Comment c : comments) {
+        List<ResponseCommentDto> comments = commentService.getCommentsByPostUrl("url");
+        for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());
         }
     }
@@ -128,9 +129,9 @@ public class CommentServiceTest {
         // then
         // 이전 query 결과를 재사용하진 않았음.
         Post post = postService.getPostByUrl("url");
-        List<Comment> comments = commentService.getCommentsByPostUrl("url");
+        List<ResponseCommentDto> comments = commentService.getCommentsByPostUrl("url");
         System.out.println("게시글 제목 : " + post.getTitle());
-        for (Comment c : comments) {
+        for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());
         }
     }

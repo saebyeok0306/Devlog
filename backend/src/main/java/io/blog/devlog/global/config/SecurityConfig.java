@@ -90,7 +90,7 @@ public class SecurityConfig {
             .authenticationEntryPoint(customAuthenticationEntryPoint)
         );
         http.formLogin(AbstractHttpConfigurer::disable);
-//        http.formLogin(form -> form
+//        http.formLogin(form -> form // MVC 패턴용
 //                .loginPage("/loginForm")
 //                .loginProcessingUrl("/login") // login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행합니다.
 //                .defaultSuccessUrl("/")
