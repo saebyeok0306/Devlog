@@ -9,7 +9,7 @@ import { EMPTY_AUTH } from "constants/user/auth";
 import { useRecoilValue } from "recoil";
 import { toast } from "react-toastify";
 
-export const signIn = (
+export const signIn = async (
   accessToken,
   refreshToken,
   setAuthDto,
@@ -26,6 +26,7 @@ export const signIn = (
       path: "/",
       // expires: new Date(payload_refresh.exp * 1000),
     });
+    // setAuthDto(new Auth(payload.username, payload.email, true));
     setAuthDto(new Auth(payload.username, payload.email, true));
     if (message !== false) toast.success(`${message}`, {});
 
