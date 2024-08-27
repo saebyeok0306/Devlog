@@ -7,10 +7,9 @@ import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
 } from "constants/user/login";
-import { EMPTY_AUTH } from "constants/user/auth";
-import { toast } from "react-toastify";
 import { recoilStorageValue } from "utils/hooks/recoilStorageValue";
 import { useNavigate } from "react-router-dom";
+import { signOut } from "utils/authenticate";
 
 const REFRESH_URL = "/reissue";
 
@@ -54,8 +53,9 @@ export const AuthTokenInterceptor = ({ children }) => {
         } = err;
 
         if (config.url === REFRESH_URL) {
-          toast.error(`다시 로그인을 해주세요.`, {});
-          setAuthDto(EMPTY_AUTH);
+          signOut(setAuthDto, "다시 로그인을 해주세요.");
+          // toast.error(`다시 로그인을 해주세요.`, {});
+          // setAuthDto(EMPTY_AUTH);
           // window.location.href = "/login";
           navigate("/login");
           return Promise.reject(err);
