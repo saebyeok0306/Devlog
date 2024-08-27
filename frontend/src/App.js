@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import PrivateRoute from "routes/PrivateRoute";
 import PublicRoute from "routes/PublicRoute";
 import AnyRoute from "routes/AnyRoute";
@@ -59,6 +59,8 @@ function App() {
                   <Route path="category" element={<CategoryManager />} />
                   <Route path="info" element={<div>info</div>} />
                 </Route>
+                <Route path="*" element={<Navigate to="/" />} />
+                {/* 모든 경로를 홈으로 리다이렉트 */}
               </Routes>
             </AuthTokenInterceptor>
           </div>

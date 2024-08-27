@@ -6,31 +6,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { authAtom } from "recoil/authAtom";
+import { commentAtom, CommentState } from "recoil/commentAtom";
 import { postAtom } from "recoil/postAtom";
 import { sortComments } from "utils/sortComments";
 
 function PostCommentContainer({ ...props }) {
-  console.log("PostCommentContainer", props);
   const navigate = useNavigate();
   const { postUrl } = useParams();
   const [authDto] = useRecoilState(authAtom);
   const [, setPostContent] = useRecoilState(postAtom);
+  const [, setCommentState] = useRecoilState(commentAtom);
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
     get_post_url_api(postUrl)
       .then((res) => {
-        console.log(res.data);
         setPostContent(res.data?.post);
         const sortedComments = sortComments(res.data?.comments);
-        console.log(sortedComments);
         setComments(sortedComments);
+        setCommentState(new CommentState(res.data?.commentFlag));
       })
       .catch((error) => {
         console.log(error);
         toast.error("잘못된 접근입니다.");
         navigate(-1);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postUrl, authDto]);
 
   return (
