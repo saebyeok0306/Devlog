@@ -14,6 +14,7 @@ import { edit_comment_api, upload_comment_api } from "api/Comment";
 import { postAtom } from "recoil/postAtom";
 import { toast } from "react-toastify";
 import MDEditor from "@uiw/react-md-editor";
+import { commentAtom } from "recoil/commentAtom";
 
 function Comment({ ...props }) {
   const { commentRef, comments } = props;
@@ -24,9 +25,18 @@ function Comment({ ...props }) {
   const [replyTargetComment, setReplyTargetComment] = useState(null);
   const [commentFiles, setCommentFiles] = useState([]);
   const postContent = useRecoilValue(postAtom);
+  const commentState = useRecoilValue(commentAtom);
+  console.log("commentState", commentState);
 
   const [editorContent, setEditorContent] = useState("");
   const [editorFiles, setEditorFiles] = useState([]);
+
+  const isWriteComment = () => {
+    if (commentState.commentFlag === true && authDto.isLogin === true) {
+      return true;
+    }
+    return false;
+  };
 
   const addClientComment = (targetId, comment) => {
     let isEdit = false;
@@ -261,7 +271,7 @@ function Comment({ ...props }) {
   const CommentView = memo(
     ({ comment, onEdit, onReply, content, setContent }) => {
       const CommentToolbar = () => {
-        if (comment.user.email === authDto.email) {
+        if (isWriteComment() && comment.user.email === authDto.email) {
           return (
             <>
               <Dropdown label="" inline>
@@ -319,7 +329,11 @@ function Comment({ ...props }) {
               <time dateTime={comment.createdAt}>
                 {getDatetime(comment.createdAt)}
               </time>
-              <button onClick={() => onReply(comment, setContent)}>답글</button>
+              {isWriteComment() ? (
+                <button onClick={() => onReply(comment, setContent)}>
+                  답글
+                </button>
+              ) : null}
             </div>
           </Timeline.Body>
         </>
@@ -354,15 +368,17 @@ function Comment({ ...props }) {
         <Comments />
       </Timeline>
       {/* Post Comment Editor */}
-      <CommentEditor
-        content={editorContent}
-        setContent={setEditorContent}
-        files={editorFiles}
-        setFiles={setEditorFiles}
-        onSave={() =>
-          uploadCommentHandler(null, editorContent, editorFiles, false)
-        }
-      />
+      {isWriteComment() ? (
+        <CommentEditor
+          content={editorContent}
+          setContent={setEditorContent}
+          files={editorFiles}
+          setFiles={setEditorFiles}
+          onSave={() =>
+            uploadCommentHandler(null, editorContent, editorFiles, false)
+          }
+        />
+      ) : null}
     </div>
   );
 }
