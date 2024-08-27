@@ -1,10 +1,10 @@
 package io.blog.devlog.domain.post.controller;
 
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
-import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.service.CommentService;
 import io.blog.devlog.domain.post.dto.*;
 import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
 import lombok.RequiredArgsConstructor;
@@ -55,12 +55,9 @@ public class PostController {
 
     @GetMapping("/{url}")
     public ResponseEntity<ResponsePostCommentDto> getPost(@PathVariable String url) throws BadRequestException {
-        Post post = postService.getPostByUrl(url);
-        if (post == null) {
-            return ResponseEntity.notFound().build();
-        }
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(post);
-        return ResponseEntity.ok(ResponsePostCommentDto.of(post, comments));
+        PostCommentFlag postCommentFlag = postService.getPostByUrl(url);
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
+        return ResponseEntity.ok(ResponsePostCommentDto.of(postCommentFlag, comments));
     }
 
     @GetMapping("/category/v1/{categoryName}")
