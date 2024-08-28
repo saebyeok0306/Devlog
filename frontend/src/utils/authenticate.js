@@ -26,7 +26,6 @@ export const signIn = async (
       path: "/",
       // expires: new Date(payload_refresh.exp * 1000),
     });
-    // setAuthDto(new Auth(payload.username, payload.email, true));
     setAuthDto(new Auth(payload.username, payload.email, true));
     if (message !== false) toast.success(`${message}`, {});
 
@@ -57,7 +56,7 @@ export const reissueToken = (headers) => {
 
 export const GetPayload = () => {
   const authDto = useRecoilValue(authAtom);
-  if (!authDto.isLogin) return EMPTY_AUTH;
+  if (!authDto?.isLogin) return EMPTY_AUTH;
 
   const token = getCookie(ACCESS_TOKEN_STRING);
   if (token == null) return EMPTY_AUTH;

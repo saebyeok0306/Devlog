@@ -15,7 +15,7 @@ function UserMenu() {
     signOut(setAuthDto);
   };
 
-  if (authDto.isLogin === false) {
+  if (authDto?.isLogin === false) {
     return (
       <nav className="usermenu button">
         <Link to="/login" state={{ backpath: location.pathname }}>

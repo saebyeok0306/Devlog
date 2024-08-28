@@ -27,7 +27,7 @@ const CommentReply = ({ rootComment, comments, reply, setReply }) => {
       <Timeline.Point icon={HiAnnotation} />
       <Timeline.Content>
         <Timeline.Time className="comment-user">
-          <div>{`${authDto.username}님`}</div>
+          <div>{`${authDto?.username}님`}</div>
         </Timeline.Time>
         <Timeline.Body className="comment-content">
           <div className="comment-content-body">

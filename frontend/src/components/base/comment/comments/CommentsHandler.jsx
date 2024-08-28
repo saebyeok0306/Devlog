@@ -2,7 +2,7 @@ import { edit_comment_api, upload_comment_api } from "api/Comment";
 import { toast } from "react-toastify";
 
 const isWriteComment = ({ commentState, authDto }) => {
-  if (commentState.commentFlag === true && authDto.isLogin === true) {
+  if (commentState.commentFlag === true && authDto?.isLogin === true) {
     return true;
   }
   return false;
