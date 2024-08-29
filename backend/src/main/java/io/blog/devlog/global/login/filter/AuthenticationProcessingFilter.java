@@ -54,7 +54,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
             }
             catch (JwtException e) {
                 // invalid token
-                Integer status = HttpServletResponse.SC_BAD_REQUEST;
+                Integer status = HttpServletResponse.SC_UNAUTHORIZED;
                 String path = request.getRequestURI();
                 errorResponse.setResponse(response, status, e.getMessage(), path);
                 return;
