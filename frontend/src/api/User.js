@@ -9,7 +9,6 @@ export const user_join_api = async (username, password, email) => {
     password: password,
     email: email,
   };
-  console.log("post user_join_api (", requestBody, ")");
   return await API.post("/join", requestBody)
     .then((response) => response)
     .catch((error) => {
@@ -22,7 +21,6 @@ export const user_login_api = async (email, password) => {
     email: email,
     password: password,
   };
-  console.log("post user_login_api (", requestBody, ")");
   return await API.post("/login", requestBody)
     .then((response) => response)
     .catch((error) => {
@@ -31,7 +29,6 @@ export const user_login_api = async (email, password) => {
 };
 
 export const user_check_api = async () => {
-  console.log("get user_check_api");
   return await API.get("/check")
     .then((response) => response)
     .catch((error) => {
@@ -43,6 +40,7 @@ export const jwt_refresh_api = mem(
   async (email) => {
     return await API.get("/reissue")
       .then((response) => {
+        console.log(response);
         reissueToken(response.headers);
       })
       .catch((error) => {

@@ -95,7 +95,7 @@ function RightMenu() {
     );
   };
 
-  if (authDto.isLogin === true) {
+  if (authDto?.isLogin === true) {
     return (
       <div className="rightmenu">
         <CommonMenu />

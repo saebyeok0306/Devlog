@@ -4,7 +4,7 @@ import "./EditCategory.scss";
 import FolderIcon from "assets/icons/Folder";
 import { useRecoilState } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
-import { get_categories_api } from "api/Category";
+import { get_categories_detail_api } from "api/Category";
 import { toast } from "react-toastify";
 
 const initialDnDState = {
@@ -22,7 +22,7 @@ function EditCategory() {
   const [dragAndDrop, setDragAndDrop] = useState(initialDnDState); // D&D 관련 상태
 
   useEffect(() => {
-    get_categories_api()
+    get_categories_detail_api()
       .then((res) => {
         console.log(res);
         setList(res.data);

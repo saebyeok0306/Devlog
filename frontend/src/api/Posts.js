@@ -30,7 +30,6 @@ export const upload_post_api = async (
 
 export const get_posts_api = mem(
   async (categoryId = null, page = 0, size = 10) => {
-    console.log("get_posts_api", categoryId, page, size);
     if (categoryId === null || categoryId === 0) {
       return await API.get(`/posts?page=${page}&size=${size}`, {})
         .then((response) => response)

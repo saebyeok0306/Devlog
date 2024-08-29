@@ -1,7 +1,6 @@
 import { API } from "./Axios";
 
 export const upload_file_api = async (file) => {
-  console.log("upload_file_api post");
   const formData = new FormData();
   formData.append("file", file);
   return await API.post("/files", formData, {

@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import "./Profile.scss";
-import { GetPayload } from "utils/authenticate";
 import { get_info_api, set_info_api } from "api/Info";
 import EditIcon from "assets/icons/Edit";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { Tooltip } from "flowbite-react";
 import { onErrorImg } from "utils/defaultImg";
+import { authAtom } from "recoil/authAtom";
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {
-  const payload = GetPayload();
+  const authDto = useRecoilValue(authAtom);
   const textarea = useRef();
-  const [isDark] = useRecoilState(themeAtom);
+  const isDark = useRecoilValue(themeAtom);
   const [profile, setProfile] = useState();
   const [editMode, setEditMode] = useState(false);
   const [editProfile, setEditProfile] = useState();
@@ -99,7 +99,7 @@ function Profile() {
         ) : (
           <>
             <p>{profile?.about}</p>
-            {payload.role === "ADMIN" ? (
+            {authDto?.role === "ADMIN" ? (
               <button onClick={(e) => handleEdit(e)}>
                 <Tooltip content="Edit" style={isDark ? "dark" : "light"}>
                   <ProfileEditIcon />

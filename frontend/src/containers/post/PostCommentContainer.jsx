@@ -27,8 +27,6 @@ function PostCommentContainer({ ...props }) {
         setCommentState(new CommentState(res.data?.commentFlag));
       })
       .catch((error) => {
-        console.log(error);
-        toast.error("잘못된 접근입니다.");
         navigate(-1);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
