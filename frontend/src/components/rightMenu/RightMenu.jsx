@@ -95,10 +95,11 @@ function RightMenu() {
     );
   };
 
-  if (authDto.isLogin === false) {
+  if (authDto?.isLogin === true) {
     return (
       <div className="rightmenu">
         <CommonMenu />
+        <NewPost />
       </div>
     );
   }
@@ -106,7 +107,6 @@ function RightMenu() {
   return (
     <div className="rightmenu">
       <CommonMenu />
-      <NewPost />
     </div>
   );
 }

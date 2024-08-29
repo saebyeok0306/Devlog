@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 import "./Posts.scss";
 import { onErrorImg } from "utils/defaultImg";
 import { get_posts_api } from "api/Posts";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { categoryAtom } from "recoil/categoryAtom";
 import { Dropdown, Pagination } from "flowbite-react";
 import { paginationCustomTheme } from "styles/theme/pagination";
 import { getDatetime } from "utils/getDatetime";
 import { Link } from "react-router-dom";
+import { authAtom } from "recoil/authAtom";
 
 function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
@@ -43,6 +44,7 @@ function PostCard(idx, post, setSelectCategory) {
 }
 
 function Posts() {
+  const authDto = useRecoilValue(authAtom);
   const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState({
@@ -51,6 +53,11 @@ function Posts() {
     totalElements: 0,
   });
   const [viewSize, setViewSize] = useState(10);
+
+  useEffect(() => {
+    PostEnvetHandler(selectCategory, page.currentPage, viewSize);
+    // eslint-disable-next-line
+  }, [selectCategory, authDto]);
 
   const PostEnvetHandler = async (category, curpage, view) => {
     await get_posts_api(category, curpage, view)
@@ -76,11 +83,6 @@ function Posts() {
     });
     PostEnvetHandler(selectCategory, 0, value);
   };
-
-  useEffect(() => {
-    PostEnvetHandler(selectCategory, page.currentPage, viewSize);
-    // eslint-disable-next-line
-  }, [selectCategory]);
 
   const onPaginationHandler = (next_page) => {
     setPage({

@@ -5,18 +5,16 @@ import FolderIcon from "assets/icons/Folder";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { get_categories_api } from "api/Category";
-import { GetPayload } from "utils/authenticate";
 import EditIcon from "assets/icons/Edit";
 import { Tooltip } from "flowbite-react";
 import { Link } from "react-router-dom";
-import { authAtom } from "recoil/authAtom";
 import { categoryAtom } from "recoil/categoryAtom";
+import { authAtom } from "recoil/authAtom";
 
 function Category() {
-  const payload = GetPayload();
-  const [isDark] = useRecoilState(themeAtom);
   const authDto = useRecoilValue(authAtom);
-  const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
+  const [isDark] = useRecoilState(themeAtom);
+  const [, setSelectCategory] = useRecoilState(categoryAtom);
   const [list, setList] = useState([]); // 렌더될 요소
 
   useEffect(() => {
@@ -65,7 +63,7 @@ function Category() {
             <CategoryIcon />
             <p>전체글보기</p>
           </button>
-          {payload.role === "ADMIN" ? (
+          {authDto?.role === "ADMIN" ? (
             <Link to="/manager/category">
               <Tooltip content="Edit" style={isDark ? "dark" : "light"}>
                 <CategoryEditIcon />

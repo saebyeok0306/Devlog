@@ -6,7 +6,7 @@ import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
 import io.blog.devlog.domain.file.service.FileService;
-import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
@@ -47,7 +47,7 @@ public class CommentService {
         return comment;
     }
 
-    public List<ResponseCommentDto> getCommentsFromPost(Post post) throws BadRequestException {
+    public List<ResponseCommentDto> getCommentsFromPost(PostCommentFlag postCommentFlag) throws BadRequestException {
         String email = getUserEmail();
         Long userId = null;
         boolean isAdmin = false;
@@ -58,14 +58,14 @@ public class CommentService {
             userId = user.getId();
             isAdmin = userService.isAdmin(user);
         }
-        List<Comment> comments = commentRepository.findAllByPostId(post.getId(), userId, isAdmin);
+        List<Comment> comments = commentRepository.findAllByPostId(postCommentFlag.getPost().getId(), userId, isAdmin);
         return comments.stream()
                 .map(ResponseCommentDto::of)
                 .toList();
     }
 
     public List<ResponseCommentDto> getCommentsByPostUrl(String postUrl) throws BadRequestException {
-        Post post = postService.getPostByUrl(postUrl); // 여기서 카테고리 읽기 권한까지 확인함.
-        return this.getCommentsFromPost(post);
+        PostCommentFlag postCommentFlag = postService.getPostByUrl(postUrl); // 여기서 카테고리 읽기 권한까지 확인함.
+        return this.getCommentsFromPost(postCommentFlag);
     }
 }

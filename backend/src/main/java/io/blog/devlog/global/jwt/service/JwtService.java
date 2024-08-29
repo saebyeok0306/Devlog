@@ -179,8 +179,8 @@ public class JwtService {
                     .getBody();
             log.info("isTokenValid 호출 : {}", claims);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            String message = "잘못된 JWT 서명입니다.";
+        } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
+            String message = "유효하지 않은 토큰입니다.";
             log.error(message);
             throw new JwtException(message, e);
         } catch (ExpiredJwtException e) {
@@ -189,10 +189,6 @@ public class JwtService {
             throw e;
         } catch (UnsupportedJwtException e) {
             String message = "지원되지 않는 JWT 토큰입니다.";
-            log.error(message);
-            throw new JwtException(message, e);
-        } catch (IllegalArgumentException e) {
-            String message = "JWT 토큰이 잘못되었습니다.";
             log.error(message);
             throw new JwtException(message, e);
         } catch (Exception e) {

@@ -1,11 +1,6 @@
 package io.blog.devlog.domain.post.service;
 
-import io.blog.devlog.domain.category.model.Category;
-import io.blog.devlog.domain.category.service.CategoryService;
-import io.blog.devlog.domain.file.model.File;
-import io.blog.devlog.domain.file.service.FileService;
-import io.blog.devlog.domain.file.service.TempFileService;
-import io.blog.devlog.domain.post.dto.RequestPostDto;
+import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
@@ -15,17 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
@@ -41,7 +28,7 @@ public class PostService {
         return postRepository.findById(id).orElse(null);
     }
 
-    public Post getPostByUrl(String url) throws BadRequestException {
+    public PostCommentFlag getPostByUrl(String url) throws BadRequestException {
         String email = getUserEmail();
         Long userId = null;
         boolean isAdmin = false;
@@ -54,7 +41,11 @@ public class PostService {
             isAdmin = userService.isAdmin(user);
             role = user.getRole();
         }
-        return postRepository.findByUrl(url, userId, isAdmin, role).orElseThrow(() -> new BadRequestException("Post not found : " + url));
+        Post post = postRepository.findByUrl(url, userId, isAdmin, role).orElseThrow(() -> new BadRequestException("Post not found : " + url));
+        return PostCommentFlag.builder()
+                .post(post)
+                .commentFlag(post.getCategory().getWriteCommentAuth().getKey() <= role.getKey())
+                .build();
     }
 
     public Page<Post> getPosts(Pageable pageable) throws BadRequestException {

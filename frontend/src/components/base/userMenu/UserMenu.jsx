@@ -3,21 +3,24 @@ import React from "react";
 import "./UserMenu.scss";
 import { authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
 import { signOut } from "utils/authenticate";
 
 function UserMenu() {
+  const location = useLocation();
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   const handleLogout = () => {
     signOut(setAuthDto);
   };
 
-  if (authDto.isLogin === false) {
+  if (authDto?.isLogin === false) {
     return (
       <nav className="usermenu button">
-        <Link to="/login">로그인</Link>
+        <Link to="/login" state={{ backpath: location.pathname }}>
+          로그인
+        </Link>
       </nav>
     );
   }

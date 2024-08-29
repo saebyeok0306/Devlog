@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.category.controller;
 
+import io.blog.devlog.domain.category.dto.CategoryDto;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.service.CategoryService;
 import io.blog.devlog.global.response.ErrorResponse;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +25,16 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getCategories() {
+    public ResponseEntity<List<CategoryDto>> getCategories() {
+        List<CategoryDto> categories = categoryService.getCategories().stream().map(CategoryDto::of).collect(Collectors.toList());
+        return ResponseEntity.ok()
+                .eTag(categories.toString())
+                .body(categories);
+    }
+
+    @GetMapping("/details")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Category>> getCategoriesDetails() {
         List<Category> categories = categoryService.getCategories();
         return ResponseEntity.ok()
                 .eTag(categories.toString())

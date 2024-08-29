@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.category.service;
 
+import io.blog.devlog.domain.category.dto.CategoryDto;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
 import io.blog.devlog.domain.user.model.Role;

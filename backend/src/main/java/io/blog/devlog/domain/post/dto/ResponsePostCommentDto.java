@@ -1,7 +1,7 @@
 package io.blog.devlog.domain.post.dto;
 
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
-import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.model.PostCommentFlag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +16,13 @@ import java.util.List;
 public class ResponsePostCommentDto {
     private ResponsePostDto post;
     private List<ResponseCommentDto> comments;
+    private boolean commentFlag;
 
-    public static ResponsePostCommentDto of(Post post, List<ResponseCommentDto> comments) {
+    public static ResponsePostCommentDto of(PostCommentFlag postCommentFlag, List<ResponseCommentDto> comments) {
         return ResponsePostCommentDto.builder()
-                .post(ResponsePostDto.of(post))
+                .post(ResponsePostDto.of(postCommentFlag.getPost()))
                 .comments(comments)
+                .commentFlag(postCommentFlag.isCommentFlag())
                 .build();
     }
 }

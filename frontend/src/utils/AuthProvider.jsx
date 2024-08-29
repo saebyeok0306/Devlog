@@ -61,7 +61,7 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const access_token = getCookie(ACCESS_TOKEN_STRING);
     const refresh_token = getCookie(REFRESH_TOKEN_STRING);
-    if (authDto.isLogin) return;
+    if (authDto?.isLogin) return;
     if (refresh_token == null) return;
     if (access_token == null) {
       jwt_refresh_api()

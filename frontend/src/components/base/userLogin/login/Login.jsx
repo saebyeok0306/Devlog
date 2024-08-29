@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Responsive from "components/common/Responsive";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./Login.scss";
 import EmailIcon from "assets/icons/Email";
@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { backpath } = location.state || {};
   const [, setAuthDto] = useRecoilState(authAtom);
 
   const [email, setEmail] = useState("");
@@ -29,12 +31,16 @@ function Login() {
     e.preventDefault();
 
     user_login_api(email, password)
-      .then((res) => {
+      .then(async (res) => {
         console.log(res);
         const access_token = res.headers["authorization"];
         const refresh_token = res.headers["authorization-refresh"];
-        signIn(access_token, refresh_token, setAuthDto);
-        navigate("/");
+        await signIn(access_token, refresh_token, setAuthDto);
+        if (backpath) {
+          navigate(backpath);
+        } else {
+          navigate("/");
+        }
       })
       .catch((err) => {
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
