@@ -1,5 +1,6 @@
 import mem from "mem";
 import { API } from "./Axios";
+import { POST_STORE } from "./Cache";
 
 export const upload_post_api = async (
   postUrl,
@@ -29,6 +30,7 @@ export const upload_post_api = async (
 
 export const get_posts_api = mem(
   async (categoryId = null, page = 0, size = 10) => {
+    console.log("get_posts_api", categoryId, page, size);
     if (categoryId === null || categoryId === 0) {
       return await API.get(`/posts?page=${page}&size=${size}`, {})
         .then((response) => response)
@@ -46,7 +48,11 @@ export const get_posts_api = mem(
         });
     }
   },
-  { maxAge: 10000, cacheKey: (args) => JSON.stringify(args) }
+  {
+    maxAge: 60 * 1000,
+    cacheKey: (args) => JSON.stringify(args),
+    cache: POST_STORE,
+  }
 );
 
 export const get_post_url_api = async (postUrl) => {

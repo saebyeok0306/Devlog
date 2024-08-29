@@ -1,6 +1,7 @@
 import mem from "mem";
 import { API } from "./Axios";
 import { reissueToken } from "utils/authenticate";
+import { REFRESH_STORE } from "./Cache";
 
 export const user_join_api = async (username, password, email) => {
   const requestBody = {
@@ -49,5 +50,5 @@ export const jwt_refresh_api = mem(
       });
   },
   // 유저별로 캐시를 따로 관리하기 위해 email을 cacheKey로 사용
-  { maxAge: 1000, cacheKey: (args) => args[0] }
+  { maxAge: 1000, cacheKey: (args) => args[0], cache: REFRESH_STORE }
 );

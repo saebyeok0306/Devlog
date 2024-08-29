@@ -10,6 +10,7 @@ import {
 import { recoilStorageValue } from "utils/hooks/recoilStorageValue";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "utils/authenticate";
+import { showAllCacheStore } from "./Cache";
 
 const REFRESH_URL = "/reissue";
 
