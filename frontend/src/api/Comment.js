@@ -27,7 +27,7 @@ export const upload_comment_api = async (
   isPrivate
 ) => {
   const requestBody = {
-    post: post,
+    postId: post,
     parent: parent,
     content: content,
     files: files,
@@ -35,6 +35,14 @@ export const upload_comment_api = async (
   };
 
   return await API.post(`/comments`, requestBody)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const delete_comment_api = async (comment_id) => {
+  return await API.delete(`/comments/${comment_id}`)
     .then((response) => response)
     .catch((error) => {
       throw error;
