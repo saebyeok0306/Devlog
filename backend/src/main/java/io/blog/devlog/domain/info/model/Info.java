@@ -15,7 +15,7 @@ public class Info extends CreateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade = CascadeType.MERGE, targetEntity = User.class)
+    @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
     private String about; // 블로그 소개글
