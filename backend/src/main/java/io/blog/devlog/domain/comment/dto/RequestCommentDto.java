@@ -17,17 +17,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestCommentDto {
-    private Post post;
+    private String postUrl;
     private Long parent; // 대댓글
     private String content;
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();
     private boolean isPrivate;
 
-    public Comment toEntity(User user) {
+    public Comment toEntity(User user, Post post) {
         return Comment.builder()
                 .user(user)
-                .post(this.post)
+                .post(post)
                 .parent(this.parent)
                 .content(this.content)
                 .isPrivate(this.isPrivate)
