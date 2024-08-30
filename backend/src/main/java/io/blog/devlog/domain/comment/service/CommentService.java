@@ -6,6 +6,7 @@ import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
 import io.blog.devlog.domain.file.service.FileService;
+import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
@@ -35,13 +36,22 @@ public class CommentService {
         User user = userService.getUserByEmail(email)
                 .orElseThrow(() -> new BadRequestException("User not found : " + email));
 
-        Comment comment = commentRepository.save(requestCommentDto.toEntity(user));
+        PostCommentFlag postCommentFlag = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
+        if (!postCommentFlag.isCommentFlag()) {
+            throw new BadRequestException("You don't have permission to write a comment.");
+        }
+
+        Comment comment = commentRepository.save(requestCommentDto.toEntity(user, postCommentFlag.getPost()));
         fileService.uploadFileAndDeleteTempFile(comment, requestCommentDto.getFiles());
         return ResponseCommentDto.of(comment);
     }
 
     public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) throws BadRequestException {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
+        String email = getUserEmail();
+        if (!comment.getUser().getEmail().equals(email)) {
+            throw new BadRequestException("You don't have permission to edit this comment.");
+        }
         comment = commentRepository.save(comment.toEdit(requestEditCommentDto));
         fileService.uploadFileAndDeleteTempFile(comment, requestEditCommentDto.getFiles());
         return comment;
@@ -67,5 +77,15 @@ public class CommentService {
     public List<ResponseCommentDto> getCommentsByPostUrl(String postUrl) throws BadRequestException {
         PostCommentFlag postCommentFlag = postService.getPostByUrl(postUrl); // 여기서 카테고리 읽기 권한까지 확인함.
         return this.getCommentsFromPost(postCommentFlag);
+    }
+
+    public void deleteComment(Long commentId) throws BadRequestException {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
+        String email = getUserEmail();
+        if (!comment.getUser().getEmail().equals(email)) {
+            throw new BadRequestException("You don't have permission to delete this comment.");
+        }
+        comment.setDeleted(true);
+        commentRepository.save(comment);
     }
 }
