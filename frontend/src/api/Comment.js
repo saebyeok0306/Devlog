@@ -27,7 +27,7 @@ export const upload_comment_api = async (
   isPrivate
 ) => {
   const requestBody = {
-    postId: post,
+    postUrl: post.url,
     parent: parent,
     content: content,
     files: files,
