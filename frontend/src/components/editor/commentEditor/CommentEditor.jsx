@@ -54,10 +54,41 @@ const codePreview = {
   icon: <Button />,
 };
 
+const ReturnInsertText = ({ ref, content, text }) => {
+  if (!ref.current.textarea) return null;
+  const textarea = ref.current.textarea;
+  const { selectionStart, selectionEnd } = textarea;
+  const newContent =
+    content.substring(0, selectionStart) +
+    text +
+    content.substring(selectionEnd);
+  return newContent;
+};
+
+const UploadFileAndInsertText = async ({
+  ref,
+  apiResult,
+  comment,
+  setComment,
+}) => {
+  const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
+  const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
+  const newContent = ReturnInsertText({
+    ref: ref,
+    content: comment.content,
+    text: text,
+  });
+  await setComment({
+    ...comment,
+    content: newContent,
+    files: [...comment.files, apiResult],
+  });
+  console.log("파일전송 완료");
+};
+
 function CommentEditor({ comment, setComment, onCancel, onSave }) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
-  console.log(comment);
 
   const handleDrop = async (event) => {
     event.preventDefault();
@@ -65,9 +96,8 @@ function CommentEditor({ comment, setComment, onCancel, onSave }) {
     if (!editorRef.current) return;
 
     const className = event.target.className;
-    console.log(event.dataTransfer?.files[0]);
     if (
-      !className.startsWith("w-md-editor-content") ||
+      !className.startsWith("w-md-editor-text-input") ||
       className.startsWith("w-md-editor-preview")
     )
       return;
@@ -81,17 +111,13 @@ function CommentEditor({ comment, setComment, onCancel, onSave }) {
       // image type check
       if (file.type.startsWith("image")) {
         await upload_file_api(file)
-          .then((res) => {
-            console.log("파일전송 완료");
-            const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
-            setComment({
-              ...comment,
-              files: [...comment.files, res.data],
+          .then(async (res) => {
+            await UploadFileAndInsertText({
+              ref: editorRef,
+              apiResult: res.data,
+              comment: comment,
+              setComment: setComment,
             });
-            insertTextAtPosition(
-              editorRef.current.textarea,
-              `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
-            );
           })
           .catch((err) => {
             console.error(err);
@@ -109,17 +135,13 @@ function CommentEditor({ comment, setComment, onCancel, onSave }) {
           event.preventDefault();
           const file = item.getAsFile();
           await upload_file_api(file)
-            .then((res) => {
-              console.log("파일전송 완료");
-              const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
-              setComment({
-                ...comment,
-                files: [...comment.files, res.data],
+            .then(async (res) => {
+              await UploadFileAndInsertText({
+                ref: editorRef,
+                apiResult: res.data,
+                comment: comment,
+                setComment: setComment,
               });
-              insertTextAtPosition(
-                editorRef.current.textarea,
-                `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
-              );
             })
             .catch((err) => {
               console.error(err);
