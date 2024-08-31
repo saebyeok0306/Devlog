@@ -35,10 +35,8 @@ const CommentReply = ({ rootComment, comments, reply, setReply }) => {
             <p className="comment-reply-name">@{reply.target.user.username}</p>
           </div>
           <CommentEditor
-            content={reply.content}
-            setContent={(text) => setReply({ ...reply, content: text })}
-            files={reply.files}
-            setFiles={(files) => setReply({ ...reply, files: files })}
+            comment={reply}
+            setComment={setReply}
             onCancel={() =>
               cancelEditHandler({
                 reply: reply,
@@ -200,10 +198,8 @@ const CommentEdit = ({ comment, comments, reply, setReply }) => {
   return (
     <>
       <CommentEditor
-        content={reply.content}
-        setContent={(text) => setReply({ ...reply, content: text })}
-        files={reply.files}
-        setFiles={(files) => setReply({ ...reply, files: files })}
+        comment={reply}
+        setComment={setReply}
         onCancel={() =>
           cancelEditHandler({
             setReply: setReply,

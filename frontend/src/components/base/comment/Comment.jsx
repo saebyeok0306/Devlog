@@ -56,14 +56,8 @@ function Comment({ ...props }) {
       {/* Post Comment Editor */}
       {isWriteComment({ commentState: commentState, authDto: authDto }) ? (
         <CommentEditor
-          content={editorComment.content}
-          setContent={(text) =>
-            setEditorComment({ ...editorComment, content: text })
-          }
-          files={editorComment.files}
-          setFiles={(files) =>
-            setEditorComment({ ...editorComment, files: files })
-          }
+          comment={editorComment}
+          setComment={setEditorComment}
           onSave={() =>
             uploadCommentHandler({
               postContent: postContent,

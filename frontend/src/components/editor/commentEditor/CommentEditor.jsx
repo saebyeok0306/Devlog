@@ -54,17 +54,10 @@ const codePreview = {
   icon: <Button />,
 };
 
-function CommentEditor({
-  content,
-  setContent,
-  files,
-  setFiles,
-  onCancel,
-  onSave,
-}) {
+function CommentEditor({ comment, setComment, onCancel, onSave }) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
-  console.log(content, files);
+  console.log(comment);
 
   const handleDrop = async (event) => {
     event.preventDefault();
@@ -91,11 +84,14 @@ function CommentEditor({
           .then((res) => {
             console.log("파일전송 완료");
             const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+            setComment({
+              ...comment,
+              files: [...comment.files, res.data],
+            });
             insertTextAtPosition(
               editorRef.current.textarea,
               `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
             );
-            setFiles([...files, res.data]);
           })
           .catch((err) => {
             console.error(err);
@@ -116,11 +112,14 @@ function CommentEditor({
             .then((res) => {
               console.log("파일전송 완료");
               const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
+              setComment({
+                ...comment,
+                files: [...comment.files, res.data],
+              });
               insertTextAtPosition(
                 editorRef.current.textarea,
                 `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
               );
-              setFiles([...files, res.data]);
             })
             .catch((err) => {
               console.error(err);
@@ -132,7 +131,7 @@ function CommentEditor({
 
   const handleChangeContent = (change_text) => {
     if (change_text.length <= MAX_LENGTH) {
-      setContent(change_text);
+      setComment({ ...comment, content: change_text });
     }
   };
 
@@ -142,7 +141,7 @@ function CommentEditor({
         ref={editorRef}
         preview="edit"
         style={{ flex: "1", whiteSpace: "pre-wrap", paddingBottom: "10px" }}
-        value={content}
+        value={comment?.content}
         onChange={handleChangeContent}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -175,7 +174,7 @@ function CommentEditor({
       />
       <div className="comment-editor-bottom">
         <span>
-          {content.length}/{MAX_LENGTH}
+          {comment.content.length}/{MAX_LENGTH}
         </span>
         {onSave ? <button onClick={onSave}>등록</button> : null}
         {onCancel ? <button onClick={onCancel}>취소</button> : null}
