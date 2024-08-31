@@ -11,6 +11,8 @@ import { getDatetime } from "utils/getDatetime";
 import { Link } from "react-router-dom";
 import { authAtom } from "recoil/authAtom";
 
+import nopostImg from "assets/nopost.png";
+
 function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
   return (
@@ -95,7 +97,10 @@ function Posts() {
   if (page.totalElements === 0) {
     return (
       <div className="posts-container">
-        <p>글이 없네요.</p>
+        <div className="posts-empty">
+          <img src={nopostImg} alt="profile" onError={onErrorImg} />
+          <p>글이 없네요.</p>
+        </div>
       </div>
     );
   }

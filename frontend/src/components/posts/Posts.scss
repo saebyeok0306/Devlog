@@ -1,6 +1,7 @@
 @import "src/styles/commons";
 
 .posts-container {
+  height: 100%;
   .posts-header {
     display: flex;
     justify-content: space-between;
@@ -12,6 +13,21 @@
 
     .post-detail {
       margin: auto 0 auto 0;
+    }
+  }
+
+  .posts-empty {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    // justify-content: center;
+    margin-top: 3rem;
+    align-items: center;
+
+    p {
+      font-size: 1.1rem;
+      font-family: "SokchoBadaBatang";
     }
   }
 
