@@ -17,6 +17,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
@@ -37,6 +38,7 @@ public class CommentService {
                 .orElseThrow(() -> new BadRequestException("User not found : " + email));
 
         PostCommentFlag postCommentFlag = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
+        System.out.println(postCommentFlag);
         if (!postCommentFlag.isCommentFlag()) {
             throw new BadRequestException("You don't have permission to write a comment.");
         }
@@ -79,13 +81,17 @@ public class CommentService {
         return this.getCommentsFromPost(postCommentFlag);
     }
 
-    public void deleteComment(Long commentId) throws BadRequestException {
+    public void deleteComment(Long commentId) throws IOException {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
         String email = getUserEmail();
         if (!comment.getUser().getEmail().equals(email)) {
             throw new BadRequestException("You don't have permission to delete this comment.");
         }
         comment.setDeleted(true);
+        boolean isDeleted = fileService.deleteFileFromComment(comment);
+        if (!isDeleted) {
+            throw new BadRequestException("잘못된 파일 경로이거나 파일 이름입니다.");
+        }
         commentRepository.save(comment);
     }
 }
