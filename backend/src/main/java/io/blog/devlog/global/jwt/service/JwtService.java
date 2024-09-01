@@ -185,8 +185,8 @@ public class JwtService {
             throw new JwtException(message, e);
         } catch (ExpiredJwtException e) {
             String message = "만료된 JWT 토큰입니다.";
-            log.error(message);
-            throw e;
+            log.error(message + "\n" + e.getMessage());
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), message);
         } catch (UnsupportedJwtException e) {
             String message = "지원되지 않는 JWT 토큰입니다.";
             log.error(message);

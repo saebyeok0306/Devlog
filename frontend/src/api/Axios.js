@@ -42,6 +42,7 @@ const requestAuthTokenInjector = async (requestConfig) => {
 
     if (token) requestConfig.headers["Authorization"] = "Bearer " + token;
   } else {
+    // if (!refreshToken) return Promise.reject("No refresh token");
     requestConfig.headers["Authorization"] = "Bearer " + refreshToken;
   }
   return requestConfig;
@@ -76,10 +77,12 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
       await signOutToast(data.error, "/");
       return Promise.reject(err);
     }
-    if (authDto?.isLogin) {
+    try {
       await jwt_refresh_api(authDto.email);
-      return API(config);
+    } catch (error) {
+      return Promise.reject(err);
     }
+    return API(config);
   }
 
   return Promise.reject(err);
