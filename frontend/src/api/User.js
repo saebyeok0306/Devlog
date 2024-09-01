@@ -41,7 +41,7 @@ export const jwt_refresh_api = mem(
     return await API.get("/reissue")
       .then((response) => {
         console.log(response);
-        reissueToken(response.headers);
+        return reissueToken(response.headers);
       })
       .catch((error) => {
         throw error;

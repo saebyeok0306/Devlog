@@ -12,6 +12,7 @@ import { warnSignOut } from "utils/authenticate";
 import { showAllCacheStore } from "./Cache";
 import { useEffect } from "react";
 import throttle from "lodash.throttle";
+import { decodeJWT } from "utils/hooks/useJWT";
 
 const REFRESH_URL = "/reissue";
 
@@ -20,16 +21,28 @@ export const API = axios.create({
   withCredentials: true,
 });
 
+const refreshAccessToken = async (refreshToken) => {
+  const paylaod = decodeJWT(refreshToken);
+  try {
+    return await jwt_refresh_api(paylaod.email);
+  } catch (error) {
+    console.error("Failed to refresh access token:", error);
+    return false;
+  }
+};
+
 const requestAuthTokenInjector = async (requestConfig) => {
   // if (!requestConfig.headers) return requestConfig;
+  let token = getCookie(ACCESS_TOKEN_STRING);
+  const refreshToken = getCookie(REFRESH_TOKEN_STRING);
   if (requestConfig.url !== REFRESH_URL) {
-    var token = getCookie(ACCESS_TOKEN_STRING);
-    if (token) {
-      requestConfig.headers["Authorization"] = "Bearer " + token;
+    if (!token && refreshToken) {
+      token = await refreshAccessToken(refreshToken);
     }
+
+    if (token) requestConfig.headers["Authorization"] = "Bearer " + token;
   } else {
-    token = getCookie(REFRESH_TOKEN_STRING);
-    requestConfig.headers["Authorization"] = "Bearer " + token;
+    requestConfig.headers["Authorization"] = "Bearer " + refreshToken;
   }
   return requestConfig;
 };
