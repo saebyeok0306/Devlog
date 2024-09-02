@@ -133,17 +133,13 @@ function EditCategory() {
       .then((res) => {
         console.log(res);
         setList(res.data);
+        const newList = Array(res.data.length).fill(false);
+        setCheckedList(newList);
+        setAllChecked(false);
       })
       .catch((err) => {
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
       });
-  }, []);
-
-  useEffect(() => {
-    const newList = Array(list.length).fill(false);
-    setCheckedList(newList);
-    setAllChecked(false);
-    console.log(list);
   }, []);
 
   const CategoryIcon = () => {
