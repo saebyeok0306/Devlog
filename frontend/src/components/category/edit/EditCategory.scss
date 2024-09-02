@@ -24,57 +24,44 @@
     margin-bottom: 1em;
   }
 
-  ul {
-    align-self: start;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  div[data-testid="table-element"] {
     width: 100%;
 
-    li {
+    table {
+      tbody {
+        tr {
+          .edit-category-item-layer {
+            display: flex;
+            flex-direction: row;
+          }
+          .edit-category-item-name {
+            display: flex;
+            flex-direction: row;
+
+            div.icon {
+              width: 1em;
+              height: 1em;
+              margin-top: auto;
+              margin-bottom: auto;
+              margin-right: 0.5em;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .edit-category-bottom {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 1em;
+
+    div {
       display: flex;
-      div.icon {
-        width: 1em;
-        height: 1em;
-        margin-top: auto;
-        margin-bottom: auto;
-        margin-right: 0.5em;
-      }
-      p {
-        transition: margin-left 50ms;
-        pointer-events: none;
-        font-size: 1.2em;
-      }
-
-      &.dropArea {
-        // 이모티콘을 제외한 텍스트 모두 흰색으로
-        color: rgba(0, 0, 0, 0) !important;
-        // background: white !important;
-        position: relative;
-
-        &::before {
-          content: "Drop Here";
-          color: #687bf7;
-          font-size: 1em;
-          text-transform: uppercase; // 대문자
-          width: 100%;
-          height: 100%;
-          border: 2px dashed #687bf7; // 점선
-          border-radius: 3px;
-          position: absolute;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        div.icon {
-          display: none;
-        }
-
-        p {
-          margin-left: 1em;
-        }
-      }
+      flex-direction: row;
+      gap: 1em;
     }
   }
 }
