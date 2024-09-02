@@ -3,16 +3,15 @@ package io.blog.devlog.domain.category.controller;
 import io.blog.devlog.domain.category.dto.CategoryDto;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.service.CategoryService;
-import io.blog.devlog.global.response.ErrorResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
-    private final ErrorResponse errorResponse;
     private final CategoryService categoryService;
 
     @GetMapping
@@ -43,33 +41,23 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateCategories(HttpServletRequest request, HttpServletResponse response, @RequestBody List<Category> categories) throws IOException {
+    public void updateCategories(@RequestBody List<Category> categories) throws IOException {
         List<Category> sortedCategories = categoryService.sortCategories(categories);
-        long idx = -1;
-        var isDuplic = false;
+        long idx = sortedCategories.get(0).getLayer();
+        List<String> categoryNames = new ArrayList<>();
         for (Category category : sortedCategories) {
-            System.out.println(category);
-            if (idx == -1) {
-                idx = category.getLayer();
+            if (categoryNames.contains(category.getName())) {
+                throw new BadRequestException("카테고리 이름은 중복될 수 없습니다.");
             }
+            categoryNames.add(category.getName());
             if (category.getLayer() == idx) {
                 idx ++;
             }
             else {
-                isDuplic = true;
-                break;
+                throw new BadRequestException("중복된 카테고리 레이어가 존재합니다.");
             }
         }
 
-        if (!isDuplic) {
-//            categoryService.cleanUpCategories();
-            categoryService.updateCategories(categories);
-        }
-        else {
-            Integer status = HttpServletResponse.SC_BAD_REQUEST;
-            String error = "잘못된 입력 정보입니다.";
-            String path = request.getRequestURI();
-            errorResponse.setResponse(response, status, error, path);
-        }
+        categoryService.updateCategories(categories);
     }
 }

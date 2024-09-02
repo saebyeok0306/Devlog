@@ -5,6 +5,7 @@ import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
 import io.blog.devlog.domain.user.model.Role;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,14 @@ public class CategoryService {
     }
 
     public List<Category> updateCategories(List<Category> categories) {
+        List<Category> prevCategories = categoryRepository.findAll();
+        // categories 없는 카테고리는 삭제
+        List<Category> deleteCategories = prevCategories.stream()
+                .filter(category -> categories.stream().noneMatch(c -> c.getId().equals(category.getId())))
+                .toList();
+        // TODO: 카테고리 삭제 시 해당 카테고리의 게시글들도 삭제 (혹은 휴지통으로 이동)
+        categoryRepository.deleteAll(deleteCategories);
+
         return categoryRepository.saveAll(categories);
     }
 
