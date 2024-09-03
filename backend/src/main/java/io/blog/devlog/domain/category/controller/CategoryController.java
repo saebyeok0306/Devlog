@@ -39,6 +39,14 @@ public class CategoryController {
                 .body(categories);
     }
 
+    @GetMapping("/readwrite")
+    public ResponseEntity<List<CategoryDto>> getCategoriesRW() {
+        List<CategoryDto> categories = categoryService.getCategoriesReadWrite().stream().map(CategoryDto::of).collect(Collectors.toList());
+        return ResponseEntity.ok()
+                .eTag(categories.toString())
+                .body(categories);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public void updateCategories(@RequestBody List<Category> categories) throws IOException {

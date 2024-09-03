@@ -23,6 +23,14 @@ export const get_categories_api = async (cache = true) => {
   }
 };
 
+export const get_categories_readwrite_api = async () => {
+  return await API.get("/categories/readwrite")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const get_categories_detail_api = async () => {
   return await API.get("/categories/details")
     .then((response) => response)

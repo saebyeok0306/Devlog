@@ -48,6 +48,19 @@ public class CategoryService {
                 .toList();
     }
 
+    public List<Category> getCategoriesReadWrite() {
+        Role role = getPrincipalRole();
+        if (role == null) {
+            role = Role.GUEST;
+        }
+        Role finalRole = role;
+        return categoryRepository.findAll()
+                .stream()
+                .filter(category -> this.hasReadWriteCategoryAuth(category, finalRole))
+                .sorted(Comparator.comparingLong(Category::getLayer))
+                .toList();
+    }
+
     public List<Category> updateCategories(List<Category> categories) {
         List<Category> prevCategories = categoryRepository.findAll();
         // categories 없는 카테고리는 삭제
