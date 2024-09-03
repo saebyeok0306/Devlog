@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./EditCategory.scss";
 import FolderIcon from "assets/icons/Folder";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { get_categories_detail_api, set_categories_api } from "api/Category";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import { Button, Checkbox, Table } from "flowbite-react";
 import { CategoryDetail } from "model/CategoryDetail";
 import EditCategoryModal from "./modal/EditCategoryModal";
 import { useNavigate } from "react-router-dom";
+import { categoryUpdaterAtom } from "recoil/categoryAtom";
 
 function allCheckCategoryHandler(allChecked, setAllChecked, setCheckedList) {
   if (!allChecked) {
@@ -58,11 +59,12 @@ function removeCategoryHandler(list, setList, checkedList, setCheckedList) {
   setCheckedList((prev) => prev.filter((item) => !item));
 }
 
-async function saveCategoryHandler(list, navigate) {
+async function saveCategoryHandler(list, setCategoryUpdater, navigate) {
   try {
     await set_categories_api(list);
     toast.info("카테고리가 저장되었습니다.");
-    navigate(-1);
+    setCategoryUpdater((prev) => prev + 1);
+    // navigate(-1);
   } catch (err) {
     toast.error(`${err.response?.data ? err.response.data.error : err}`);
   }
@@ -78,6 +80,13 @@ function openEditCategoryModalHandler(
   setOpenModal(true);
   setModalCategoryItem({ index: index, data: categoryItem });
   setModalCategoryName(categoryItem.name);
+}
+
+function layerSort(list) {
+  for (let i = 0; i < list.length; i++) {
+    list[i].layer = i + 1;
+  }
+  return list;
 }
 
 function arrowUpHandler(checkedList, setCheckedList, list, setList) {
@@ -96,7 +105,7 @@ function arrowUpHandler(checkedList, setCheckedList, list, setList) {
     }
   }
 
-  setList(newList);
+  setList(layerSort(newList));
   setCheckedList(newCheckedList);
 }
 
@@ -116,7 +125,7 @@ function arrowDownHandler(checkedList, setCheckedList, list, setList) {
     }
   }
 
-  setList(newList);
+  setList(layerSort(newList));
   setCheckedList(newCheckedList);
 }
 
@@ -124,6 +133,7 @@ function EditCategory() {
   // Reference https://romantech.net/1118?category=954568
   const navigate = useNavigate();
   const isDark = useRecoilValue(themeAtom);
+  const [, setCategoryUpdater] = useRecoilState(categoryUpdaterAtom);
   const [list, setList] = useState([]); // 렌더될 요소
   const [allChecked, setAllChecked] = useState(false); // 전체 체크 여부
   const [checkedList, setCheckedList] = useState([]);
@@ -283,7 +293,9 @@ function EditCategory() {
           <Button
             color="success"
             size="sm"
-            onClick={() => saveCategoryHandler(list, navigate)}
+            onClick={() =>
+              saveCategoryHandler(list, setCategoryUpdater, navigate)
+            }
           >
             저장
           </Button>
