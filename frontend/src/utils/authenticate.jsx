@@ -18,9 +18,13 @@ export const signIn = async (
 ) => {
   if (accessToken != null && refreshToken != null) {
     const payload = decodeJWT(accessToken);
+    const payloadRefresh = decodeJWT(refreshToken);
 
     setCookie(ACCESS_TOKEN_STRING, accessToken, { path: "/" });
-    setCookie(REFRESH_TOKEN_STRING, refreshToken, { path: "/" });
+    setCookie(REFRESH_TOKEN_STRING, refreshToken, {
+      path: "/",
+      expires: new Date(payloadRefresh.exp * 1000),
+    });
 
     setAuthDto(new Auth(payload.username, payload.email, true, payload.role));
 
@@ -66,14 +70,18 @@ export const GetPayload = () => {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
-    const token = getCookie(ACCESS_TOKEN_STRING);
-    if (token == null) {
-      setAuthDto(new Auth());
-      return;
-    }
-    if (authDto?.isLogin) return;
-    const payload = decodeJWT(token);
-    setAuthDto(new Auth(payload.username, payload.email, true, payload.role));
+    const checkUserdata = async () => {
+      let token = getCookie(ACCESS_TOKEN_STRING);
+      if (token == null) {
+        setAuthDto(new Auth());
+        return;
+      }
+      if (authDto?.isLogin) return;
+      const payload = decodeJWT(token);
+      setAuthDto(new Auth(payload.username, payload.email, true, payload.role));
+    };
+
+    checkUserdata();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

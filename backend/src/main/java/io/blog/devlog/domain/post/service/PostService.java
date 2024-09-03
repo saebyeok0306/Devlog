@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
 @Service
@@ -30,17 +32,18 @@ public class PostService {
 
     public PostCommentFlag getPostByUrl(String url) throws BadRequestException {
         String email = getUserEmail();
-        Long userId = null;
-        boolean isAdmin = false;
-        Role role = Role.GUEST;
-        if (email == null) {
-            userId = 0L;
-        } else {
-            User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-            userId = user.getId();
-            isAdmin = userService.isAdmin(user);
-            role = user.getRole();
+        User user = userService.getUserByEmail(email).orElse(null);
+        if (user == null) {
+            return this.getPostByUrl(url, 0L, false, Role.GUEST);
         }
+        return this.getPostByUrl(url, user);
+    }
+
+    public PostCommentFlag getPostByUrl(String url, User user) throws BadRequestException {
+        return this.getPostByUrl(url, user.getId(), userService.isAdmin(user), user.getRole());
+    }
+
+    public PostCommentFlag getPostByUrl(String url, Long userId, boolean isAdmin, Role role) throws BadRequestException {
         Post post = postRepository.findByUrl(url, userId, isAdmin, role).orElseThrow(() -> new BadRequestException("Post not found : " + url));
         return PostCommentFlag.builder()
                 .post(post)

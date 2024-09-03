@@ -8,8 +8,10 @@ import io.blog.devlog.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,5 +35,10 @@ public class CommentController {
     public List<ResponseCommentDto> getComments(@PathVariable String postUrl) throws BadRequestException {
         log.info("Get comments of post : " + postUrl);
         return commentService.getCommentsByPostUrl(postUrl);
+    }
+
+    @DeleteMapping("/{commentId}")
+    public void deleteComment(@PathVariable Long commentId) throws IOException {
+        commentService.deleteComment(commentId);
     }
 }

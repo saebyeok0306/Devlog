@@ -9,6 +9,9 @@ import lombok.*;
 
 import java.util.List;
 
+@Table(name="POST", indexes = {
+        @Index(name = "idx_url", columnList = "url"),
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity

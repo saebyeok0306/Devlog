@@ -1,11 +1,7 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 
 import "./CommentEditor.scss";
-import MDEditor, {
-  commands,
-  EditorContext,
-  insertTextAtPosition,
-} from "@uiw/react-md-editor";
+import MDEditor, { commands, EditorContext } from "@uiw/react-md-editor";
 import { upload_file_api } from "api/File";
 
 const Button = () => {
@@ -54,17 +50,41 @@ const codePreview = {
   icon: <Button />,
 };
 
-function CommentEditor({
-  content,
-  setContent,
-  files,
-  setFiles,
-  onCancel,
-  onSave,
-}) {
+const ReturnInsertText = ({ ref, content, text }) => {
+  if (!ref.current.textarea) return null;
+  const textarea = ref.current.textarea;
+  const { selectionStart, selectionEnd } = textarea;
+  const newContent =
+    content.substring(0, selectionStart) +
+    text +
+    content.substring(selectionEnd);
+  return newContent;
+};
+
+const UploadFileAndInsertText = async ({
+  ref,
+  apiResult,
+  comment,
+  setComment,
+}) => {
+  const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
+  const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
+  const newContent = ReturnInsertText({
+    ref: ref,
+    content: comment.content,
+    text: text,
+  });
+  await setComment({
+    ...comment,
+    content: newContent,
+    files: [...comment.files, apiResult],
+  });
+  console.log("파일전송 완료");
+};
+
+function CommentEditor({ comment, setComment, onCancel, onSave }) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
-  console.log(content, files);
 
   const handleDrop = async (event) => {
     event.preventDefault();
@@ -72,9 +92,8 @@ function CommentEditor({
     if (!editorRef.current) return;
 
     const className = event.target.className;
-    console.log(event.dataTransfer?.files[0]);
     if (
-      !className.startsWith("w-md-editor-content") ||
+      !className.startsWith("w-md-editor-text-input") ||
       className.startsWith("w-md-editor-preview")
     )
       return;
@@ -88,14 +107,13 @@ function CommentEditor({
       // image type check
       if (file.type.startsWith("image")) {
         await upload_file_api(file)
-          .then((res) => {
-            console.log("파일전송 완료");
-            const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
-            insertTextAtPosition(
-              editorRef.current.textarea,
-              `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
-            );
-            setFiles([...files, res.data]);
+          .then(async (res) => {
+            await UploadFileAndInsertText({
+              ref: editorRef,
+              apiResult: res.data,
+              comment: comment,
+              setComment: setComment,
+            });
           })
           .catch((err) => {
             console.error(err);
@@ -113,14 +131,13 @@ function CommentEditor({
           event.preventDefault();
           const file = item.getAsFile();
           await upload_file_api(file)
-            .then((res) => {
-              console.log("파일전송 완료");
-              const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
-              insertTextAtPosition(
-                editorRef.current.textarea,
-                `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
-              );
-              setFiles([...files, res.data]);
+            .then(async (res) => {
+              await UploadFileAndInsertText({
+                ref: editorRef,
+                apiResult: res.data,
+                comment: comment,
+                setComment: setComment,
+              });
             })
             .catch((err) => {
               console.error(err);
@@ -132,7 +149,7 @@ function CommentEditor({
 
   const handleChangeContent = (change_text) => {
     if (change_text.length <= MAX_LENGTH) {
-      setContent(change_text);
+      setComment({ ...comment, content: change_text });
     }
   };
 
@@ -142,7 +159,7 @@ function CommentEditor({
         ref={editorRef}
         preview="edit"
         style={{ flex: "1", whiteSpace: "pre-wrap", paddingBottom: "10px" }}
-        value={content}
+        value={comment?.content}
         onChange={handleChangeContent}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -175,7 +192,7 @@ function CommentEditor({
       />
       <div className="comment-editor-bottom">
         <span>
-          {content.length}/{MAX_LENGTH}
+          {comment.content.length}/{MAX_LENGTH}
         </span>
         {onSave ? <button onClick={onSave}>등록</button> : null}
         {onCancel ? <button onClick={onCancel}>취소</button> : null}

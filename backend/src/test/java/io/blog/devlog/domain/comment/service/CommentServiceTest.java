@@ -7,6 +7,7 @@ import io.blog.devlog.domain.category.service.CategoryService;
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
+import io.blog.devlog.domain.file.handler.FileHandler;
 import io.blog.devlog.domain.file.repository.FileRepository;
 import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
@@ -56,6 +57,7 @@ public class CommentServiceTest {
     private JwtService jwtService;
     private TempFileService tempFileService;
     private FileService fileService;
+    private FileHandler fileHandler;
     private static final TestConfig testConfig = new TestConfig();
 
     private User guestUser;
@@ -68,7 +70,8 @@ public class CommentServiceTest {
         postService = new PostService(postRepository, userService);
         categoryService = new CategoryService(categoryRepository);
         tempFileService = new TempFileService(tempFileRepository);
-        fileService = new FileService(fileRepository, tempFileService);
+        fileHandler = new FileHandler(tempFileService);
+        fileService = new FileService(fileRepository, tempFileService, fileHandler);
         commentService = new CommentService(commentRepository, userService, postService, fileService);
     }
 

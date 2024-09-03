@@ -7,31 +7,25 @@
   .post-top {
     display: flex;
     justify-content: space-between;
-    margin: 5px;
+    margin-top: 0.5rem;
+    outline-width: 1px;
+    border-radius: 15px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    overflow: hidden;
+
     input.post-title {
-      margin-right: 1em;
       flex: 1;
       font-size: 1.3rem;
       padding: 0.3em;
       height: 2em;
-      background-color: $background-white-color;
-      border-radius: 10px;
-      &:is(.dark *) {
-        background-color: #0d1117;
-      }
-    }
-    .post-extra-menu {
-      width: auto;
-      display: flex;
-      gap: 0.5em;
-      margin: auto;
-      button {
-      }
+      background-color: inherit;
     }
   }
   .w-md-editor {
     font-size: 1rem;
-    border-radius: 15px;
+    border-radius: 0px;
+
     &:is(.dark *) {
       background-color: #252e3a;
     }
@@ -45,33 +39,26 @@
       .w-md-editor-text-input {
         font-family: NanumGothic !important;
         font-size: 1em !important;
-        // line-height: 1em !important;
-        // font-size: 1.3em !important;
-        // line-height: 1.3em !important;
       }
       .wmde-markdown {
         font-family: NanumGothic !important;
         background-color: inherit;
         font-size: 1em !important;
-        // line-height: 1em !important;
-        // font-size: 1.3em !important;
-        // line-height: 1.3em !important;
       }
       .w-md-editor-preview {
         font-family: NanumGothic !important;
         background-color: inherit;
-        // position: inherit;
-        // height: 100%;
         padding: 10px;
         ul.contains-task-list {
           white-space: nowrap;
         }
-        // font-size: 1em !important;
-        // line-height: 1em !important;
       }
     }
     .w-md-editor-toolbar {
       border-radius: 15px;
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+      border-top: none;
       button {
         width: 2em;
         height: 2em;
@@ -88,6 +75,12 @@
     }
   }
 
-  .post-editor-file-uploader {
+  .post-editor-publish-btn {
+    margin-top: 1px;
+    border: none;
+    border-radius: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    outline-width: 1px;
   }
 }

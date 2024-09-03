@@ -1,4 +1,8 @@
-import { edit_comment_api, upload_comment_api } from "api/Comment";
+import {
+  delete_comment_api,
+  edit_comment_api,
+  upload_comment_api,
+} from "api/Comment";
 import { toast } from "react-toastify";
 
 const isWriteComment = ({ commentState, authDto }) => {
@@ -41,7 +45,8 @@ const updateClientComment = ({ targetId, comments, reply }) => {
     const parent = comments[i];
     if (parent.id === targetId) {
       parent.content = reply.content;
-      parent.isPrivate = reply.private;
+      parent.private = reply.private;
+      parent.deleted = reply.deleted;
       break;
     }
     if (!parent.children) continue;
@@ -49,7 +54,8 @@ const updateClientComment = ({ targetId, comments, reply }) => {
       const child = parent.children[j];
       if (child.id === targetId) {
         child.content = reply.content;
-        child.isPrivate = reply.private;
+        child.private = reply.private;
+        child.deleted = reply.deleted;
         isEdit = true;
         break;
       }
@@ -174,6 +180,26 @@ const updateEditHandler = async ({ comment, comments, reply, setReply }) => {
   }
 };
 
+const deleteCommentHandler = async ({ comment, comments, setUpdater }) => {
+  try {
+    await delete_comment_api(comment.id);
+    const deleteComment = {
+      content: comment.content,
+      private: false,
+      deleted: true,
+    };
+    updateClientComment({
+      targetId: comment.id,
+      comments: comments,
+      reply: deleteComment,
+    });
+    await setUpdater((prev) => prev + 1);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 export {
   isWriteComment,
   addClientComment,
@@ -184,4 +210,5 @@ export {
   cancelEditHandler,
   updateClientComment,
   updateEditHandler,
+  deleteCommentHandler,
 };

@@ -19,6 +19,7 @@ function Comment({ ...props }) {
   const { commentRef, comments } = props;
   const authDto = useRecoilValue(authAtom);
   const isDark = useRecoilValue(themeAtom);
+  const [, setUpdater] = useState(0);
   const [reply, setReply] = useState({
     flag: false, // true: 답글 작성 false: 편집
     editId: null, // 편집 중인 댓글 id
@@ -29,7 +30,6 @@ function Comment({ ...props }) {
   });
   const postContent = useRecoilValue(postAtom);
   const commentState = useRecoilValue(commentAtom);
-  console.log("commentState", commentState);
 
   const [editorComment, setEditorComment] = useState({
     content: "",
@@ -44,19 +44,18 @@ function Comment({ ...props }) {
       data-color-mode={isDark ? "dark" : "light"}
     >
       <Timeline className="comments" theme={timelineCustomTheme}>
-        <Comments comments={comments} reply={reply} setReply={setReply} />
+        <Comments
+          comments={comments}
+          reply={reply}
+          setReply={setReply}
+          setUpdater={setUpdater}
+        />
       </Timeline>
       {/* Post Comment Editor */}
       {isWriteComment({ commentState: commentState, authDto: authDto }) ? (
         <CommentEditor
-          content={editorComment.content}
-          setContent={(text) =>
-            setEditorComment({ ...editorComment, content: text })
-          }
-          files={editorComment.files}
-          setFiles={(files) =>
-            setEditorComment({ ...editorComment, files: files })
-          }
+          comment={editorComment}
+          setComment={setEditorComment}
           onSave={() =>
             uploadCommentHandler({
               postContent: postContent,

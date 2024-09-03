@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -72,7 +75,15 @@ public class FileHandler {
                 .build();
     }
 
-    public String getFolder() {
+    public boolean deleteFile(String fileUrl) throws IOException {
+        Path file = Path.of(uploadPath, fileUrl);
+        System.out.println(file.toFile());
+        if(!file.toFile().exists()) return false;
+        Files.delete(file);
+        return true;
+    }
+
+    private String getFolder() {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String folderName = sdf.format(date);

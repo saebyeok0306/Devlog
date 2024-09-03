@@ -7,25 +7,28 @@ import { themeAtom } from "recoil/themeAtom";
 import { get_categories_api } from "api/Category";
 import EditIcon from "assets/icons/Edit";
 import { Tooltip } from "flowbite-react";
-import { Link } from "react-router-dom";
-import { categoryAtom } from "recoil/categoryAtom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { categoryAtom, categoryUpdaterAtom } from "recoil/categoryAtom";
 import { authAtom } from "recoil/authAtom";
 
 function Category() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const authDto = useRecoilValue(authAtom);
+  const categoryUpdater = useRecoilValue(categoryUpdaterAtom);
   const [isDark] = useRecoilState(themeAtom);
   const [, setSelectCategory] = useRecoilState(categoryAtom);
   const [list, setList] = useState([]); // 렌더될 요소
 
   useEffect(() => {
-    get_categories_api()
+    get_categories_api(categoryUpdater)
       .then((res) => {
         setList(res.data);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [authDto]);
+  }, [authDto, categoryUpdater]);
 
   const CategoryIcon = () => {
     return (
@@ -51,6 +54,13 @@ function Category() {
     );
   };
 
+  const clickCategoryHandler = (id) => {
+    setSelectCategory(id);
+    if (location.pathname !== "/") {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="category">
       <p className="title">Category</p>
@@ -58,7 +68,7 @@ function Category() {
         <li className="category-all">
           <button
             className="category-item"
-            onClick={() => setSelectCategory(0)}
+            onClick={() => clickCategoryHandler(0)}
           >
             <CategoryIcon />
             <p>전체글보기</p>
@@ -75,7 +85,7 @@ function Category() {
           <li key={idx} draggable={false} data-position={idx}>
             <button
               className="category-item"
-              onClick={() => setSelectCategory(item?.id ? item.id : 0)}
+              onClick={() => clickCategoryHandler(item?.id ? item.id : 0)}
             >
               <CategoryIcon />
               <p>{`${item?.name}`}</p>

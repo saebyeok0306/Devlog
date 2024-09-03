@@ -7,8 +7,11 @@ import io.blog.devlog.global.time.BaseTime;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
-@Table(name="COMMENTS")
+@Table(name="COMMENTS", indexes = {
+        @Index(name = "idx_post_id", columnList = "post_id"),
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -28,9 +31,13 @@ public class Comment extends BaseTime {
     @Nullable
     @JoinColumn(name = "parent_id")
     private Long parent; // 대댓글
+    @Setter
     @Column(length = 5000)
     private String content;
     private boolean isPrivate;
+    @Setter
+    @ColumnDefault("false")
+    private boolean isDeleted;
 
     public Comment toEdit(RequestEditCommentDto requestEditCommentDto) {
         this.content = requestEditCommentDto.getContent();
