@@ -5,7 +5,7 @@ import rehypeVideo from "rehype-video";
 import "./PostEditor.scss";
 import { useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
-import { Button, Dropdown } from "flowbite-react";
+import { Button } from "flowbite-react";
 import { get_categories_readwrite_api } from "api/Category";
 import Responsive from "components/common/Responsive";
 import { upload_file_api } from "api/File";
@@ -123,10 +123,6 @@ function PostEditor() {
       return;
     }
     setContent(change_text);
-  };
-
-  const selectCategoryHandler = (category) => {
-    setSelectCategory(category);
   };
 
   const handleDrop = async (event) => {
