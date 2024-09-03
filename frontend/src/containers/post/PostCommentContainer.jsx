@@ -3,7 +3,6 @@ import Comment from "components/base/comment";
 import Post from "components/post";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { authAtom } from "recoil/authAtom";
 import { commentAtom, CommentState } from "recoil/commentAtom";

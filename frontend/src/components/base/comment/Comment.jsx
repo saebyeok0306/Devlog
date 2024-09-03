@@ -30,8 +30,6 @@ function Comment({ ...props }) {
   });
   const postContent = useRecoilValue(postAtom);
   const commentState = useRecoilValue(commentAtom);
-  console.log("comments", comments);
-  console.log("commentState", commentState);
 
   const [editorComment, setEditorComment] = useState({
     content: "",

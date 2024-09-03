@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 import "./RightMenu.scss";
-import { Auth, authAtom } from "recoil/authAtom";
-import { useRecoilState } from "recoil";
+import { authAtom } from "recoil/authAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Dropdown } from "flowbite-react";
 import DarkIcon from "assets/icons/Dark";
 import { setTheme, getThemeValue, themeAtom } from "recoil/themeAtom";
@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 function RightMenu() {
   const [select, SetSelect] = useState(getThemeValue());
-  const [authDto, setAuthDto] = useRecoilState(authAtom);
+  const authDto = useRecoilValue(authAtom);
   const [isDark, setThemeMode] = useRecoilState(themeAtom);
 
   const fill = () => (isDark ? "#fff" : "#000");

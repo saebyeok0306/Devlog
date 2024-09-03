@@ -17,6 +17,7 @@ function DarkModeProvider({ children }) {
     return () => {
       matchMedia.removeEventListener("change", handleChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{children}</>;

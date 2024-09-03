@@ -22,7 +22,7 @@ import { postAtom } from "recoil/postAtom";
 const CommentReply = ({ rootComment, comments, reply, setReply }) => {
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
-  console.log(reply.target);
+
   return (
     <Timeline.Item className={"comment create-reply"}>
       <Timeline.Point icon={HiAnnotation} />

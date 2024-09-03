@@ -1,11 +1,7 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 
 import "./CommentEditor.scss";
-import MDEditor, {
-  commands,
-  EditorContext,
-  insertTextAtPosition,
-} from "@uiw/react-md-editor";
+import MDEditor, { commands, EditorContext } from "@uiw/react-md-editor";
 import { upload_file_api } from "api/File";
 
 const Button = () => {

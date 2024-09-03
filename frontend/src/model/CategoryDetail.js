@@ -1,5 +1,3 @@
-import ROLE_TYPE from "utils/RoleType";
-
 export class CategoryDetail {
   constructor({
     layer,
