@@ -6,6 +6,7 @@ import { onErrorImg } from "utils/defaultImg";
 import { upload_post_api } from "api/Posts";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import validator from "validator";
 
 function Publish({
   openModal,
@@ -26,8 +27,10 @@ function Publish({
 
   useEffect(() => {
     if (openModal && !postUrl && title) {
-      setPostUrl(title.replace(/ /g, "-"));
+      const safeTitle = validator.escape(title).replace(/ /g, "-");
+      setPostUrl(safeTitle);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModal]);
 
   const closeHandler = () => {
@@ -158,7 +161,7 @@ function Publish({
                   placeholder="포스트 URL"
                   required
                   color="gray"
-                  value={postUrl}
+                  value={postUrl || ""}
                   onChange={(e) => console.log(e)}
                 />
               </div>
