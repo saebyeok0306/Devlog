@@ -6,6 +6,7 @@ import io.blog.devlog.global.jwt.service.JwtService;
 import io.blog.devlog.global.login.dto.PrincipalDetails;
 import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //        userService.updateRefreshToken(user, refreshToken);
         user.updateRefreshToken(refreshToken);
 
-        response.sendRedirect(String.format("%s/callback?at=%s&rt=%s", frontendOriginUrl, accessToken, refreshToken));
+        response.sendRedirect(String.format("%s/callback", frontendOriginUrl));
+//        response.sendRedirect(String.format("%s/callback?at=%s&rt=%s", frontendOriginUrl, accessToken, refreshToken));
         return true;
     }
 }

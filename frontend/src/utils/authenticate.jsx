@@ -1,69 +1,56 @@
 import { Auth, authAtom } from "recoil/authAtom";
-import { getCookie, removeCookie, setCookie } from "./hooks/useCookie";
-import { decodeJWT } from "./hooks/useJWT";
-import {
-  ACCESS_TOKEN_STRING,
-  REFRESH_TOKEN_STRING,
-} from "constants/user/login";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 import { clearAllCacheStore } from "api/Cache";
 import { useEffect } from "react";
+import { jwt_refresh_api, user_logout_api, user_profile_api } from "api/User";
 
-export const signIn = async (
-  accessToken,
-  refreshToken,
-  setAuthDto,
-  message = "로그인 성공!"
-) => {
-  if (accessToken != null && refreshToken != null) {
-    const payload = decodeJWT(accessToken);
-    const payloadRefresh = decodeJWT(refreshToken);
-
-    setCookie(ACCESS_TOKEN_STRING, accessToken, { path: "/" });
-    setCookie(REFRESH_TOKEN_STRING, refreshToken, {
-      path: "/",
-      expires: new Date(payloadRefresh.exp * 1000),
-    });
-
-    setAuthDto(new Auth(payload.username, payload.email, true, payload.role));
+export const signIn = async (setAuthDto, message = "로그인 성공!") => {
+  try {
+    let payload = await user_profile_api();
+    payload = payload.data;
+    setAuthDto(
+      new Auth(
+        payload.username,
+        payload.email,
+        true,
+        payload.role,
+        payload.profileUrl
+      )
+    );
 
     clearAllCacheStore(); // 캐시 초기화
     if (message !== false) toast.success(`${message}`, {});
     return true;
+  } catch (error) {
+    console.error("Failed to sign in:", error);
+    return false;
   }
-  return false;
 };
 
-export const signOut = (setAuthDto, message = "로그아웃 했습니다.") => {
-  setAuthDto(new Auth());
-  removeCookie(ACCESS_TOKEN_STRING);
-  removeCookie(REFRESH_TOKEN_STRING);
-  clearAllCacheStore(); // 캐시 초기화
-  toast.success(`${message}`, {});
+export const signOut = async (setAuthDto, message = "로그아웃 했습니다.") => {
+  try {
+    await user_logout_api();
+    setAuthDto(new Auth());
+    clearAllCacheStore(); // 캐시 초기화
+    toast.success(`${message}`, {});
+  } catch (error) {
+    console.error("Failed to sign out:", error);
+  }
 };
 
-export const warnSignOut = (
+export const warnSignOut = async (
   setAuthDto,
   message = "로그인이 만료되었습니다."
 ) => {
-  setAuthDto(new Auth());
-  removeCookie(ACCESS_TOKEN_STRING);
-  removeCookie(REFRESH_TOKEN_STRING);
-  clearAllCacheStore(); // 캐시 초기화
-  toast.warning(`${message}`, {});
-};
-
-export const reissueToken = (headers) => {
-  const accessToken = headers["authorization"];
-  const refreshToken = getCookie(REFRESH_TOKEN_STRING);
-
-  if (accessToken == null || refreshToken == null)
-    throw new Error("토큰이 없습니다.");
-
-  setCookie(ACCESS_TOKEN_STRING, accessToken, { path: "/" });
-
-  return accessToken;
+  try {
+    await user_logout_api();
+    setAuthDto(new Auth());
+    clearAllCacheStore(); // 캐시 초기화
+    toast.warning(`${message}`, {});
+  } catch (error) {
+    console.error("Failed to sign out:", error);
+  }
 };
 
 export const GetPayload = () => {
@@ -71,14 +58,26 @@ export const GetPayload = () => {
 
   useEffect(() => {
     const checkUserdata = async () => {
-      let token = getCookie(ACCESS_TOKEN_STRING);
-      if (token == null) {
+      if (authDto?.isLogin) return;
+      let payload = null;
+      try {
+        await jwt_refresh_api();
+        const result = await user_profile_api();
+        payload = result.data;
+      } catch (error) {
+        console.error("Failed to get user data:", error);
         setAuthDto(new Auth());
         return;
       }
-      if (authDto?.isLogin) return;
-      const payload = decodeJWT(token);
-      setAuthDto(new Auth(payload.username, payload.email, true, payload.role));
+      setAuthDto(
+        new Auth(
+          payload.username,
+          payload.email,
+          true,
+          payload.role,
+          payload.profileUrl
+        )
+      );
     };
 
     checkUserdata();

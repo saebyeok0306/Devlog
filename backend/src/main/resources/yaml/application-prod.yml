@@ -20,6 +20,7 @@ spring:
         format_sql: true
 frontend:
   url: https://devlog.run
+  domain: devlog.run
 file:
   upload:
     path: /home/resource

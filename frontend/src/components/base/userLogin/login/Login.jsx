@@ -33,9 +33,7 @@ function Login() {
     user_login_api(email, password)
       .then(async (res) => {
         console.log(res);
-        const access_token = res.headers["authorization"];
-        const refresh_token = res.headers["authorization-refresh"];
-        await signIn(access_token, refresh_token, setAuthDto);
+        await signIn(setAuthDto);
         if (backpath) {
           navigate(backpath);
         } else {

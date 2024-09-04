@@ -1,17 +1,11 @@
 import axios from "axios";
 import { authAtom } from "../recoil/authAtom";
 import { useRecoilState } from "recoil";
-import { getCookie } from "../utils/hooks/useCookie";
 import { jwt_refresh_api } from "./User";
-import {
-  ACCESS_TOKEN_STRING,
-  REFRESH_TOKEN_STRING,
-} from "constants/user/login";
 import { useNavigate } from "react-router-dom";
 import { warnSignOut } from "utils/authenticate";
 import { useEffect } from "react";
 import throttle from "lodash.throttle";
-import { decodeJWT } from "utils/hooks/useJWT";
 
 const REFRESH_URL = "/reissue";
 
@@ -20,31 +14,31 @@ export const API = axios.create({
   withCredentials: true,
 });
 
-const refreshAccessToken = async (refreshToken) => {
-  const paylaod = decodeJWT(refreshToken);
-  try {
-    return await jwt_refresh_api(paylaod.email);
-  } catch (error) {
-    console.error("Failed to refresh access token:", error);
-    return false;
-  }
-};
+// const refreshAccessToken = async (refreshToken) => {
+//   const paylaod = decodeJWT(refreshToken);
+//   try {
+//     return await jwt_refresh_api(paylaod.email);
+//   } catch (error) {
+//     console.error("Failed to refresh access token:", error);
+//     return false;
+//   }
+// };
 
-const requestAuthTokenInjector = async (requestConfig) => {
-  // if (!requestConfig.headers) return requestConfig;
-  let token = getCookie(ACCESS_TOKEN_STRING);
-  const refreshToken = getCookie(REFRESH_TOKEN_STRING);
-  if (requestConfig.url !== REFRESH_URL) {
-    if (!token && refreshToken) {
-      token = await refreshAccessToken(refreshToken);
-    }
+const requestAuthTokenInjector = async (request) => {
+  // if (!request.headers) return request;
+  // let token = getCookie(ACCESS_TOKEN_STRING);
+  // const refreshToken = getCookie(REFRESH_TOKEN_STRING);
+  // if (request.url !== REFRESH_URL) {
+  //   if (!token && refreshToken) {
+  //     token = await refreshAccessToken(refreshToken);
+  //   }
 
-    if (token) requestConfig.headers["Authorization"] = "Bearer " + token;
-  } else {
-    // if (!refreshToken) return Promise.reject("No refresh token");
-    requestConfig.headers["Authorization"] = "Bearer " + refreshToken;
-  }
-  return requestConfig;
+  //   if (token) request.headers["Authorization"] = "Bearer " + token;
+  // } else {
+  //   // if (!refreshToken) return Promise.reject("No refresh token");
+  //   request.headers["Authorization"] = "Bearer " + refreshToken;
+  // }
+  return request;
 };
 
 const responseSuccessHandler = (response) => {

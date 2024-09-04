@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +31,8 @@ public class JwtService {
     private final String CLAIM_NAME = "username";
     private final String CLAIM_EMAIL = "email";
     private final String CLAIN_ROLE = "role";
+    private final String ACCESS_TOKEN_COOKIE = "access_token";
+    private final String REFRESH_TOKEN_COOKIE = "refresh_token";
 
     @Value("${jwt.secret}")
     private String secret;
@@ -42,6 +46,8 @@ public class JwtService {
     private long accessTokenExpiration;
     @Value("${jwt.refresh.expiration}")
     private long refreshTokenExpiration;
+    @Value("${frontend.domain}")
+    private String frontendDomain;
     private Key key;
 
     @PostConstruct
@@ -112,27 +118,74 @@ public class JwtService {
                 .compact();
     }
 
+    public Cookie createAccessTokenCookie(String accessToken) {
+        Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN_COOKIE, accessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setDomain(frontendDomain);
+        return accessTokenCookie;
+    }
+
+    public Cookie createRefreshTokenCookie(String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE, refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setDomain(frontendDomain);
+        refreshTokenCookie.setMaxAge((int) refreshTokenExpiration);
+        return refreshTokenCookie;
+    }
+
+    public void expireTokenCookie(HttpServletResponse response) {
+        Cookie accessCookie = createAccessTokenCookie("");
+        Cookie refreshCookie = createRefreshTokenCookie("");
+        accessCookie.setMaxAge(0);
+        refreshCookie.setMaxAge(0);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+    }
+
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader(accessHeader, accessToken);
+//        response.setHeader(accessHeader, accessToken);
+        response.addCookie(this.createAccessTokenCookie(accessToken));
     }
 
     public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader(refreshHeader, refreshToken);
+//        response.setHeader(refreshHeader, refreshToken);
+
+        response.addCookie(this.createRefreshTokenCookie(refreshToken));
     }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader(accessHeader, accessToken);
-        response.setHeader(refreshHeader, refreshToken);
+        this.sendAccessToken(response, accessToken);
+        this.sendRefreshToken(response, refreshToken);
     }
 
     public Optional<String> extractJWT(HttpServletRequest request) {
         log.info("extractJWT() 호출");
-        return Optional.ofNullable(request.getHeader(accessHeader))
-                .filter(accessToken -> accessToken.startsWith(BEARER))
-                .map(accessToken -> accessToken.replace(BEARER, ""));
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN_COOKIE))
+                .map(Cookie::getValue)
+                .findFirst();
+    }
+
+    public Optional<String> extractRefreshJWT(HttpServletRequest request) {
+        log.info("extractRefreshJWT() 호출");
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return Optional.empty();
+        }
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE))
+                .map(Cookie::getValue)
+                .findFirst();
     }
 
     public Optional<String> extractUsername(String accessToken) {
@@ -207,6 +260,7 @@ public class JwtService {
         }
         return true;
     }
+
     public boolean isRefreshTokenValid(String token) {
         Claims claims = this.extractClaims(token);
         if (!Objects.equals(claims.getSubject(), REFRESH_TOKEN_SUBJECT)) {

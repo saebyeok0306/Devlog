@@ -7,11 +7,18 @@ import { atom } from "recoil";
 // });
 
 export class Auth {
-  constructor(username = null, email = null, isLogin = false, role = "GUEST") {
+  constructor(
+    username = null,
+    email = null,
+    isLogin = false,
+    role = "GUEST",
+    profileUrl = null
+  ) {
     this.username = username;
     this.email = email;
     this.isLogin = isLogin;
     this.role = role;
+    this.profileUrl = profileUrl;
   }
 }
 

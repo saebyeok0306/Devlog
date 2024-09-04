@@ -5,6 +5,7 @@ import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -34,12 +35,19 @@ public class UserService {
         return userRepository.findByRefreshToken(token);
     }
 
-    public String reissueAccessToken(HttpServletRequest request) throws BadRequestException {
-        String refreshToken = jwtService.extractJWT(request).orElse(null);
-        if (refreshToken == null || !jwtService.isRefreshTokenValid(refreshToken)) throw new BadRequestException("Invalid refresh token");
+    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
+        String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
+        if (refreshToken == null || (jwtService.isTokenValid(refreshToken) && !jwtService.isRefreshTokenValid(refreshToken)))
+            throw new BadRequestException("Invalid refresh token");
+
         User user = userRepository.findByRefreshToken(refreshToken).orElse(null);
         if (user == null) throw new BadRequestException("Invalid refresh token");
-        return jwtService.createAccessToken(user);
+        String newAccessToken = jwtService.createAccessToken(user);
+        jwtService.sendAccessToken(response, newAccessToken);
+    }
+
+    public void logout(HttpServletResponse response) {
+        jwtService.expireTokenCookie(response);
     }
 
     public User getAdmin() {

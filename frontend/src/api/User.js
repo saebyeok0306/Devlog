@@ -1,6 +1,5 @@
 import mem from "mem";
 import { API } from "./Axios";
-import { reissueToken } from "utils/authenticate";
 import { REFRESH_STORE } from "./Cache";
 
 export const user_join_api = async (username, password, email) => {
@@ -36,13 +35,26 @@ export const user_check_api = async () => {
     });
 };
 
+export const user_profile_api = async () => {
+  return await API.get("/profile")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const user_logout_api = async () => {
+  return await API.get("/signout")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export const jwt_refresh_api = mem(
-  async (email) => {
+  async (email = null) => {
     return await API.get("/reissue")
-      .then((response) => {
-        console.log(response);
-        return reissueToken(response.headers);
-      })
+      .then((response) => response)
       .catch((error) => {
         throw error;
       });

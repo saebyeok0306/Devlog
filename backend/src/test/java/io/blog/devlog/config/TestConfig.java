@@ -45,6 +45,7 @@ public class TestConfig {
         ReflectionTestUtils.setField(jwtService, "refreshHeader", "Authorization-Refresh");
         ReflectionTestUtils.setField(jwtService, "accessTokenExpiration", 3600);
         ReflectionTestUtils.setField(jwtService, "refreshTokenExpiration", 86400);
+        ReflectionTestUtils.setField(jwtService, "frontendDomain", "localhost");
         jwtService.init();
         return jwtService;
     }
