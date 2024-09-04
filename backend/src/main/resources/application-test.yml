@@ -45,6 +45,7 @@ jwt:
 
 frontend:
   url: http://localhost:3000
+  domain: localhost
 
 file:
   upload:

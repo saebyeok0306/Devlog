@@ -1,10 +1,9 @@
 package io.blog.devlog.domain.user.controller;
 
+import io.blog.devlog.domain.user.dto.ResponseUserProfileDto;
 import io.blog.devlog.domain.user.dto.UserDto;
 import io.blog.devlog.domain.user.model.User;
-import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.domain.user.service.UserService;
-import io.blog.devlog.global.jwt.service.JwtService;
 import io.blog.devlog.global.response.ErrorResponse;
 import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.Optional;
 
+import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
 
     private final UserService userService;
-    private final JwtService jwtService;
     private final ErrorResponse errorResponse;
     private final SuccessResponse successResponse;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -73,18 +75,23 @@ public class AuthController {
         log.info("GET /check");
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ResponseUserProfileDto> getProfile() throws BadRequestException {
+        String userEmail = getUserEmail();
+        if (userEmail == null) throw new BadRequestException("로그인이 필요합니다.");
+        log.info("GET /profile userEmail : {}", userEmail);
+        User user = userService.getUserByEmail(userEmail).orElseThrow(() -> new BadRequestException("잘못된 요청입니다."));
+        return ResponseEntity.ok(ResponseUserProfileDto.of(user));
+    }
+
     @GetMapping("/reissue")
     public void reissue(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String accessToken = userService.reissueAccessToken(request);
-        if (accessToken == null) {
-            log.error("토큰 재발급 중 사용자 계정에 문제가 있음.");
-            Integer status = HttpServletResponse.SC_BAD_REQUEST;
-            String error = "잘못된 사용자 계정입니다.";
-            String path = request.getRequestURI();
-            errorResponse.setResponse(response, status, error, path);
-            return;
-        }
+        userService.reissueAccessToken(request, response);
+    }
 
-        jwtService.sendAccessToken(response, accessToken);
+    @GetMapping("/signout")
+    public void logout(HttpServletResponse response) {
+        log.info("GET /signout");
+        userService.logout(response);
     }
 }

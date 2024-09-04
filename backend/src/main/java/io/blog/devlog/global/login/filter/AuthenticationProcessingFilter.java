@@ -47,6 +47,10 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
                 }
             }
             catch (ExpiredJwtException e) {
+                if (request.getRequestURI().equals("/reissue")) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
                 Integer status = HttpServletResponse.SC_UNAUTHORIZED;
                 String path = request.getRequestURI();
                 errorResponse.setResponse(response, status, e.getMessage(), path);

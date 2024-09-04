@@ -6,6 +6,7 @@ import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.global.jwt.service.JwtService;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import org.apache.coyote.BadRequestException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,10 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Objects;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -81,13 +85,17 @@ public class UserServiceTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         request.setRequestURI("/reissue");
-        request.addHeader("Authorization", "Bearer " + refreshToken);
-
+//        request.addHeader("Authorization", "Bearer " + refreshToken);
+        request.setCookies(jwtService.createRefreshTokenCookie(refreshToken));
+        MockHttpServletResponse response = new MockHttpServletResponse();
 
         // when
-        String accessToken = userService.reissueAccessToken(request);
+        userService.reissueAccessToken(request, response);
 
         // then
+        Cookie accessTokenCookie = response.getCookie("access_token");
+        Assertions.assertThat(accessTokenCookie).isNotNull();
+        String accessToken = accessTokenCookie.getValue();
         Assertions.assertThat(accessToken).isNotNull();
         Assertions.assertThat(jwtService.isTokenValid(accessToken)).isTrue();
         Claims claims = jwtService.extractClaims(accessToken);
