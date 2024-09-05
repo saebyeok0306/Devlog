@@ -37,8 +37,13 @@ public class UserService {
 
     public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
         String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
-        if (refreshToken == null || (jwtService.isTokenValid(refreshToken) && !jwtService.isRefreshTokenValid(refreshToken)))
+        if (refreshToken == null) {
+            log.error("refreshToken is null");
             throw new BadRequestException("Invalid refresh token");
+        }
+        if (jwtService.isTokenValid(refreshToken) && !jwtService.isRefreshTokenValid(refreshToken)) {
+            throw new BadRequestException("Invalid refresh token");
+        }
 
         User user = userRepository.findByRefreshToken(refreshToken).orElse(null);
         if (user == null) throw new BadRequestException("Invalid refresh token");

@@ -262,6 +262,7 @@ public class JwtService {
     }
 
     public boolean isRefreshTokenValid(String token) {
+        log.info("isRefreshTokenValid 호출");
         Claims claims = this.extractClaims(token);
         if (!Objects.equals(claims.getSubject(), REFRESH_TOKEN_SUBJECT)) {
             String message = "RefreshToken이 아닙니다.";
