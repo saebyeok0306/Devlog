@@ -18,16 +18,22 @@ function PostCommentContainer({ ...props }) {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    get_post_url_api(postUrl)
-      .then((res) => {
-        setPostContent(res.data?.post);
-        const sortedComments = sortComments(res.data?.comments);
-        setComments(sortedComments);
-        setCommentState(new CommentState(res.data?.commentFlag));
-      })
-      .catch((error) => {
-        navigate(-1);
-      });
+    const getPost = async () => {
+      await setPostContent("");
+      await setComments([]);
+      await get_post_url_api(postUrl)
+        .then((res) => {
+          setPostContent(res.data?.post);
+          const sortedComments = sortComments(res.data?.comments);
+          setComments(sortedComments);
+          setCommentState(new CommentState(res.data?.commentFlag));
+        })
+        .catch((error) => {
+          console.error("Failed to get post:", error);
+          navigate(-1);
+        });
+    };
+    getPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postUrl, authDto]);
 

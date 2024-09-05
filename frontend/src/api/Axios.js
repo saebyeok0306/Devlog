@@ -76,6 +76,9 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
       return Promise.reject(err);
     }
     return API(config);
+  } else if (authDto?.isLogin) {
+    await signOutToast("다시 로그인을 해주세요.", "/login");
+    return Promise.reject(err);
   }
 
   return Promise.reject(err);
