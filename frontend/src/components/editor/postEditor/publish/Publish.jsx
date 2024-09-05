@@ -13,21 +13,15 @@ function Publish({
   setOpenModal,
   authDto,
   categories,
-  selectCategory,
-  setSelectCategory,
-  title,
-  content,
-  files,
-  preview,
-  setPreview,
+  postContext,
+  setPostContext,
 }) {
   const navigate = useNavigate();
-  const [isPrivate, setIsPrivate] = useState(false);
   const [postUrl, setPostUrl] = useState();
 
   useEffect(() => {
-    if (openModal && !postUrl && title) {
-      const safeTitle = validator.escape(title).replace(/ /g, "-");
+    if (openModal && !postUrl && postContext.title) {
+      const safeTitle = validator.escape(postContext.title).replace(/ /g, "-");
       setPostUrl(safeTitle);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,27 +33,27 @@ function Publish({
 
   const publicHandler = (e) => {
     e.preventDefault();
-    setIsPrivate(false);
+    setPostContext({ ...postContext, isPrivate: false });
     toast.info("전체공개로 설정되었습니다.");
   };
 
   const privateHandler = (e) => {
     e.preventDefault();
-    setIsPrivate(true);
+    setPostContext({ ...postContext, isPrivate: true });
     toast.info("비공개로 설정되었습니다.");
   };
 
   const publishHandler = async () => {
     await upload_post_api(
       postUrl,
-      title,
-      content,
-      preview
-        ? `${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`
+      postContext.title,
+      postContext.content,
+      postContext.preview
+        ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
         : null,
-      selectCategory?.id,
-      files,
-      isPrivate
+      postContext.category?.id,
+      postContext.files,
+      postContext.isPrivate
     )
       .then((res) => {
         toast.info("게시글을 업로드했습니다!");
@@ -72,7 +66,7 @@ function Publish({
   };
 
   const PreviewCarousel = () => {
-    if (files.length === 0) {
+    if (postContext.files.length === 0) {
       return (
         <div className="publish-preview-list">
           <h3 className="text-xl font-medium">미리보기 선택</h3>
@@ -85,13 +79,13 @@ function Publish({
       <div className="publish-preview-list">
         <h3 className="text-xl font-medium">미리보기 선택</h3>
         <Carousel slide={false}>
-          {files.map((file, index) => (
+          {postContext.files.map((file, index) => (
             <img
               key={index}
               className="publish-preview-list-image"
               src={`${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
               alt={`preview${index}`}
-              onClick={() => setPreview(file)}
+              onClick={() => setPostContext({ ...postContext, preview: file })}
             />
           ))}
         </Carousel>
@@ -109,9 +103,9 @@ function Publish({
               <div className="publish-preview">
                 <h3 className="text-xl font-medium">포스트 미리보기</h3>
                 <div className="publish-preview-img">
-                  {preview ? (
+                  {postContext.preview ? (
                     <img
-                      src={`${process.env.REACT_APP_API_FILE_URL}/${preview?.filePath}/${preview?.fileUrl}`}
+                      src={`${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`}
                       alt="preview"
                       onError={onErrorImg}
                     />
@@ -127,13 +121,13 @@ function Publish({
                 <h3 className="text-xl font-medium">포스트 공개범위</h3>
                 <div>
                   <Button
-                    color={isPrivate ? "gray" : "blue"}
+                    color={postContext.isPrivate ? "gray" : "blue"}
                     onClick={publicHandler}
                   >
                     전체공개
                   </Button>
                   <Button
-                    color={isPrivate ? "warning" : "gray"}
+                    color={postContext.isPrivate ? "warning" : "gray"}
                     onClick={privateHandler}
                   >
                     비공개
@@ -143,11 +137,13 @@ function Publish({
               <div className="publish-category">
                 <h3 className="text-xl font-medium">카테고리</h3>
                 <div className="border border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm rounded-lg">
-                  <Dropdown label={selectCategory?.name} inline>
+                  <Dropdown label={postContext.category?.name} inline>
                     {categories.map((category, idx) => (
                       <Dropdown.Item
                         key={idx}
-                        onClick={() => setSelectCategory(category)}
+                        onClick={() =>
+                          setPostContext({ ...postContext, category: category })
+                        }
                       >
                         {category?.name}
                       </Dropdown.Item>
