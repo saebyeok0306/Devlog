@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import "./Post.scss";
 import { getDatetime } from "utils/getDatetime";
@@ -14,6 +14,13 @@ import { Navigate } from "react-router-dom";
 function Post({ ...props }) {
   const [isDark] = useRecoilState(themeAtom);
   const postContent = useRecoilValue(postAtom);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
+  }, []);
 
   if (postContent === null) {
     return <Navigate replace to="/" />;

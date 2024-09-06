@@ -4,33 +4,75 @@ import { useRecoilState } from "recoil";
 import { postAtom } from "recoil/postAtom";
 
 import "./TOC.scss";
-import { Button } from "flowbite-react";
-import { HiOutlineChevronDoubleUp, HiChatAlt, HiLink } from "react-icons/hi";
+import { Button, Dropdown } from "flowbite-react";
+import {
+  HiOutlineChevronDoubleUp,
+  HiChatAlt,
+  HiLink,
+  HiDotsVertical,
+} from "react-icons/hi";
 import { toast } from "react-toastify";
+import { PostContext, postContextAtom } from "recoil/editorAtom";
+import { get_post_files_api } from "api/Posts";
+import { useNavigate } from "react-router-dom";
+
+const scrollToTopHandler = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
+const scrollToCommentHandler = (commentRef) => {
+  if (commentRef.current === null) return;
+  commentRef.current.scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
+const exportUrlHandler = (postContent) => {
+  const url = `${window.location.origin}/post/${postContent?.url}`;
+  navigator.clipboard.writeText(url);
+  toast.info("URL이 복사되었습니다.", { position: "bottom-center" });
+};
+
+const postEditHandler = async (navigate, postContent, setPostContext) => {
+  let files = [];
+  try {
+    const result = await get_post_files_api(postContent.id);
+    files = result.data;
+  } catch (error) {
+    console.error("Failed to get post files:", error);
+  }
+
+  const preview = files.find(
+    (file) =>
+      `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===
+      postContent.previewUrl
+  );
+
+  const newContext = new PostContext(
+    postContent.id,
+    postContent.title,
+    postContent.content,
+    postContent.category,
+    files,
+    preview,
+    postContent.private
+  );
+  console.log(newContext);
+
+  await setPostContext(newContext);
+  navigate("/editor");
+};
 
 function TOC({ ...props }) {
   const { commentRef } = props;
+  const navigate = useNavigate();
   const [postContent] = useRecoilState(postAtom);
+  const [, setPostContext] = useRecoilState(postContextAtom);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  const scrollToComment = () => {
-    if (commentRef.current === null) return;
-    commentRef.current.scrollIntoView({
-      behavior: "smooth",
-    });
-  };
-
-  const exportUrl = () => {
-    const url = `${window.location.origin}/post/${postContent?.url}`;
-    navigator.clipboard.writeText(url);
-    toast.info("URL이 복사되었습니다.", { position: "bottom-center" });
-  };
+  console.log(postContent);
 
   useEffect(() => {
     const postContent = document.querySelector(".post-content");
@@ -89,15 +131,51 @@ function TOC({ ...props }) {
           className="toc text-gray-800 dark:text-gray-300"
         />
         <div className="toc-buttons">
-          <Button size="xs" color="gray" onClick={scrollToTop}>
+          <Button
+            className="toc-button"
+            size="xs"
+            color="gray"
+            onClick={scrollToTopHandler}
+          >
             <HiOutlineChevronDoubleUp />
           </Button>
-          <Button size="xs" color="gray" onClick={scrollToComment}>
+          <Button
+            className="toc-button"
+            size="xs"
+            color="gray"
+            onClick={() => scrollToCommentHandler(commentRef)}
+          >
             <HiChatAlt />
           </Button>
-          <Button size="xs" color="gray" onClick={exportUrl}>
+          <Button
+            className="toc-button"
+            size="xs"
+            color="gray"
+            onClick={() => exportUrlHandler(postContent)}
+          >
             <HiLink />
           </Button>
+          {postContent?.ownership ? (
+            <Dropdown
+              className="dropdown"
+              label=""
+              // inline
+              renderTrigger={() => (
+                <Button className="toc-button" size="xs" color="gray">
+                  <HiDotsVertical />
+                </Button>
+              )}
+            >
+              <Dropdown.Item
+                onClick={() =>
+                  postEditHandler(navigate, postContent, setPostContext)
+                }
+              >
+                수정
+              </Dropdown.Item>
+              <Dropdown.Item>삭제</Dropdown.Item>
+            </Dropdown>
+          ) : null}
         </div>
       </div>
     </aside>

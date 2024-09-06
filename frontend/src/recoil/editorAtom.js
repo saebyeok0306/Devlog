@@ -2,6 +2,7 @@ import { atom } from "recoil";
 
 export class PostContext {
   constructor(
+    id = null,
     title = "",
     content = "",
     category = null,
@@ -9,6 +10,7 @@ export class PostContext {
     preview = null,
     isPrivate = false
   ) {
+    this.id = id;
     this.title = title;
     this.content = content;
     this.category = category;

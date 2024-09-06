@@ -26,8 +26,9 @@ public class ResponsePostDto {
     private long likes;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
+    private boolean ownership; // 권한 소유
 
-    public static ResponsePostDto of(Post post) {
+    public static ResponsePostDto of(String email, Post post) {
         return ResponsePostDto.builder()
                 .id(post.getId())
                 .url(post.getUrl())
@@ -40,6 +41,7 @@ public class ResponsePostDto {
                 .likes(post.getLikes())
                 .modifiedAt(post.getModifiedAt())
                 .createdAt(post.getCreatedAt())
+                .ownership(post.getUser().getEmail().equals(email))
                 .build();
     }
 }

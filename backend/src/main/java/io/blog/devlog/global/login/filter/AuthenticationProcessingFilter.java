@@ -37,6 +37,10 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("AuthenticationProcessingFilter 호출됨 {}", request.getRequestURI());
 
+        if (request.getRequestURI().equals("/signout")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String token = jwtService.extractJWT(request).orElse(null);
 
         if(token != null) {

@@ -45,6 +45,7 @@ function Publish({
 
   const publishHandler = async () => {
     await upload_post_api(
+      postContext.id,
       postUrl,
       postContext.title,
       postContext.content,

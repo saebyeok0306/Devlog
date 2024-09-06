@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestPostDto {
+    private Long id;
     private String url;
     private String title;
     private String content;
@@ -32,6 +33,7 @@ public class RequestPostDto {
 
     public Post toEntity(User user, Category category) {
         return Post.builder()
+                .id(this.id)
                 .url(this.url)
                 .title(this.title)
                 .content(this.content)

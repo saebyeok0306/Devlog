@@ -45,7 +45,7 @@ public class CommentService {
 
         Comment comment = commentRepository.save(requestCommentDto.toEntity(user, postCommentFlag.getPost()));
         fileService.uploadFileAndDeleteTempFile(comment, requestCommentDto.getFiles());
-        return ResponseCommentDto.of(comment);
+        return ResponseCommentDto.of(email, comment);
     }
 
     public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) throws BadRequestException {
@@ -72,7 +72,7 @@ public class CommentService {
         }
         List<Comment> comments = commentRepository.findAllByPostId(postCommentFlag.getPost().getId(), userId, isAdmin);
         return comments.stream()
-                .map(ResponseCommentDto::of)
+                .map(comment -> ResponseCommentDto.of(email, comment))
                 .toList();
     }
 
@@ -88,10 +88,7 @@ public class CommentService {
             throw new BadRequestException("You don't have permission to delete this comment.");
         }
         comment.setDeleted(true);
-        boolean isDeleted = fileService.deleteFileFromComment(comment);
-        if (!isDeleted) {
-            throw new BadRequestException("잘못된 파일 경로이거나 파일 이름입니다.");
-        }
+        fileService.deleteFileFromComment(comment);
         commentRepository.save(comment);
     }
 }

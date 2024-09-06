@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
@@ -55,9 +57,10 @@ public class PostController {
 
     @GetMapping("/{url}")
     public ResponseEntity<ResponsePostCommentDto> getPost(@PathVariable String url) throws BadRequestException {
+        String email = getUserEmail();
         PostCommentFlag postCommentFlag = postService.getPostByUrl(url);
         List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
-        return ResponseEntity.ok(ResponsePostCommentDto.of(postCommentFlag, comments));
+        return ResponseEntity.ok(ResponsePostCommentDto.of(email, postCommentFlag, comments));
     }
 
     @GetMapping("/category/v1/{categoryName}")

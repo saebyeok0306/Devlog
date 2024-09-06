@@ -32,6 +32,10 @@ public class PostService {
 
     public PostCommentFlag getPostByUrl(String url) throws BadRequestException {
         String email = getUserEmail();
+        return this.getPostByUrl(email, url);
+    }
+
+    public PostCommentFlag getPostByUrl(String email, String url) throws BadRequestException {
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null) {
             return this.getPostByUrl(url, 0L, false, Role.GUEST);

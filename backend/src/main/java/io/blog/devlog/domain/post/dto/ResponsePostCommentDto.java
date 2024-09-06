@@ -18,9 +18,9 @@ public class ResponsePostCommentDto {
     private List<ResponseCommentDto> comments;
     private boolean commentFlag;
 
-    public static ResponsePostCommentDto of(PostCommentFlag postCommentFlag, List<ResponseCommentDto> comments) {
+    public static ResponsePostCommentDto of(String email, PostCommentFlag postCommentFlag, List<ResponseCommentDto> comments) {
         return ResponsePostCommentDto.builder()
-                .post(ResponsePostDto.of(postCommentFlag.getPost()))
+                .post(ResponsePostDto.of(email, postCommentFlag.getPost()))
                 .comments(comments)
                 .commentFlag(postCommentFlag.isCommentFlag())
                 .build();
