@@ -66,7 +66,7 @@ export const GetPayload = () => {
         payload = result.data;
       } catch (error) {
         console.error("Failed to get user data:", error);
-        setAuthDto(new Auth());
+        await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
       }
       setAuthDto(

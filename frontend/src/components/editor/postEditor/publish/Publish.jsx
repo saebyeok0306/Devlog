@@ -7,6 +7,7 @@ import { upload_post_api } from "api/Posts";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
+import { POST_STORE } from "api/Cache";
 
 function Publish({
   openModal,
@@ -58,6 +59,7 @@ function Publish({
     )
       .then((res) => {
         toast.info("게시글을 업로드했습니다!");
+        POST_STORE.clear();
       })
       .catch((err) => {
         toast.error("게시글 업로드에 실패했습니다!");
