@@ -74,7 +74,7 @@ public class PostServiceTest {
         tempFileService = new TempFileService(tempFileRepository);
         fileHandler = new FileHandler(tempFileService);
         fileService = new FileService(fileRepository, tempFileService, fileHandler);
-        postService = new PostService(postRepository, userService);
+        postService = new PostService(postRepository, userService, fileService);
         postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService);
     }
 
@@ -207,7 +207,7 @@ public class PostServiceTest {
     public void findPrivateExceptionPostAllPageableTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
-        userService.saveUser(testConfig.geustUser);
+        userService.saveUser(testConfig.guestUser);
         // 사용자 정보를 SecurityContextHolder에 등록함.
         testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
@@ -224,7 +224,7 @@ public class PostServiceTest {
 
         // when
         // 사용자 정보를 SecurityContextHolder에 등록함.
-        testConfig.updateAuthentication(testConfig.geustUser);
+        testConfig.updateAuthentication(testConfig.guestUser);
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());

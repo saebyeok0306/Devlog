@@ -7,6 +7,9 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
+import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.domain.user.model.User;
+import io.blog.devlog.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,7 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @RequestMapping("/posts")
 @Slf4j
 public class PostController {
+    private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
     private final PostUploadService postUploadService;
@@ -58,8 +63,16 @@ public class PostController {
     @GetMapping("/{url}")
     public ResponseEntity<ResponsePostCommentDto> getPost(@PathVariable String url) throws BadRequestException {
         String email = getUserEmail();
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(url);
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
+        User user = userService.getUserByEmail(email).orElse(null);
+        if (user == null) {
+            user = User.builder()
+                    .email(null)
+                    .role(Role.GUEST)
+                    .username("GUEST")
+                    .build();
+        }
+        PostCommentFlag postCommentFlag = postService.getPostByUrl(url, user);
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(user, postCommentFlag);
         return ResponseEntity.ok(ResponsePostCommentDto.of(email, postCommentFlag, comments));
     }
 
@@ -99,5 +112,17 @@ public class PostController {
                 .totalElements(posts.getTotalElements())
                 .build();
         return ResponseEntity.ok(responsePageablePostDto);
+    }
+
+    @DeleteMapping("/{url}")
+    public void deletePost(@PathVariable String url) throws BadRequestException {
+        String email = getUserEmail();
+        PostCommentFlag postCommentFlag = postService.getPostByUrl(email, url);
+        if(!postCommentFlag.getPost().getUser().getEmail().equals(email)) {
+            throw new BadRequestException("You don't have permission to delete this post.");
+        }
+        commentService.deleteCommentsByPostId(postCommentFlag.getPost().getId());
+        postService.deletePost(postCommentFlag.getPost());
+//        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
     }
 }

@@ -67,17 +67,17 @@ public class CommentServiceTest {
     public void beforeSetUp() {
         jwtService = testConfig.createJwtService();
         userService = new UserService(userRepository, jwtService);
-        postService = new PostService(postRepository, userService);
         categoryService = new CategoryService(categoryRepository);
         tempFileService = new TempFileService(tempFileRepository);
         fileHandler = new FileHandler(tempFileService);
         fileService = new FileService(fileRepository, tempFileService, fileHandler);
-        commentService = new CommentService(commentRepository, userService, postService, fileService);
+        postService = new PostService(postRepository, userService, fileService);
+        commentService = new CommentService(commentRepository, userService, fileService);
     }
 
     public void setupUserAndCategoryAndPost() {
         userService.saveUser(testConfig.adminUser);
-        User guestUser = userService.saveUser(testConfig.geustUser);
+        User guestUser = userService.saveUser(testConfig.guestUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
         Post post = Post.builder()
                         .url("url")
@@ -96,6 +96,8 @@ public class CommentServiceTest {
     public void saveCommentTest() throws BadRequestException {
         // given
         this.setupUserAndCategoryAndPost();
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.adminUser);
         Comment comment = Comment.builder()
                         .content("댓글 내용1")
                         .post(this.post)
@@ -108,7 +110,9 @@ public class CommentServiceTest {
         // when
 
         // then
-        List<ResponseCommentDto> comments = commentService.getCommentsByPostUrl("url");
+        PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
+
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.adminUser, postCommentFlag);
         for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());
         }
@@ -119,6 +123,8 @@ public class CommentServiceTest {
     public void getPostCommentTest() throws BadRequestException {
         // given
         this.setupUserAndCategoryAndPost();
+        // 사용자 정보를 SecurityContextHolder에 등록함.
+        testConfig.updateAuthentication(testConfig.guestUser);
         Comment comment = Comment.builder()
                 .content("댓글 내용1")
                 .post(this.post)
@@ -134,7 +140,7 @@ public class CommentServiceTest {
         // 이전 query 결과를 재사용하진 않았음.
         PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
         Post post = postCommentFlag.getPost();
-        List<ResponseCommentDto> comments = commentService.getCommentsByPostUrl("url");
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.guestUser, postCommentFlag);
         System.out.println("게시글 제목 : " + post.getTitle());
         for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());

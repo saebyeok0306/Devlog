@@ -31,7 +31,7 @@ public class TestConfig {
             .username(username)
             .role(role)
             .build();
-    public User geustUser = User.builder()
+    public User guestUser = User.builder()
             .email(guestEmail)
             .password(guestPassword)
             .username(guestUsername)

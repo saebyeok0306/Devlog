@@ -21,7 +21,6 @@ public class ResponsePostNonContentDto {
     private ResponseUserDto user;
     private CategoryDto category;
     private long views;
-    private long likes;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
 
@@ -33,7 +32,6 @@ public class ResponsePostNonContentDto {
                 .user(ResponseUserDto.of(post.getUser()))
                 .category(CategoryDto.of(post.getCategory()))
                 .views(post.getViews())
-                .likes(post.getLikes())
                 .modifiedAt(post.getModifiedAt())
                 .createdAt(post.getCreatedAt())
                 .build();

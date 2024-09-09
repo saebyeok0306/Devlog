@@ -55,11 +55,29 @@ public class FileService {
         return fileRepository.findByEntityTypeAndEntityId(EntityType.COMMENT, commentId);
     }
 
-    public void deleteFileFromComment(Comment comment) throws IOException {
+    public void deleteFileFromComment(Comment comment) {
         List<File> files = this.getFilesByCommentId(comment.getId());
         if (files.isEmpty()) return;
         for (File file : files) {
-            fileHandler.deleteFile(file.getFileUrl());
+            try {
+                fileHandler.deleteFile(file.getFileUrl());
+                fileRepository.delete(file);
+            } catch (IOException e) {
+                log.error("File not found : " + file.getFileUrl());
+            }
+        }
+    }
+
+    public void deleteFileFromPost(Post post) {
+        List<File> files = this.getFilesByPostId(post.getId());
+        if (files.isEmpty()) return;
+        for (File file : files) {
+            try {
+                fileHandler.deleteFile(file.getFileUrl());
+                fileRepository.delete(file);
+            } catch (IOException e) {
+                log.error("File not found : " + file.getFileUrl());
+            }
         }
     }
 }

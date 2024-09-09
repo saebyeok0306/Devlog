@@ -79,12 +79,7 @@ public class FileHandler {
         Path file = Path.of(uploadPath, fileUrl);
         System.out.println(file.toFile());
         if(!file.toFile().exists()) return false;
-        try {
-            Files.delete(file);
-        } catch (IOException e) {
-            log.error("File delete error : " + fileUrl);
-            return false;
-        }
+        Files.delete(file);
         return true;
     }
 

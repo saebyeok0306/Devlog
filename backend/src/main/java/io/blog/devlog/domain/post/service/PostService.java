@@ -1,7 +1,9 @@
 package io.blog.devlog.domain.post.service;
 
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.comment.service.CommentService;
+import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.model.PostCommentFlag;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
@@ -14,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.io.IOException;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
@@ -25,6 +27,7 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
+    private final FileService fileService;
 
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);
@@ -44,7 +47,7 @@ public class PostService {
     }
 
     public PostCommentFlag getPostByUrl(String url, User user) throws BadRequestException {
-        return this.getPostByUrl(url, user.getId(), userService.isAdmin(user), user.getRole());
+        return this.getPostByUrl(url, user.getId() == null ? 0L : user.getId(), userService.isAdmin(user), user.getRole());
     }
 
     public PostCommentFlag getPostByUrl(String url, Long userId, boolean isAdmin, Role role) throws BadRequestException {
@@ -81,5 +84,10 @@ public class PostService {
         }
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
         return postRepository.findAllByCategoryId(pageable, categoryId, user.getId(), userService.isAdmin(user), user.getRole());
+    }
+
+    public void deletePost(Post post) throws BadRequestException {
+        fileService.deleteFileFromPost(post);
+        postRepository.delete(post);
     }
 }
