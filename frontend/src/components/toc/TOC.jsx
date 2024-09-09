@@ -13,8 +13,9 @@ import {
 } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { PostContext, postContextAtom } from "recoil/editorAtom";
-import { get_post_files_api } from "api/Posts";
+import { delete_post_api, get_post_files_api } from "api/Posts";
 import { useNavigate } from "react-router-dom";
+import { POST_STORE } from "api/Cache";
 
 const scrollToTopHandler = () => {
   window.scrollTo({
@@ -64,6 +65,18 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
 
   await setPostContext(newContext);
   navigate("/editor");
+};
+
+const postDeleteHandler = async (navigate, postContent) => {
+  try {
+    await delete_post_api(postContent.url);
+    POST_STORE.clear();
+    navigate("-1");
+    toast.info("게시글이 삭제되었습니다.");
+  } catch (error) {
+    toast.error("게시글 삭제 중 오류가 발생했습니다.");
+    console.error("Failed to delete post:", error);
+  }
 };
 
 function TOC({ ...props }) {
@@ -173,7 +186,11 @@ function TOC({ ...props }) {
               >
                 수정
               </Dropdown.Item>
-              <Dropdown.Item>삭제</Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => postDeleteHandler(navigate, postContent)}
+              >
+                삭제
+              </Dropdown.Item>
             </Dropdown>
           ) : null}
         </div>

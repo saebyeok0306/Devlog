@@ -73,3 +73,11 @@ export const get_post_files_api = async (postId) => {
       throw error;
     });
 };
+
+export const delete_post_api = async (postUrl) => {
+  return await API.delete(`/posts/${postUrl}`, {})
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
