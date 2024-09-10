@@ -16,24 +16,39 @@ function PostCommentContainer({ ...props }) {
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
   const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
+  const [likes, setLikes] = useState();
 
   useEffect(() => {
-    get_post_url_api(postUrl)
-      .then((res) => {
-        setPostContent(res.data?.post);
-        const sortedComments = sortComments(res.data?.comments);
-        setComments(sortedComments);
-        setCommentState(new CommentState(res.data?.commentFlag));
-      })
-      .catch((error) => {
-        navigate(-1);
-      });
+    const getPost = async () => {
+      await setPostContent("");
+      await setComments([]);
+      await get_post_url_api(postUrl)
+        .then((res) => {
+          setPostContent(res.data?.post);
+          const sortedComments = sortComments(res.data?.comments);
+          setComments(sortedComments);
+          setCommentCount(res.data?.comments.length);
+          setCommentState(new CommentState(res.data?.commentFlag));
+          setLikes(res.data?.likes);
+        })
+        .catch((error) => {
+          console.error("Failed to get post:", error);
+          navigate(-1);
+        });
+    };
+    getPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postUrl, authDto]);
 
   return (
     <>
-      <Post {...props} />
+      <Post
+        {...props}
+        likes={likes}
+        setLikes={setLikes}
+        commentCount={commentCount}
+      />
       <Comment {...props} comments={comments} />
     </>
   );

@@ -1,8 +1,9 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 
 import "./CommentEditor.scss";
 import MDEditor, { commands, EditorContext } from "@uiw/react-md-editor";
 import { upload_file_api } from "api/File";
+import { toast } from "react-toastify";
 
 const Button = () => {
   const { preview, dispatch } = useContext(EditorContext);
@@ -85,6 +86,7 @@ const UploadFileAndInsertText = async ({
 function CommentEditor({ comment, setComment, onCancel, onSave }) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
+  const [throttle, setThrottle] = useState(false);
 
   const handleDrop = async (event) => {
     event.preventDefault();
@@ -150,6 +152,17 @@ function CommentEditor({ comment, setComment, onCancel, onSave }) {
   const handleChangeContent = (change_text) => {
     if (change_text.length <= MAX_LENGTH) {
       setComment({ ...comment, content: change_text });
+    } else {
+      if (throttle) return;
+      if (!throttle) {
+        setThrottle(true);
+        setTimeout(async () => {
+          toast.info(`최대 ${MAX_LENGTH}자까지 입력 가능합니다.`, {
+            position: "bottom-center",
+          });
+          setThrottle(false);
+        }, 1000);
+      }
     }
   };
 

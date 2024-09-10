@@ -3,7 +3,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import rehypeVideo from "rehype-video";
 
 import "./PostEditor.scss";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { Button } from "flowbite-react";
 import { get_categories_readwrite_api } from "api/Category";
@@ -15,6 +15,7 @@ import FileUploader from "./fileUploader";
 import UploadIcon from "assets/icons/Upload";
 import { authAtom } from "recoil/authAtom";
 import { useNavigate } from "react-router-dom";
+import { PostContext, postContextAtom } from "recoil/editorAtom";
 
 const ReturnInsertText = ({ ref, content, text }) => {
   if (!ref.current.textarea) return null;
@@ -31,19 +32,21 @@ const ReturnInsertText = ({ ref, content, text }) => {
 const UploadFileAndInsertText = async ({
   ref,
   apiResult,
-  content,
-  setContent,
-  setFiles,
+  postContext,
+  setPostContext,
 }) => {
   const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
   const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
   const newContent = ReturnInsertText({
     ref: ref,
-    content: content,
+    content: postContext.content,
     text: text,
   });
-  await setContent(newContent);
-  await setFiles((prev) => [...prev, apiResult]);
+  await setPostContext({
+    ...postContext,
+    content: newContent,
+    files: [...postContext.files, apiResult],
+  });
 };
 
 function PostEditor() {
@@ -53,12 +56,8 @@ function PostEditor() {
   const isDark = useRecoilValue(themeAtom);
   const [openModal, setOpenModal] = useState(false);
 
-  const [title, setTitle] = useState(null);
-  const [content, setContent] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [files, setFiles] = useState([]);
-  const [selectCategory, setSelectCategory] = useState();
-  const [preview, setPreview] = useState();
+  const [postContext, setPostContext] = useRecoilState(postContextAtom);
 
   const [openLoader, setOpenLoader] = useState(false);
 
@@ -74,29 +73,34 @@ function PostEditor() {
         }
 
         setCategories(res.data);
-        setSelectCategory(res.data[0]);
+        setPostContext((prev) => ({ ...prev, category: res.data[0] }));
       })
       .catch((err) => {
         console.error(err);
       });
+    return () => {
+      setOpenModal(false);
+      setOpenLoader(false);
+      setPostContext(new PostContext());
+    };
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (!preview) {
-      setPreview(files[0]);
+    if (!postContext.preview) {
+      setPostContext((prev) => ({ ...prev, preview: prev.files[0] }));
     } else {
       // files 중 content에 없는 이미지가 preview인 경우 다시 files에서 첫번째 항목으로 선택.
       if (
-        content.indexOf(
-          `(${process.env.REACT_APP_API_FILE_URL}/${preview.filePath}/${preview.fileUrl})`
+        postContext.content.indexOf(
+          `(${process.env.REACT_APP_API_FILE_URL}/${postContext.preview.filePath}/${postContext.preview.fileUrl})`
         ) === -1
       ) {
-        setPreview(files[0]);
+        setPostContext((prev) => ({ ...prev, preview: prev.files[0] }));
       }
     }
     // eslint-disable-next-line
-  }, [files]);
+  }, [postContext.files]);
 
   const fileUploader = {
     name: "FileUploader",
@@ -107,8 +111,8 @@ function PostEditor() {
         {...props}
         openLoader={openLoader}
         setOpenLoader={setOpenLoader}
-        files={files}
-        setFiles={setFiles}
+        postContext={postContext}
+        setPostContext={setPostContext}
       />
     ),
     execute: (state, api) => {
@@ -122,7 +126,8 @@ function PostEditor() {
     if (change_text.length > MAX_LENGTH) {
       return;
     }
-    setContent(change_text);
+    setPostContext((prev) => ({ ...prev, content: change_text }));
+    // setContent(change_text);
   };
 
   const handleDrop = async (event) => {
@@ -149,9 +154,8 @@ function PostEditor() {
             await UploadFileAndInsertText({
               ref: editorRef,
               apiResult: res.data,
-              content: content,
-              setContent: setContent,
-              setFiles: setFiles,
+              postContext: postContext,
+              setPostContext: setPostContext,
             });
           })
           .catch((err) => {
@@ -174,9 +178,8 @@ function PostEditor() {
               await UploadFileAndInsertText({
                 ref: editorRef,
                 apiResult: res.data,
-                content: content,
-                setContent: setContent,
-                setFiles: setFiles,
+                postContext: postContext,
+                setPostContext: setPostContext,
               });
             })
             .catch((err) => {
@@ -189,24 +192,26 @@ function PostEditor() {
 
   const publishHandler = (e) => {
     e.preventDefault();
-    if (!title) {
+    if (!postContext.title) {
       toast.error("제목을 입력해주세요.");
       return;
     }
-    if (!content) {
+    if (!postContext.content) {
       toast.error("내용을 입력해주세요.");
       return;
     }
 
     // files 중 content에 없는 파일은 files에서 제거
-    setFiles(
-      files.filter(
-        (file) =>
-          content.indexOf(
-            `(${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl})`
-          ) !== -1
-      )
+    const newFiles = postContext.files.filter(
+      (file) =>
+        postContext.content.indexOf(
+          `(${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl})`
+        ) !== -1
     );
+    setPostContext((prev) => ({
+      ...prev,
+      files: newFiles,
+    }));
 
     setOpenModal(true);
   };
@@ -224,15 +229,18 @@ function PostEditor() {
         <input
           className="post-title"
           placeholder="글 제목을 입력하세요."
-          value={title || ""}
-          onChange={(e) => setTitle(e.target.value)}
+          value={postContext.title || ""}
+          onChange={(e) =>
+            setPostContext((prev) => ({ ...prev, title: e.target.value }))
+          }
+          // onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <MDEditor
         ref={editorRef}
         preview={window.innerWidth > 768 ? "live" : "edit"}
         style={{ flex: "1", whiteSpace: "pre-wrap" }}
-        value={content || ""}
+        value={postContext.content || ""}
         onChange={(e) => contentChangeHandler(e)}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
@@ -290,13 +298,8 @@ function PostEditor() {
         setOpenModal={setOpenModal}
         authDto={authDto}
         categories={categories}
-        selectCategory={selectCategory}
-        setSelectCategory={setSelectCategory}
-        title={title}
-        content={content}
-        files={files}
-        preview={preview}
-        setPreview={setPreview}
+        postContext={postContext}
+        setPostContext={setPostContext}
       />
     </Responsive>
   );

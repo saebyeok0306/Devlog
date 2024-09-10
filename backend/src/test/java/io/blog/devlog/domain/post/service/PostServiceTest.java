@@ -9,7 +9,7 @@ import io.blog.devlog.domain.file.repository.FileRepository;
 import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.file.service.TempFileService;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.dto.RequestPostDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
@@ -74,7 +74,7 @@ public class PostServiceTest {
         tempFileService = new TempFileService(tempFileRepository);
         fileHandler = new FileHandler(tempFileService);
         fileService = new FileService(fileRepository, tempFileService, fileHandler);
-        postService = new PostService(postRepository, userService);
+        postService = new PostService(postRepository, userService, fileService);
         postUploadService = new PostUploadService(postRepository, userService, categoryService, fileService);
     }
 
@@ -163,12 +163,12 @@ public class PostServiceTest {
         postUploadService.savePost(requestPostDto);
 
         // when
-        PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
-        System.out.println(postCommentFlag);
+        PostDetail postDetail = postService.getPostByUrl("url");
+        System.out.println(postDetail);
 
         // then
-        Assertions.assertThat(postCommentFlag.getPost()).isNotNull();
-        Assertions.assertThat(postCommentFlag.getPost().getUrl()).isEqualTo("url");
+        Assertions.assertThat(postDetail.getPost()).isNotNull();
+        Assertions.assertThat(postDetail.getPost().getUrl()).isEqualTo("url");
     }
 
     @Test
@@ -207,7 +207,7 @@ public class PostServiceTest {
     public void findPrivateExceptionPostAllPageableTest() throws BadRequestException {
         // given
         userService.saveUser(testConfig.adminUser);
-        userService.saveUser(testConfig.geustUser);
+        userService.saveUser(testConfig.guestUser);
         // 사용자 정보를 SecurityContextHolder에 등록함.
         testConfig.updateAuthentication(testConfig.adminUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
@@ -224,7 +224,7 @@ public class PostServiceTest {
 
         // when
         // 사용자 정보를 SecurityContextHolder에 등록함.
-        testConfig.updateAuthentication(testConfig.geustUser);
+        testConfig.updateAuthentication(testConfig.guestUser);
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());

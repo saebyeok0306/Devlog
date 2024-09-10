@@ -20,8 +20,9 @@ public class ResponseCommentDto {
     private boolean isPrivate;
     private boolean isDeleted;
     private LocalDateTime createdAt;
+    private boolean ownership; // 권한 소유
 
-    public static ResponseCommentDto of(Comment comment) {
+    public static ResponseCommentDto of(String email, Comment comment) {
         if (comment.isDeleted()) {
             return ResponseCommentDto.builder()
                     .id(comment.getId())
@@ -31,6 +32,7 @@ public class ResponseCommentDto {
                     .createdAt(comment.getCreatedAt())
                     .isPrivate(false)
                     .isDeleted(comment.isDeleted())
+                    .ownership(false)
                     .build();
         }
         return ResponseCommentDto.builder()
@@ -41,6 +43,7 @@ public class ResponseCommentDto {
                 .createdAt(comment.getCreatedAt())
                 .isPrivate(comment.isPrivate())
                 .isDeleted(comment.isDeleted())
+                .ownership(comment.getUser().getEmail().equals(email))
                 .build();
     }
 }

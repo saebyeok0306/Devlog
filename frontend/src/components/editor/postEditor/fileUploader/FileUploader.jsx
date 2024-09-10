@@ -16,8 +16,8 @@ function FileUploader({
   dispatch,
   openLoader,
   setOpenLoader,
-  files,
-  setFiles,
+  postContext,
+  setPostContext,
 }) {
   // textApi.replaceSelection(value);
   // execute(); // execute the command
@@ -53,7 +53,11 @@ function FileUploader({
             `${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl}\n`
           );
         }
-        setFiles([...files, res.data]);
+        setPostContext({
+          ...postContext,
+          files: [...postContext.files, res.data],
+        });
+        // setFiles([...postContext.files, res.data]);
       })
       .catch((err) => {
         toast.error(`파일 업로드에 실패했습니다.\n${err}`);
@@ -62,7 +66,9 @@ function FileUploader({
   };
 
   const UploadedFiles = () => {
-    const checkFiles = files.filter((file) => file.fileType !== "IMAGE");
+    const checkFiles = postContext.files.filter(
+      (file) => file.fileType !== "IMAGE"
+    );
     if (checkFiles.length === 0) {
       return <></>;
     }

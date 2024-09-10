@@ -3,6 +3,7 @@ import { API } from "./Axios";
 import { POST_STORE } from "./Cache";
 
 export const upload_post_api = async (
+  id,
   postUrl,
   title,
   content,
@@ -21,6 +22,9 @@ export const upload_post_api = async (
     files: files,
     isPrivate: isPrivate,
   };
+  if (id > 0) {
+    requestBody["id"] = id;
+  }
   return await API.post("/posts", requestBody, {})
     .then((response) => response)
     .catch((error) => {
@@ -56,6 +60,22 @@ export const get_posts_api = mem(
 
 export const get_post_url_api = async (postUrl) => {
   return await API.get(`/posts/${postUrl}`, {})
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const get_post_files_api = async (postId) => {
+  return await API.get(`/files/post/${postId}`)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const delete_post_api = async (postUrl) => {
+  return await API.delete(`/posts/${postUrl}`, {})
     .then((response) => response)
     .catch((error) => {
       throw error;

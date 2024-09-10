@@ -1,6 +1,7 @@
 @import "src/styles/commons";
 
 .post-container {
+  margin-bottom: 15px;
   hr {
     margin: 1em 0 1em 0;
   }
@@ -13,6 +14,7 @@
     .post-title {
       font-size: 2rem;
       font-weight: 600;
+      margin-bottom: -0.5em;
     }
     .post-category {
       font-size: 1.1rem;
@@ -32,15 +34,22 @@
     margin: 2em 0 2em 0;
     .wmde-markdown {
       background-color: inherit;
+      * {
+        background-color: inherit;
+      }
     }
   }
 
   footer {
     display: flex;
-    font-size: 1.1em;
-    gap: 5px;
-    * {
-      margin: auto 0 auto 0;
+    gap: 10px;
+    .post-footer-item {
+      display: flex;
+      font-size: 1.1em;
+      gap: 5px;
+      * {
+        margin: auto 0 auto 0;
+      }
     }
   }
 }

@@ -23,11 +23,11 @@ public class ResponsePostDto {
     private ResponseUserDto user;
     private CategoryDto category;
     private long views;
-    private long likes;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
+    private boolean ownership; // 권한 소유
 
-    public static ResponsePostDto of(Post post) {
+    public static ResponsePostDto of(String email, Post post) {
         return ResponsePostDto.builder()
                 .id(post.getId())
                 .url(post.getUrl())
@@ -37,9 +37,9 @@ public class ResponsePostDto {
                 .user(ResponseUserDto.of(post.getUser()))
                 .category(CategoryDto.of(post.getCategory()))
                 .views(post.getViews())
-                .likes(post.getLikes())
                 .modifiedAt(post.getModifiedAt())
                 .createdAt(post.getCreatedAt())
+                .ownership(post.getUser().getEmail().equals(email))
                 .build();
     }
 }

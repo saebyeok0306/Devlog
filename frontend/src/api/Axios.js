@@ -5,7 +5,8 @@ import { jwt_refresh_api } from "./User";
 import { useNavigate } from "react-router-dom";
 import { warnSignOut } from "utils/authenticate";
 import { useEffect } from "react";
-import throttle from "lodash.throttle";
+import mem from "mem";
+import { ETC_STORE } from "./Cache";
 
 const REFRESH_URL = "/reissue";
 
@@ -14,30 +15,7 @@ export const API = axios.create({
   withCredentials: true,
 });
 
-// const refreshAccessToken = async (refreshToken) => {
-//   const paylaod = decodeJWT(refreshToken);
-//   try {
-//     return await jwt_refresh_api(paylaod.email);
-//   } catch (error) {
-//     console.error("Failed to refresh access token:", error);
-//     return false;
-//   }
-// };
-
 const requestAuthTokenInjector = async (request) => {
-  // if (!request.headers) return request;
-  // let token = getCookie(ACCESS_TOKEN_STRING);
-  // const refreshToken = getCookie(REFRESH_TOKEN_STRING);
-  // if (request.url !== REFRESH_URL) {
-  //   if (!token && refreshToken) {
-  //     token = await refreshAccessToken(refreshToken);
-  //   }
-
-  //   if (token) request.headers["Authorization"] = "Bearer " + token;
-  // } else {
-  //   // if (!refreshToken) return Promise.reject("No refresh token");
-  //   request.headers["Authorization"] = "Bearer " + refreshToken;
-  // }
   return request;
 };
 
@@ -55,13 +33,16 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
     response: { status, data },
   } = err;
 
-  const signOutToast = throttle(async (message, path) => {
-    warnSignOut(setAuthDto, message);
-    navigate(path);
-  }, 1000);
+  const signOutToast = mem(
+    async (message, path) => {
+      warnSignOut(setAuthDto, message);
+      navigate(path);
+    },
+    { maxAge: 5, cache: ETC_STORE }
+  );
 
   if (config.url === REFRESH_URL) {
-    await signOutToast("다시 로그인을 해주세요.", "/login");
+    await signOutToast("다시 로그인을 해주세요.", "/login", navigate);
     return Promise.reject(err);
   }
 

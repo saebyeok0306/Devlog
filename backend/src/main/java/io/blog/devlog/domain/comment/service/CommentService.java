@@ -7,8 +7,7 @@ import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
-import io.blog.devlog.domain.post.service.PostService;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,23 +28,12 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final PostService postService;
     private final FileService fileService;
 
-    public ResponseCommentDto saveComment(RequestCommentDto requestCommentDto) throws BadRequestException {
-        String email = getUserEmail();
-        User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
-
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
-        System.out.println(postCommentFlag);
-        if (!postCommentFlag.isCommentFlag()) {
-            throw new BadRequestException("You don't have permission to write a comment.");
-        }
-
-        Comment comment = commentRepository.save(requestCommentDto.toEntity(user, postCommentFlag.getPost()));
+    public ResponseCommentDto saveComment(User user, RequestCommentDto requestCommentDto, Post post) {
+        Comment comment = commentRepository.save(requestCommentDto.toEntity(user, post));
         fileService.uploadFileAndDeleteTempFile(comment, requestCommentDto.getFiles());
-        return ResponseCommentDto.of(comment);
+        return ResponseCommentDto.of(user.getEmail(), comment);
     }
 
     public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) throws BadRequestException {
@@ -59,26 +47,13 @@ public class CommentService {
         return comment;
     }
 
-    public List<ResponseCommentDto> getCommentsFromPost(PostCommentFlag postCommentFlag) throws BadRequestException {
-        String email = getUserEmail();
-        Long userId = null;
-        boolean isAdmin = false;
-        if (email == null) {
-            userId = 0L;
-        } else {
-            User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-            userId = user.getId();
-            isAdmin = userService.isAdmin(user);
-        }
-        List<Comment> comments = commentRepository.findAllByPostId(postCommentFlag.getPost().getId(), userId, isAdmin);
+    public List<ResponseCommentDto> getCommentsFromPost(User user, PostDetail postDetail) throws BadRequestException {
+        Long userId = user.getId() == null ? 0L : user.getId();
+        boolean isAdmin = userService.isAdmin(user);
+        List<Comment> comments = commentRepository.findAllByPostId(postDetail.getPost().getId(), userId, isAdmin);
         return comments.stream()
-                .map(ResponseCommentDto::of)
+                .map(comment -> ResponseCommentDto.of(user.getEmail(), comment))
                 .toList();
-    }
-
-    public List<ResponseCommentDto> getCommentsByPostUrl(String postUrl) throws BadRequestException {
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(postUrl); // 여기서 카테고리 읽기 권한까지 확인함.
-        return this.getCommentsFromPost(postCommentFlag);
     }
 
     public void deleteComment(Long commentId) throws IOException {
@@ -88,10 +63,15 @@ public class CommentService {
             throw new BadRequestException("You don't have permission to delete this comment.");
         }
         comment.setDeleted(true);
-        boolean isDeleted = fileService.deleteFileFromComment(comment);
-        if (!isDeleted) {
-            throw new BadRequestException("잘못된 파일 경로이거나 파일 이름입니다.");
-        }
+        fileService.deleteFileFromComment(comment);
         commentRepository.save(comment);
+    }
+
+    public void deleteCommentsByPostId(Long postId) {
+        List<Comment> comments = commentRepository.findAllByPostId(postId, 0L, true);
+        comments.forEach(comment -> {
+            fileService.deleteFileFromComment(comment);
+            commentRepository.delete(comment);
+        });
     }
 }

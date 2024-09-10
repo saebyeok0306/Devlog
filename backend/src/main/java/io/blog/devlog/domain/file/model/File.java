@@ -1,6 +1,5 @@
 package io.blog.devlog.domain.file.model;
 
-import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.global.time.CreateTime;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,9 +21,6 @@ public class File extends CreateTime {
     private String filePath; // res
     @Enumerated(EnumType.STRING)
     private FileType fileType;
-//    @ManyToOne
-//    @JoinColumn(name = "post_id")
-//    private Post post;
     @Enumerated(EnumType.STRING)
     private EntityType entityType;
     private Long entityId;

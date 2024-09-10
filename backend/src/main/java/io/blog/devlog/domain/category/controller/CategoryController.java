@@ -25,26 +25,20 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getCategories() {
         List<CategoryDto> categories = categoryService.getCategories().stream().map(CategoryDto::of).collect(Collectors.toList());
-        return ResponseEntity.ok()
-                .eTag(categories.toString())
-                .body(categories);
+        return ResponseEntity.ok().body(categories);
     }
 
     @GetMapping("/details")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Category>> getCategoriesDetails() {
         List<Category> categories = categoryService.getCategories();
-        return ResponseEntity.ok()
-                .eTag(categories.toString())
-                .body(categories);
+        return ResponseEntity.ok().body(categories);
     }
 
     @GetMapping("/readwrite")
     public ResponseEntity<List<CategoryDto>> getCategoriesRW() {
         List<CategoryDto> categories = categoryService.getCategoriesReadWrite().stream().map(CategoryDto::of).collect(Collectors.toList());
-        return ResponseEntity.ok()
-                .eTag(categories.toString())
-                .body(categories);
+        return ResponseEntity.ok().body(categories);
     }
 
     @PostMapping

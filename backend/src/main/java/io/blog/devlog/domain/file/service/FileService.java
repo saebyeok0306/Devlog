@@ -47,9 +47,37 @@ public class FileService {
         }
     }
 
-    public boolean deleteFileFromComment(Comment comment) throws IOException {
-        File file = fileRepository.findByEntityTypeAndEntityId(EntityType.COMMENT, comment.getId()).orElse(null);
-        if (file == null) return false;
-        return fileHandler.deleteFile(file.getFileUrl());
+    public List<File> getFilesByPostId(Long postId) {
+        return fileRepository.findByEntityTypeAndEntityId(EntityType.POST, postId);
+    }
+
+    public List<File> getFilesByCommentId(Long commentId) {
+        return fileRepository.findByEntityTypeAndEntityId(EntityType.COMMENT, commentId);
+    }
+
+    public void deleteFileFromComment(Comment comment) {
+        List<File> files = this.getFilesByCommentId(comment.getId());
+        if (files.isEmpty()) return;
+        for (File file : files) {
+            try {
+                fileHandler.deleteFile(file.getFileUrl());
+                fileRepository.delete(file);
+            } catch (IOException e) {
+                log.error("File not found : " + file.getFileUrl());
+            }
+        }
+    }
+
+    public void deleteFileFromPost(Post post) {
+        List<File> files = this.getFilesByPostId(post.getId());
+        if (files.isEmpty()) return;
+        for (File file : files) {
+            try {
+                fileHandler.deleteFile(file.getFileUrl());
+                fileRepository.delete(file);
+            } catch (IOException e) {
+                log.error("File not found : " + file.getFileUrl());
+            }
+        }
     }
 }

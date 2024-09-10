@@ -42,4 +42,15 @@ public class FileDto {
     public File toEntity(Comment comment) {
         return this.toEntity().setEntity(EntityType.COMMENT, comment.getId());
     }
+
+    public static FileDto of(File file) {
+        return FileDto.builder()
+                .tempId(file.getId())
+                .fileName(file.getFileName())
+                .fileSize(file.getFileSize())
+                .fileUrl(file.getFileUrl())
+                .filePath(file.getFilePath())
+                .fileType(file.getFileType())
+                .build();
+    }
 }

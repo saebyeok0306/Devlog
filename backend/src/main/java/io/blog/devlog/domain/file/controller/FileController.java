@@ -2,16 +2,17 @@ package io.blog.devlog.domain.file.controller;
 
 import io.blog.devlog.domain.file.dto.FileDto;
 import io.blog.devlog.domain.file.handler.FileHandler;
+import io.blog.devlog.domain.file.model.File;
+import io.blog.devlog.domain.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class FileController {
     private final FileHandler fileHandler;
+    private final FileService fileService;
+
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PARTNER')")
     public ResponseEntity<FileDto> uploadFiles(@RequestParam("file") MultipartFile file) throws FileUploadException {
@@ -31,5 +34,11 @@ public class FileController {
         System.out.println("File type : " + file.getContentType());
         FileDto fileDto = fileHandler.uploadFile(file);
         return ResponseEntity.ok(fileDto);
+    }
+
+    @GetMapping("/post/{entityId}")
+    public ResponseEntity<List<FileDto>> getPostFiles(@PathVariable Long entityId) {
+        List<File> postFiles = fileService.getFilesByPostId(entityId);
+        return ResponseEntity.ok(postFiles.stream().map(FileDto::of).toList());
     }
 }

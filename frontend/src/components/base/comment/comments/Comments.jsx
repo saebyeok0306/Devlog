@@ -100,7 +100,7 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
   const CommentToolbar = () => {
     if (
       isWriteComment({ commentState: commentState, authDto: authDto }) &&
-      comment.user?.email === authDto.email &&
+      comment.ownership &&
       comment.deleted === false
     ) {
       return (

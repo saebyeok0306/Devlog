@@ -15,7 +15,7 @@ const get_cache_categories = mem(get_categories, {
   cache: CATEGORY_STORE,
 });
 
-export const get_categories_api = async (cache = true) => {
+export const get_categories_api = async (categoryUpdater, cache = true) => {
   if (cache) {
     return await get_cache_categories();
   } else {
