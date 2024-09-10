@@ -16,6 +16,7 @@ function PostCommentContainer({ ...props }) {
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
   const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
   const [likes, setLikes] = useState();
 
   useEffect(() => {
@@ -27,6 +28,7 @@ function PostCommentContainer({ ...props }) {
           setPostContent(res.data?.post);
           const sortedComments = sortComments(res.data?.comments);
           setComments(sortedComments);
+          setCommentCount(res.data?.comments.length);
           setCommentState(new CommentState(res.data?.commentFlag));
           setLikes(res.data?.likes);
         })
@@ -41,7 +43,12 @@ function PostCommentContainer({ ...props }) {
 
   return (
     <>
-      <Post {...props} likes={likes} setLikes={setLikes} />
+      <Post
+        {...props}
+        likes={likes}
+        setLikes={setLikes}
+        commentCount={commentCount}
+      />
       <Comment {...props} comments={comments} />
     </>
   );

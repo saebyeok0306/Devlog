@@ -3,7 +3,12 @@ import React, { useEffect } from "react";
 import "./Post.scss";
 import { getDatetime } from "utils/getDatetime";
 
-import { HiCalendar, HiHeart, HiOutlineHeart } from "react-icons/hi";
+import {
+  HiCalendar,
+  HiHeart,
+  HiOutlineHeart,
+  HiOutlineChatAlt2,
+} from "react-icons/hi";
 import MDEditor from "@uiw/react-md-editor";
 import RehypeVideo from "rehype-video";
 import { themeAtom } from "recoil/themeAtom";
@@ -13,6 +18,7 @@ import { Navigate } from "react-router-dom";
 import { Tooltip } from "flowbite-react";
 import { authAtom } from "recoil/authAtom";
 import { post_like_api, post_unlike_api } from "api/Like";
+import { toast } from "react-toastify";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -25,6 +31,7 @@ const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
     });
   } catch (error) {
     console.error("Failed to like post:", error);
+    toast.info(error.response.data.error);
   }
 };
 
@@ -43,7 +50,7 @@ const onLikeCancelHandler = async (postUrl, likes, setLikes, authDto) => {
 };
 
 function Post({ ...props }) {
-  const { likes, setLikes } = props;
+  const { likes, setLikes, commentCount } = props;
   const isDark = useRecoilValue(themeAtom);
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
@@ -66,7 +73,7 @@ function Post({ ...props }) {
         : "가장 먼저 좋아요를 눌러보세요.";
 
     return (
-      <div className="post-like">
+      <div className="post-like post-footer-item">
         {likes?.liked ? (
           <button
             onClick={() =>
@@ -85,7 +92,7 @@ function Post({ ...props }) {
           </button>
         )}
         <Tooltip content={likers}>
-          <span>{`${likes?.likeCount}개`}</span>
+          <span>{`좋아요 ${likes?.likeCount}개`}</span>
         </Tooltip>
       </div>
     );
@@ -114,6 +121,10 @@ function Post({ ...props }) {
       <hr />
       <footer>
         <Like />
+        <div className="post-comment-count post-footer-item">
+          <HiOutlineChatAlt2 />
+          <span>{`댓글 ${commentCount}개`}</span>
+        </div>
       </footer>
     </div>
   );

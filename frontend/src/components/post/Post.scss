@@ -38,9 +38,10 @@
 
   footer {
     display: flex;
-    .post-like {
+    gap: 10px;
+    .post-footer-item {
       display: flex;
-      font-size: 1.3em;
+      font-size: 1.1em;
       gap: 5px;
       * {
         margin: auto 0 auto 0;
