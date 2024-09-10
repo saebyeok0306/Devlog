@@ -73,15 +73,15 @@ public class SecurityConfig {
             config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
             config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
             config.setExposedHeaders(List.of(CorsConfiguration.ALL));
-            config.addExposedHeader("Authorization");
-            config.addExposedHeader("Authorization-Refresh");
+//            config.addExposedHeader("Authorization");
+//            config.addExposedHeader("Authorization-Refresh");
             return config;
         }));
         http.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/user/**").authenticated()
-            .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-            .requestMatchers("/admin/**").hasRole("ADMIN")
+//            .requestMatchers("/user/**").authenticated()
+//            .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
+//            .requestMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().permitAll()
         );
         // 승인되지 않은 접근(401)이나 접근 권한이 없는 경우(403)

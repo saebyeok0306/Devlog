@@ -28,14 +28,21 @@ export const signIn = async (setAuthDto, message = "로그인 성공!") => {
   }
 };
 
-export const signOut = async (setAuthDto, message = "로그아웃 했습니다.") => {
+export const signOutProcess = async (setAuthDto) => {
   try {
     await user_logout_api();
     setAuthDto(new Auth());
     clearAllCacheStore(); // 캐시 초기화
-    toast.success(`${message}`, {});
+    return true;
   } catch (error) {
     console.error("Failed to sign out:", error);
+  }
+  return false;
+};
+
+export const signOut = async (setAuthDto, message = "로그아웃 했습니다.") => {
+  if (await signOutProcess(setAuthDto)) {
+    toast.success(`${message}`, {});
   }
 };
 
@@ -43,13 +50,8 @@ export const warnSignOut = async (
   setAuthDto,
   message = "로그인이 만료되었습니다."
 ) => {
-  try {
-    await user_logout_api();
-    setAuthDto(new Auth());
-    clearAllCacheStore(); // 캐시 초기화
+  if (await signOutProcess(setAuthDto)) {
     toast.warning(`${message}`, {});
-  } catch (error) {
-    console.error("Failed to sign out:", error);
   }
 };
 
@@ -65,8 +67,9 @@ export const GetPayload = () => {
         const result = await user_profile_api();
         payload = result.data;
       } catch (error) {
-        console.error("Failed to get user data:", error);
-        await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
+        // console.error("Failed to get user data:", error);
+        await signOutProcess(setAuthDto);
+        // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
       }
       setAuthDto(
