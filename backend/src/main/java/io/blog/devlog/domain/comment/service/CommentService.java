@@ -7,8 +7,7 @@ import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
-import io.blog.devlog.domain.post.service.PostService;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +47,10 @@ public class CommentService {
         return comment;
     }
 
-    public List<ResponseCommentDto> getCommentsFromPost(User user, PostCommentFlag postCommentFlag) throws BadRequestException {
+    public List<ResponseCommentDto> getCommentsFromPost(User user, PostDetail postDetail) throws BadRequestException {
         Long userId = user.getId() == null ? 0L : user.getId();
         boolean isAdmin = userService.isAdmin(user);
-        List<Comment> comments = commentRepository.findAllByPostId(postCommentFlag.getPost().getId(), userId, isAdmin);
+        List<Comment> comments = commentRepository.findAllByPostId(postDetail.getPost().getId(), userId, isAdmin);
         return comments.stream()
                 .map(comment -> ResponseCommentDto.of(user.getEmail(), comment))
                 .toList();

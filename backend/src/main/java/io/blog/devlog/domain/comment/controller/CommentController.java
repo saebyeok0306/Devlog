@@ -5,7 +5,7 @@ import io.blog.devlog.domain.comment.dto.RequestEditCommentDto;
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.service.CommentService;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
@@ -32,11 +32,11 @@ public class CommentController {
         User user = userService.getUserByEmail(email)
                 .orElseThrow(() -> new BadRequestException("User not found : " + email));
 
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
-        if (!postCommentFlag.isCommentFlag()) {
+        PostDetail postDetail = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
+        if (!postDetail.isCommentFlag()) {
             throw new BadRequestException("You don't have permission to write a comment.");
         }
-        return commentService.saveComment(user, requestCommentDto, postCommentFlag.getPost());
+        return commentService.saveComment(user, requestCommentDto, postDetail.getPost());
     }
 
     @PostMapping("/{commentId}")

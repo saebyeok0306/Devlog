@@ -9,7 +9,7 @@ import io.blog.devlog.domain.file.repository.FileRepository;
 import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.file.service.TempFileService;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.dto.RequestPostDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
@@ -163,12 +163,12 @@ public class PostServiceTest {
         postUploadService.savePost(requestPostDto);
 
         // when
-        PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
-        System.out.println(postCommentFlag);
+        PostDetail postDetail = postService.getPostByUrl("url");
+        System.out.println(postDetail);
 
         // then
-        Assertions.assertThat(postCommentFlag.getPost()).isNotNull();
-        Assertions.assertThat(postCommentFlag.getPost().getUrl()).isEqualTo("url");
+        Assertions.assertThat(postDetail.getPost()).isNotNull();
+        Assertions.assertThat(postDetail.getPost().getUrl()).isEqualTo("url");
     }
 
     @Test

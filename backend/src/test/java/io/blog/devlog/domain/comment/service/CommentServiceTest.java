@@ -13,7 +13,7 @@ import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.file.service.TempFileService;
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
@@ -110,9 +110,9 @@ public class CommentServiceTest {
         // when
 
         // then
-        PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
+        PostDetail postDetail = postService.getPostByUrl("url");
 
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.adminUser, postCommentFlag);
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.adminUser, postDetail);
         for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());
         }
@@ -138,9 +138,9 @@ public class CommentServiceTest {
 
         // then
         // 이전 query 결과를 재사용하진 않았음.
-        PostCommentFlag postCommentFlag = postService.getPostByUrl("url");
-        Post post = postCommentFlag.getPost();
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.guestUser, postCommentFlag);
+        PostDetail postDetail = postService.getPostByUrl("url");
+        Post post = postDetail.getPost();
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.guestUser, postDetail);
         System.out.println("게시글 제목 : " + post.getTitle());
         for (ResponseCommentDto c : comments) {
             System.out.println(c.getContent());
