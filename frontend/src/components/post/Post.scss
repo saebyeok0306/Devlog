@@ -1,6 +1,7 @@
 @import "src/styles/commons";
 
 .post-container {
+  margin-bottom: 15px;
   hr {
     margin: 1em 0 1em 0;
   }
@@ -37,10 +38,13 @@
 
   footer {
     display: flex;
-    font-size: 1.1em;
-    gap: 5px;
-    * {
-      margin: auto 0 auto 0;
+    .post-like {
+      display: flex;
+      font-size: 1.3em;
+      gap: 5px;
+      * {
+        margin: auto 0 auto 0;
+      }
     }
   }
 }

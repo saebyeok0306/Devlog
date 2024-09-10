@@ -16,6 +16,7 @@ function PostCommentContainer({ ...props }) {
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
   const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState();
 
   useEffect(() => {
     const getPost = async () => {
@@ -27,6 +28,7 @@ function PostCommentContainer({ ...props }) {
           const sortedComments = sortComments(res.data?.comments);
           setComments(sortedComments);
           setCommentState(new CommentState(res.data?.commentFlag));
+          setLikes(res.data?.likes);
         })
         .catch((error) => {
           console.error("Failed to get post:", error);
@@ -39,7 +41,7 @@ function PostCommentContainer({ ...props }) {
 
   return (
     <>
-      <Post {...props} />
+      <Post {...props} likes={likes} setLikes={setLikes} />
       <Comment {...props} comments={comments} />
     </>
   );

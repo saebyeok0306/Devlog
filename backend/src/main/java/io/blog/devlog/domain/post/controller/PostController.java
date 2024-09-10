@@ -2,9 +2,11 @@ package io.blog.devlog.domain.post.controller;
 
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.service.CommentService;
+import io.blog.devlog.domain.like.model.PostLikeDetail;
+import io.blog.devlog.domain.like.service.PostLikeService;
 import io.blog.devlog.domain.post.dto.*;
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.post.model.PostCommentFlag;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
 import io.blog.devlog.domain.user.model.Role;
@@ -20,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class PostController {
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
+    private final PostLikeService postLikeService;
     private final PostUploadService postUploadService;
 
     @PostMapping
@@ -71,9 +73,10 @@ public class PostController {
                     .username("GUEST")
                     .build();
         }
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(url, user);
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(user, postCommentFlag);
-        return ResponseEntity.ok(ResponsePostCommentDto.of(email, postCommentFlag, comments));
+        PostDetail postDetail = postService.getPostByUrl(url, user);
+        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(user, postDetail);
+        PostLikeDetail postLikeDetail = postLikeService.likeDetailFromPost(postDetail.getPost(), user);
+        return ResponseEntity.ok(ResponsePostCommentDto.of(email, postDetail, comments, postLikeDetail));
     }
 
     @GetMapping("/category/v1/{categoryName}")
@@ -117,12 +120,12 @@ public class PostController {
     @DeleteMapping("/{url}")
     public void deletePost(@PathVariable String url) throws BadRequestException {
         String email = getUserEmail();
-        PostCommentFlag postCommentFlag = postService.getPostByUrl(email, url);
-        if(!postCommentFlag.getPost().getUser().getEmail().equals(email)) {
+        PostDetail postDetail = postService.getPostByUrl(email, url);
+        if(!postDetail.getPost().getUser().getEmail().equals(email)) {
             throw new BadRequestException("You don't have permission to delete this post.");
         }
-        commentService.deleteCommentsByPostId(postCommentFlag.getPost().getId());
-        postService.deletePost(postCommentFlag.getPost());
+        commentService.deleteCommentsByPostId(postDetail.getPost().getId());
+        postService.deletePost(postDetail.getPost());
 //        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
     }
 }
