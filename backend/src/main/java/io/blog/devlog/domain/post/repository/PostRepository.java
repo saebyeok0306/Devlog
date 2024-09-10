@@ -14,10 +14,11 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+    public Optional<Post> findByUrl(String url);
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
             "WHERE p.url = :url and p.category.readCategoryAuth <= :role and (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
-    public Optional<Post> findByUrl(
+    public Optional<Post> findPostByUrl(
             @Param("url") String url,
             @Param("userId") Long userId,
             @Param("isAdmin") boolean isAdmin,

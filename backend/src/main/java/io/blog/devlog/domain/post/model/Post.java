@@ -25,10 +25,10 @@ public class Post extends BaseTime {
     @Column(length = 50000)
     private String content;
     private String previewUrl;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 //    @OneToMany(mappedBy = "post")
