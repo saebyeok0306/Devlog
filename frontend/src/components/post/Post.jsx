@@ -103,6 +103,7 @@ function Post({ ...props }) {
     <div className="post-container" data-color-mode={isDark ? "dark" : "light"}>
       <header>
         <h1 className="post-title">{postContent?.title}</h1>
+        <div className="post-author">By.{postContent?.user?.username}</div>
         <div className="post-category">{postContent?.category?.name}</div>
         <div className="post-datetime text-gray-700 dark:text-gray-400">
           <HiCalendar />
