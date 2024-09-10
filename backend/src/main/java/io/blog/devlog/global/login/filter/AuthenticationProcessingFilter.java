@@ -37,7 +37,7 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("AuthenticationProcessingFilter 호출됨 {}", request.getRequestURI());
 
-        if (request.getRequestURI().equals("/signout")) {
+        if (request.getRequestURI().equals("/signout") || request.getRequestURI().equals("/reissue")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,10 +51,6 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
                 }
             }
             catch (ExpiredJwtException e) {
-                if (request.getRequestURI().equals("/reissue")) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
                 Integer status = HttpServletResponse.SC_UNAUTHORIZED;
                 String path = request.getRequestURI();
                 errorResponse.setResponse(response, status, e.getMessage(), path);
