@@ -44,6 +44,9 @@
         font-family: NanumGothic !important;
         background-color: inherit;
         font-size: 1em !important;
+        * {
+          background-color: inherit;
+        }
       }
       .w-md-editor-preview {
         font-family: NanumGothic !important;

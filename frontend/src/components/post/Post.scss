@@ -33,6 +33,9 @@
     margin: 2em 0 2em 0;
     .wmde-markdown {
       background-color: inherit;
+      * {
+        background-color: inherit;
+      }
     }
   }
 
