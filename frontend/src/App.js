@@ -19,6 +19,7 @@ import { ROLE_TYPE } from "utils/RoleType";
 import ToastContainerComponent from "utils/ToastContainer";
 import { useEffect } from "react";
 import { GetPayload } from "utils/authenticate";
+import Profile from "pages/Profile";
 
 function App() {
   const isDark = useRecoilValue(themeAtom);
@@ -48,13 +49,16 @@ function App() {
               <Routes>
                 <Route element={<AnyRoute />}>
                   <Route path="/" element={<Home />} />
-                  <Route path="/editor" element={<Editor />} />
                   <Route path="/post/:postUrl" element={<Post />} />
                 </Route>
                 <Route element={<PublicRoute />}>
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/callback" element={<Callback />} />
+                </Route>
+                <Route element={<PrivateRoute role={ROLE_TYPE.USER} />}>
+                  <Route path="/editor" element={<Editor />} />
+                  <Route path="/profile" element={<Profile />} />
                 </Route>
                 <Route
                   path="/manager"
