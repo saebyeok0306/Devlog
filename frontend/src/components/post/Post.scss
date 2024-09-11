@@ -1,7 +1,13 @@
 @import "src/styles/commons";
 
 .post-container {
-  margin-bottom: 15px;
+  background-color: #fbfbfb;
+  &:is(.dark *) {
+    background-color: #242424;
+  }
+  padding: 1em;
+  border-radius: 15px;
+  margin: 15px 0 15px 0;
   hr {
     margin: 1em 0 1em 0;
   }
