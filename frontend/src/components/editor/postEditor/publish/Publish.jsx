@@ -3,7 +3,7 @@ import { Button, Carousel, Dropdown, Modal, TextInput } from "flowbite-react";
 import "./Publish.scss";
 import { useEffect, useState } from "react";
 import { onErrorImg } from "utils/defaultImg";
-import { upload_post_api } from "api/Posts";
+import { edit_post_api, upload_post_api } from "api/Posts";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
@@ -22,8 +22,14 @@ function Publish({
 
   useEffect(() => {
     if (openModal && !postUrl && postContext.title) {
-      const safeTitle = validator.escape(postContext.title).replace(/ /g, "-");
-      setPostUrl(safeTitle);
+      if (postContext.url === "") {
+        const safeTitle = validator
+          .escape(postContext.title)
+          .replace(/ /g, "-");
+        setPostUrl(safeTitle);
+      } else {
+        setPostUrl(postContext.url);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModal]);
@@ -45,25 +51,39 @@ function Publish({
   };
 
   const publishHandler = async () => {
-    await upload_post_api(
-      postContext.id,
-      postUrl,
-      postContext.title,
-      postContext.content,
-      postContext.preview
-        ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-        : null,
-      postContext.category?.id,
-      postContext.files,
-      postContext.isPrivate
-    )
-      .then((res) => {
-        toast.info("게시글을 업로드했습니다!");
-        POST_STORE.clear();
+    if (postContext.id === null) {
+      await upload_post_api({
+        postContext: postContext,
+        postUrl: postUrl,
+        previewUrl: postContext.preview
+          ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+          : null,
       })
-      .catch((err) => {
-        toast.error("게시글 업로드에 실패했습니다!");
-      });
+        .then((res) => {
+          toast.info("게시글을 업로드했습니다!");
+          POST_STORE.clear();
+        })
+        .catch((err) => {
+          toast.error("게시글 업로드에 실패했습니다!");
+        });
+    } else {
+      const modifiedAt = new Date().toISOString();
+      await edit_post_api({
+        postContext: postContext,
+        postUrl: postUrl,
+        previewUrl: postContext.preview
+          ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+          : null,
+        modifiedAt: modifiedAt,
+      })
+        .then((res) => {
+          toast.info("게시글을 수정했습니다!");
+          POST_STORE.clear();
+        })
+        .catch((err) => {
+          toast.error("게시글 수정에 실패했습니다!");
+        });
+    }
     closeHandler();
     navigate("/");
   };

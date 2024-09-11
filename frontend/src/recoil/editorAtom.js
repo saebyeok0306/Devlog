@@ -8,7 +8,10 @@ export class PostContext {
     category = null,
     files = [],
     preview = null,
-    isPrivate = false
+    isPrivate = false,
+    createdAt = null,
+    modifiedAt = null,
+    url = ""
   ) {
     this.id = id;
     this.title = title;
@@ -17,6 +20,9 @@ export class PostContext {
     this.files = files;
     this.preview = preview;
     this.isPrivate = isPrivate;
+    this.createdAt = createdAt;
+    this.modifiedAt = modifiedAt;
+    this.url = url;
   }
 }
 

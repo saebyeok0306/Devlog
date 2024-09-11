@@ -59,7 +59,10 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
     postContent.category,
     files,
     preview,
-    postContent.private
+    postContent.private,
+    postContent.createdAt,
+    postContent.modifiedAt,
+    postContent.url
   );
   console.log(newContext);
 

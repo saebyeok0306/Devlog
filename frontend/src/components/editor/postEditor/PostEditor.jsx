@@ -61,6 +61,8 @@ function PostEditor() {
 
   const [openLoader, setOpenLoader] = useState(false);
 
+  console.log(postContext);
+
   const MAX_LENGTH = 50000;
 
   useEffect(() => {
