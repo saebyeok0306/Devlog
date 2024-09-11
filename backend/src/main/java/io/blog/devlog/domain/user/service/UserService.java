@@ -36,6 +36,7 @@ public class UserService {
     }
 
     public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
+        log.info("reissueRequest : " + request.toString());
         String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
         if (refreshToken == null) {
             log.error("refreshToken is null");
