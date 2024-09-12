@@ -72,7 +72,7 @@ jobs:
         run: npm ci
 
       - name: Build with Node.js
-        run: CI=false npm run build
+        run: GENERATE_SOURCEMAP=false CI=false npm run build
 
       - name: Make zip build file
         run: zip -qq -r ./${{ env.ZIP_NAME }} ./build
