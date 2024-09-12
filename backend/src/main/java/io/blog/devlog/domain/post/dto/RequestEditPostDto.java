@@ -27,7 +27,6 @@ public class RequestEditPostDto {
     private Long categoryId;
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();
-    @ColumnDefault("false")
     private boolean isPrivate;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
