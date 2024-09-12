@@ -11,7 +11,7 @@ export const upload_post_api = async ({ postContext, postUrl, previewUrl }) => {
     previewUrl: previewUrl,
     categoryId: postContext.category.id,
     files: postContext.files,
-    isPrivate: postContext.isPrivate,
+    private: postContext.isPrivate,
   };
   return await API.post("/posts", requestBody, {})
     .then((response) => response)
@@ -34,7 +34,7 @@ export const edit_post_api = async ({
     previewUrl: previewUrl,
     categoryId: postContext.category.id,
     files: postContext.files,
-    isPrivate: postContext.isPrivate,
+    private: postContext.isPrivate,
     createdAt: postContext.createdAt,
     modifiedAt: modifiedAt,
   };
