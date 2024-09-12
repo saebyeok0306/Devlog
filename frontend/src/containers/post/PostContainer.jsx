@@ -1,7 +1,7 @@
-import Main from "components/base/main";
+import Main from "components/common/main";
 import React, { useRef } from "react";
 import PostCommentContainer from "./PostCommentContainer";
-import TOC from "components/toc/TOC";
+import TOC from "components/side/toc/TOC";
 
 function PostContainer() {
   const commentRef = useRef(null);

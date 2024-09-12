@@ -3,17 +3,22 @@ import React from "react";
 import "./UserMenu.scss";
 import { authAtom } from "recoil/authAtom";
 import { useRecoilState } from "recoil";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
 import { signOut } from "utils/authenticate";
 
+const onProfileHandler = (navigate) => {
+  navigate("/profile");
+};
+
+const onLogoutHandler = (setAuthDto) => {
+  signOut(setAuthDto);
+};
+
 function UserMenu() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [authDto, setAuthDto] = useRecoilState(authAtom);
-
-  const handleLogout = () => {
-    signOut(setAuthDto);
-  };
 
   if (authDto?.isLogin === false) {
     return (
@@ -28,10 +33,15 @@ function UserMenu() {
   return (
     <nav className="usermenu">
       <Dropdown label={`${authDto.username}님`} inline>
-        <Dropdown.Item>Dashboard</Dropdown.Item>
-        <Dropdown.Item>Settings</Dropdown.Item>
-        <Dropdown.Item>Earnings</Dropdown.Item>
-        <Dropdown.Item onClick={() => handleLogout()}>Sign out</Dropdown.Item>
+        <Dropdown.Item onClick={() => onProfileHandler(navigate)}>
+          프로필
+        </Dropdown.Item>
+        {authDto.role === "ADMIN" ? (
+          <Dropdown.Item>블로그</Dropdown.Item>
+        ) : null}
+        <Dropdown.Item onClick={() => onLogoutHandler(setAuthDto)}>
+          로그아웃
+        </Dropdown.Item>
       </Dropdown>
     </nav>
   );

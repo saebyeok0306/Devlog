@@ -1,5 +1,5 @@
 import React from "react";
-import Profile from "components/profile";
+import Profile from "components/side/profile";
 import Category from "components/category/display";
 
 function LeftSideContainer() {

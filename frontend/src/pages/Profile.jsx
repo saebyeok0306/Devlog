@@ -1,15 +1,15 @@
 import React from "react";
 import PageTemplate from "components/common/pageTemplate";
 import HeaderContainer from "containers/base/HeaderContainer";
-import MainContainer from "containers/main/MainContainer";
+import ProfileContainer from "containers/profile/ProfileContainer";
 
-function Home() {
+function Profile() {
   return (
     <PageTemplate>
       <HeaderContainer />
-      <MainContainer />
+      <ProfileContainer />
     </PageTemplate>
   );
 }
 
-export default Home;
+export default Profile;

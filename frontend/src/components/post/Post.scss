@@ -1,7 +1,13 @@
 @import "src/styles/commons";
 
 .post-container {
-  margin-bottom: 15px;
+  background-color: #fbfbfb;
+  &:is(.dark *) {
+    background-color: #242424;
+  }
+  padding: 1em;
+  border-radius: 15px;
+  margin: 15px 0 15px 0;
   hr {
     margin: 1em 0 1em 0;
   }
@@ -45,7 +51,7 @@
     gap: 10px;
     .post-footer-item {
       display: flex;
-      font-size: 1.1em;
+      font-size: 1em;
       gap: 5px;
       * {
         margin: auto 0 auto 0;

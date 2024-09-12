@@ -1,5 +1,5 @@
 import React from "react";
-import Main from "components/base/main";
+import Main from "components/common/main";
 import LeftSideContainer from "containers/side/LeftSideContainer";
 import Posts from "components/posts/Posts";
 

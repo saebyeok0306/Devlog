@@ -3,6 +3,7 @@ package io.blog.devlog.domain.post.service;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.service.CategoryService;
 import io.blog.devlog.domain.file.service.FileService;
+import io.blog.devlog.domain.post.dto.RequestEditPostDto;
 import io.blog.devlog.domain.post.dto.RequestPostDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
@@ -36,6 +37,19 @@ public class PostUploadService {
         Post post = postRepository.save(requestPostDto.toEntity(user, category));
 
         fileService.uploadFileAndDeleteTempFile(post, requestPostDto.getFiles());
+        return post;
+    }
+
+    public Post editPost(RequestEditPostDto requestEditPostDto) throws BadRequestException {
+        String email = getUserEmail();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+        Category category = categoryService.getCategoryById(requestEditPostDto.getCategoryId())
+                .orElseThrow(() -> new BadRequestException("Category not found : " + requestEditPostDto.getCategoryId()));
+
+        Post post = postRepository.save(requestEditPostDto.toEntity(user, category));
+
+        fileService.uploadFileAndDeleteTempFile(post, requestEditPostDto.getFiles());
         return post;
     }
 }

@@ -4,9 +4,13 @@ import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.file.dto.FileDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.user.model.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +18,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestPostDto {
+public class RequestEditPostDto {
+    private Long id;
     private String url;
     private String title;
     private String content;
@@ -24,14 +29,17 @@ public class RequestPostDto {
     private List<FileDto> files = Collections.emptyList();
     @ColumnDefault("false")
     private boolean isPrivate;
+    private LocalDateTime modifiedAt;
+    private LocalDateTime createdAt;
 
-    public RequestPostDto setUrl(String url) {
+    public RequestEditPostDto setUrl(String url) {
         this.url = url;
         return this;
     }
 
     public Post toEntity(User user, Category category) {
-        return Post.builder()
+        Post newPost = Post.builder()
+                .id(this.id)
                 .url(this.url)
                 .title(this.title)
                 .content(this.content)
@@ -40,5 +48,8 @@ public class RequestPostDto {
                 .user(user)
                 .isPrivate(this.isPrivate)
                 .build();
+        newPost.setModifiedAt(this.modifiedAt);
+        newPost.setCreatedAt(this.createdAt);
+        return newPost;
     }
 }

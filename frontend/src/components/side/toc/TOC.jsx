@@ -59,7 +59,10 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
     postContent.category,
     files,
     preview,
-    postContent.private
+    postContent.private,
+    postContent.createdAt,
+    postContent.modifiedAt,
+    postContent.url
   );
   console.log(newContext);
 
@@ -135,7 +138,7 @@ function TOC({ ...props }) {
   });
 
   return (
-    <aside>
+    <aside className="toc-box">
       <div className="toc-container">
         <span className="toc-title">목차</span>
         <Toc

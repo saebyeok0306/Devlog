@@ -44,6 +44,12 @@ public class PostController {
         postUploadService.savePost(requestPostDto);
     }
 
+    @PostMapping("/edit")
+    public void editPost(@RequestBody RequestEditPostDto requestEditPostDto) throws BadRequestException {
+        log.info("Post edited : " + requestEditPostDto.getTitle());
+        postUploadService.editPost(requestEditPostDto);
+    }
+
     @GetMapping
     public ResponseEntity<ResponsePageablePostDto> getPosts(@RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size) throws BadRequestException {
