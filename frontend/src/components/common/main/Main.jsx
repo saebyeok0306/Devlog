@@ -6,11 +6,19 @@ import "./Main.scss";
 function Main({ LeftSide, MainContent, RightSide, ...props }) {
   return (
     <Responsive className="main">
-      {LeftSide == null ? <aside /> : <LeftSide {...props} />}
+      {LeftSide == null ? (
+        <aside style={{ height: "0px", padding: "0px" }} />
+      ) : (
+        <LeftSide {...props} />
+      )}
       <section>
         <MainContent {...props} />
       </section>
-      {RightSide == null ? <aside /> : <RightSide {...props} />}
+      {RightSide == null ? (
+        <aside style={{ height: "0px", padding: "0px" }} />
+      ) : (
+        <RightSide {...props} />
+      )}
     </Responsive>
   );
 }

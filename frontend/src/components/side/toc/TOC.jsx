@@ -138,7 +138,7 @@ function TOC({ ...props }) {
   });
 
   return (
-    <aside>
+    <aside className="toc-box">
       <div className="toc-container">
         <span className="toc-title">목차</span>
         <Toc
