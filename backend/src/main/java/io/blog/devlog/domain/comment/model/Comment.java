@@ -36,7 +36,7 @@ public class Comment extends BaseTime {
     private String content;
     private boolean isPrivate;
     @Setter
-    @ColumnDefault("false")
+    @ColumnDefault("0")
     private boolean isDeleted;
 
     public Comment toEdit(RequestEditCommentDto requestEditCommentDto) {
