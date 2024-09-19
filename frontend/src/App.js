@@ -35,9 +35,9 @@ function App() {
     }
   }, [isDark]);
 
-  if (!readyPayload) {
-    return <div>Loading...</div>;
-  }
+  // if (!readyPayload) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <DarkModeProvider>
