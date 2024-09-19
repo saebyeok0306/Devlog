@@ -60,7 +60,29 @@ function Post({ ...props }) {
       top: 0,
       behavior: "instant",
     });
-  }, []);
+
+    const images = document.querySelectorAll(".post-content img");
+    const modal = document.querySelector(".post-image-modal");
+    const modalImg = document.querySelector(".post-image-modal img");
+
+    images.forEach((img) => {
+      img.addEventListener("click", () => {
+        modalImg.src = img.src; // 클릭한 이미지의 src를 모달에 설정
+        modal.classList.add("active"); // 모달 보이기
+      });
+    });
+
+    modal.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+
+    return () => {
+      images.forEach((img) => {
+        img.removeEventListener("click", () => {});
+      });
+      modal.removeEventListener("click", () => {});
+    };
+  }, [postContent]);
 
   if (postContent === null) {
     return <Navigate replace to="/" />;
@@ -112,6 +134,10 @@ function Post({ ...props }) {
       </header>
       <hr />
       <article>
+        <div className="post-image-modal">
+          <img src={null} alt="fullscreen" />
+          <p>클릭하면 이미지가 축소됩니다.</p>
+        </div>
         <MDEditor.Markdown
           className="post-content"
           source={postContent?.content}
