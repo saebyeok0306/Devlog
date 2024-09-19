@@ -3,6 +3,7 @@ package io.blog.devlog.domain.user.service;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
+import io.blog.devlog.global.exception.NullJwtException;
 import io.blog.devlog.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,9 +41,10 @@ public class UserService {
         String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
         if (refreshToken == null) {
             log.error("refreshToken is null");
-            throw new BadRequestException("Invalid refresh token");
+            throw new NullJwtException("refreshToken is null");
         }
         if (jwtService.isTokenValid(refreshToken) && !jwtService.isRefreshTokenValid(refreshToken)) {
+            // 만료된 경우에는 isTokenValid에서 따로 에러를 던짐.
             throw new BadRequestException("Invalid refresh token");
         }
 

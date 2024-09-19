@@ -17,27 +17,36 @@ function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
-      <Link className="post-top" to={`/post/${post.url}`}>
-        {post.previewUrl !== null ? (
-          <img
-            className="post-img"
-            src={post.previewUrl}
-            alt="post"
-            onError={onErrorImg}
-          />
-        ) : (
-          <div className="post-img"></div>
-        )}
-        <div className="post-title">{post.title}</div>
-      </Link>
-      <div className="post-bottom">
-        <button
-          className="post-category"
-          onClick={() => setSelectCategory(post.category.id)}
-        >
-          {post.category.name}
-        </button>
-        <div className="post-create">{createdAtFormat}</div>
+      <div className="post-item-top">
+        <Link to={`/post/${post.url}`}>
+          {post.previewUrl !== null ? (
+            <img
+              className="post-item-img"
+              src={post.previewUrl}
+              alt="post"
+              onError={onErrorImg}
+            />
+          ) : (
+            <div className="post-item-img"></div>
+          )}
+        </Link>
+      </div>
+      <div className="post-item-bottom">
+        <div className="post-item-content">
+          <button
+            className="post-item-category"
+            onClick={() => setSelectCategory(post.category.id)}
+          >
+            {post.category.name}
+          </button>
+          <Link to={`/post/${post.url}`} className="post-item-title">
+            {post.title}
+          </Link>
+        </div>
+        <div className="post-item-chore">
+          <div className="post-item-create">{createdAtFormat}</div>
+          <div className="post-item-views">{`View ${post.views}`}</div>
+        </div>
       </div>
       {/* <div className="author">by {post.author}</div> */}
       {/* <div className="content">{post.content}</div> */}

@@ -61,26 +61,30 @@ export const GetPayload = () => {
   useEffect(() => {
     const checkUserdata = async () => {
       if (authDto?.isLogin) return;
-      let payload = null;
       try {
         await jwt_refresh_api();
         const result = await user_profile_api();
-        payload = result.data;
+        const payload = result.data;
+
+        if (result.status === 200) {
+          setAuthDto(
+            new Auth(
+              payload.username,
+              payload.email,
+              true,
+              payload.role,
+              payload.profileUrl
+            )
+          );
+        } else if (result.status === 204) {
+          return;
+        }
       } catch (error) {
         // console.error("Failed to get user data:", error);
         await signOutProcess(setAuthDto);
         // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
       }
-      setAuthDto(
-        new Auth(
-          payload.username,
-          payload.email,
-          true,
-          payload.role,
-          payload.profileUrl
-        )
-      );
     };
 
     checkUserdata();

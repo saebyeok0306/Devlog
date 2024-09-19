@@ -21,4 +21,12 @@ public class GlobalExceptionHandler {
         String path = request.getRequestURI();
         errorResponse.setResponse(response, status, error, path);
     }
+
+    @ExceptionHandler(NullJwtException.class)
+    public void nullJwtExceptionHandler(NullJwtException e, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Integer status = HttpServletResponse.SC_NO_CONTENT;
+        String error = e.getMessage();
+        String path = request.getRequestURI();
+        errorResponse.setResponse(response, status, error, path);
+    }
 }

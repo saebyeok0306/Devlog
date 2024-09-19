@@ -57,7 +57,7 @@ function Publish({
         postUrl: postUrl,
         previewUrl: postContext.preview
           ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-          : null,
+          : `previewUrl`,
       })
         .then((res) => {
           toast.info("게시글을 업로드했습니다!");
@@ -73,7 +73,7 @@ function Publish({
         postUrl: postUrl,
         previewUrl: postContext.preview
           ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-          : null,
+          : `previewUrl`,
         modifiedAt: modifiedAt,
       })
         .then((res) => {

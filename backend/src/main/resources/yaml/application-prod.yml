@@ -23,7 +23,7 @@ frontend:
   domain: devlog.run
 file:
   upload:
-    path: /home/resource
+    path: /home/static/resource
   request:
     path: res
 # screen -S back java -jar devlog.jar --spring.profiles.active=prod
