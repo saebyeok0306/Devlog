@@ -57,7 +57,7 @@
       &:is(.dark *) {
         background-color: #242424;
       }
-      .post-img {
+      .post-item-img {
         width: 100%;
         height: 12rem;
         text-align: center;
@@ -65,12 +65,22 @@
         object-fit: cover;
         border-radius: 10px;
       }
-      .post-title {
-        margin-top: 1em;
-        font-size: 1.2rem;
-        font-weight: 600;
+      .post-item-top {
+        margin: auto 0 auto 0;
       }
-      .post-bottom {
+      .post-item-content {
+        margin-top: 1em;
+        display: flex;
+        flex-direction: column;
+        .post-item-category {
+          text-align: left;
+        }
+        .post-item-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+      }
+      .post-item-chore {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
