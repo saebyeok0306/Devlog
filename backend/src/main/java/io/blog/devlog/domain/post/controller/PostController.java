@@ -9,9 +9,11 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
+import io.blog.devlog.domain.post.service.PostViewsService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -37,6 +39,7 @@ public class PostController {
     private final CommentService commentService;
     private final PostLikeService postLikeService;
     private final PostUploadService postUploadService;
+    private final PostViewsService postViewsService;
 
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
@@ -69,7 +72,7 @@ public class PostController {
     }
 
     @GetMapping("/{url}")
-    public ResponseEntity<ResponsePostCommentDto> getPost(@PathVariable String url) throws BadRequestException {
+    public ResponseEntity<ResponsePostCommentDto> getPost(HttpServletRequest request, @PathVariable String url) throws BadRequestException {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null) {
@@ -80,6 +83,7 @@ public class PostController {
                     .build();
         }
         PostDetail postDetail = postService.getPostByUrl(url, user);
+        postViewsService.increaseViewCount(postDetail.getPost().getId(), request);
         List<ResponseCommentDto> comments = commentService.getCommentsFromPost(user, postDetail);
         PostLikeDetail postLikeDetail = postLikeService.likeDetailFromPost(postDetail.getPost(), user);
         return ResponseEntity.ok(ResponsePostCommentDto.of(email, postDetail, comments, postLikeDetail));
