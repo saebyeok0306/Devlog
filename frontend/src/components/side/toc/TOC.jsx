@@ -62,7 +62,8 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
     postContent.private,
     postContent.createdAt,
     postContent.modifiedAt,
-    postContent.url
+    postContent.url,
+    postContent.views
   );
   console.log(newContext);
 

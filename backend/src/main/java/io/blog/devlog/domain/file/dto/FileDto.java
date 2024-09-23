@@ -24,6 +24,8 @@ public class FileDto {
     private String filePath; // res
     @Enumerated(EnumType.STRING)
     private FileType fileType;
+    @Builder.Default
+    private boolean exist = false; // 이미 존재하는 파일인지 여부
 
     public File toEntity() {
         return File.builder()
@@ -45,12 +47,13 @@ public class FileDto {
 
     public static FileDto of(File file) {
         return FileDto.builder()
-                .tempId(file.getId())
+                .tempId(0)
                 .fileName(file.getFileName())
                 .fileSize(file.getFileSize())
                 .fileUrl(file.getFileUrl())
                 .filePath(file.getFilePath())
                 .fileType(file.getFileType())
+                .exist(true) // 이미 존재하는 파일에서 Dto로 변환하므로
                 .build();
     }
 }

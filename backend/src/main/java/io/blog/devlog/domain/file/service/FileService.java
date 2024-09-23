@@ -33,6 +33,10 @@ public class FileService {
         List<File> files = new ArrayList<>();
         for (FileDto uploadFile : uploadFiles) {
             try {
+                if (uploadFile.isExist()) {
+                    continue;
+                }
+                System.out.println("uploadFile = " + uploadFile.toString());
                 tempFileService.deleteTempFile(uploadFile.getTempId());
                 File file = null;
                 if (original.getClass().equals(Post.class)) {
