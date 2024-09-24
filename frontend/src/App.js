@@ -17,13 +17,15 @@ import DarkModeProvider from "utils/DarkModeProvider";
 import CategoryManager from "pages/CategoryManager";
 import { ROLE_TYPE } from "utils/RoleType";
 import ToastContainerComponent from "utils/ToastContainer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GetPayload } from "utils/authenticate";
 import Profile from "pages/Profile";
+import { HashLoader } from "react-spinners";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const isDark = useRecoilValue(themeAtom);
-  const readyPayload = GetPayload();
+  GetPayload(setIsLoading);
 
   useEffect(() => {
     if (isDark) {
@@ -35,7 +37,7 @@ function App() {
     }
   }, [isDark]);
 
-  // if (!readyPayload) {
+  // if (isLoading) {
   //   return <div>Loading...</div>;
   // }
 
@@ -46,30 +48,44 @@ function App() {
         <BrowserRouter basename={process.env.PUBLIC_URL}>
           <AxiosProvider>
             <div className={`contentWrapper`}>
-              <Routes>
-                <Route element={<AnyRoute />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/post/:postUrl" element={<Post />} />
-                </Route>
-                <Route element={<PublicRoute />}>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/callback" element={<Callback />} />
-                </Route>
-                <Route element={<PrivateRoute role={ROLE_TYPE.USER} />}>
-                  <Route path="/editor" element={<Editor />} />
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
-                <Route
-                  path="/manager"
-                  element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}
-                >
-                  <Route path="category" element={<CategoryManager />} />
-                  <Route path="info" element={<div>info</div>} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" />} />
-                {/* 모든 경로를 홈으로 리다이렉트 */}
-              </Routes>
+              {!isLoading ? (
+                <Routes>
+                  <Route element={<AnyRoute />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/post/:postUrl" element={<Post />} />
+                  </Route>
+                  <Route element={<PublicRoute />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/callback" element={<Callback />} />
+                  </Route>
+                  <Route element={<PrivateRoute role={ROLE_TYPE.USER} />}>
+                    <Route path="/editor" element={<Editor />} />
+                    <Route path="/profile" element={<Profile />} />
+                  </Route>
+                  <Route
+                    path="/manager"
+                    element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}
+                  >
+                    <Route path="category" element={<CategoryManager />} />
+                    <Route path="info" element={<div>info</div>} />
+                  </Route>
+                  <Route path="*" element={<Navigate to="/" />} />
+                  {/* 모든 경로를 홈으로 리다이렉트 */}
+                </Routes>
+              ) : (
+                <div style={{ flex: 1 }}>
+                  <HashLoader
+                    size={150}
+                    color={isDark ? "#fff" : "#000"}
+                    cssOverride={{
+                      display: "block",
+                      margin: "0 auto 0 auto",
+                      marginTop: "20%",
+                    }}
+                  />
+                </div>
+              )}
             </div>
             <FooterContainer />
           </AxiosProvider>

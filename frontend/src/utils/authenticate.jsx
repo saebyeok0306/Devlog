@@ -55,7 +55,7 @@ export const warnSignOut = async (
   }
 };
 
-export const GetPayload = () => {
+export const GetPayload = (setIsLoading) => {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
@@ -84,6 +84,8 @@ export const GetPayload = () => {
         await signOutProcess(setAuthDto);
         // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
+      } finally {
+        setIsLoading(false);
       }
     };
 
