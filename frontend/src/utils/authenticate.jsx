@@ -55,7 +55,7 @@ export const warnSignOut = async (
   }
 };
 
-export const GetPayload = (setIsLoading) => {
+export const GetPayload = (setIsLoading, setMaintenance) => {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
@@ -80,7 +80,11 @@ export const GetPayload = (setIsLoading) => {
           return;
         }
       } catch (error) {
-        // console.error("Failed to get user data:", error);
+        if (error?.message === "Network Error") {
+          console.error("server maintenance:", error);
+          setMaintenance(true);
+          return;
+        }
         await signOutProcess(setAuthDto);
         // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
