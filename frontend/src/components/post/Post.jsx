@@ -19,6 +19,7 @@ import { Tooltip } from "flowbite-react";
 import { authAtom } from "recoil/authAtom";
 import { post_like_api, post_unlike_api } from "api/Like";
 import { toast } from "react-toastify";
+import remarkYoutubePlugin from "remark-youtube";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -142,6 +143,7 @@ function Post({ ...props }) {
           className="post-content"
           source={postContent?.content}
           rehypePlugins={[[RehypeVideo]]}
+          remarkPlugins={[[remarkYoutubePlugin, {}]]}
           style={{ flex: "1", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
         />
       </article>

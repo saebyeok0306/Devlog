@@ -16,6 +16,7 @@ import UploadIcon from "assets/icons/Upload";
 import { authAtom } from "recoil/authAtom";
 import { useNavigate } from "react-router-dom";
 import { PostContext, postContextAtom } from "recoil/editorAtom";
+import remarkYoutubePlugin from "remark-youtube";
 
 const ReturnInsertText = ({ ref, content, text }) => {
   if (!ref.current.textarea) return null;
@@ -251,6 +252,7 @@ function PostEditor() {
         }}
         previewOptions={{
           rehypePlugins: [[rehypeVideo, { test: /\/(.*)(.mp4|.mov)$/ }]],
+          remarkPlugins: [[remarkYoutubePlugin, {}]],
         }}
         commands={[
           commands.bold,
