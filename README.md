@@ -53,6 +53,10 @@ Frontend는 React, Backend는 Spring을 사용하여 웹서비스를 만들고 �
 
 ![OAuth 2.0 로그인 구현](https://github.com/westreed/Devlog/blob/main/readme_src/OAuth2_Sequencediagram.png)
 
+### Redis Pub/Sub
+
+Redis를 활용하여 Pub/Sub를 구현하였습니다. 메일서버와의 비동기 연결을 위해 사용했고, 메시지 전달 여부가 크게 중요하지 않았기 때문에 Kafka나 RabbitMQ보다는 Redis를 선택하게 되었습니다.
+
 ## TODO-List
 
 - 프로필 페이지 만들기
