@@ -17,8 +17,12 @@ spring:
       ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
+        hightlight_sql: true
+  data:
+    redis:
+      host: redis
+      port: 6379
 frontend:
   url: http://localhost:3000
   domain: localhost

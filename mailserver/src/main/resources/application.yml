@@ -6,7 +6,8 @@ spring:
     name: mailserver
   config:
     import:
-      - classpath:/yaml/application-docker.yml
+      - classpath:/yaml/application-local.yml
+      - classpath:/yaml/application-prod.yml
   profiles:
     active: local
   mail:

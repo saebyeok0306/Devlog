@@ -1,0 +1,6 @@
+FROM gradle:jdk17
+
+WORKDIR /app
+COPY ./mail.jar .
+
+ENTRYPOINT ["java", "-jar", "mail.jar", "--spring.profiles.active=prod"]
