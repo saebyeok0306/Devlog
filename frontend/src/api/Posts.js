@@ -34,6 +34,7 @@ export const edit_post_api = async ({
     previewUrl: previewUrl,
     categoryId: postContext.category.id,
     files: postContext.files,
+    views: postContext.views,
     private: postContext.isPrivate,
     createdAt: postContext.createdAt,
     modifiedAt: modifiedAt,

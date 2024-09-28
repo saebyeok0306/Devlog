@@ -1,9 +1,14 @@
 package io.blog.devlog.domain.user.controller;
 
+import io.blog.devlog.domain.user.dto.RequestPasswordDto;
 import io.blog.devlog.domain.user.dto.ResponseUserProfileDto;
 import io.blog.devlog.domain.user.dto.UserDto;
+import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.domain.user.service.VerifyService;
+import io.blog.devlog.global.redis.message.VerifyEmailMessage;
+import io.blog.devlog.global.redis.service.VerifyEmailPubService;
 import io.blog.devlog.global.response.ErrorResponse;
 import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,10 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -30,6 +32,8 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 public class AuthController {
 
     private final UserService userService;
+    private final VerifyService verifyService;
+    private final VerifyEmailPubService verifyEmailPubService;
     private final ErrorResponse errorResponse;
     private final SuccessResponse successResponse;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -59,9 +63,10 @@ public class AuthController {
                 .username(userDto.getUsername())
                 .password(userDto.getPassword())
                 .email(userDto.getEmail())
+                .certificate(false)
+                .role(Role.GUEST) // 인증이 안된 상태이므로 GUEST 권한
                 .build();
 
-        user.authorizeUser();
         user.passwordEncode(bCryptPasswordEncoder);
         userService.saveUser(user);
 
@@ -93,5 +98,46 @@ public class AuthController {
     public void logout(HttpServletResponse response) {
         log.info("GET /signout");
         userService.logout(response);
+    }
+
+    @PutMapping("/profile/password")
+    public void renewPassword(@RequestBody RequestPasswordDto requestPasswordDto) throws BadRequestException {
+        log.info("PUT /password/renew RequestPasswordDto : {}", requestPasswordDto);
+
+        if (requestPasswordDto.getCurrentPassword().isEmpty() || requestPasswordDto.getNewPassword().isEmpty()) {
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
+        if (requestPasswordDto.getCurrentPassword().equals(requestPasswordDto.getNewPassword())) {
+            throw new BadRequestException("기존 비밀번호와 새 비밀번호가 같습니다.");
+        }
+        String userEmail = getUserEmail();
+        if (userEmail == null) {
+            throw new BadRequestException("잘못된 요청입니다.");
+        }
+        User user = userService.getUserByEmail(userEmail).orElseThrow(() -> new BadRequestException("잘못된 요청입니다."));
+
+        user.updatePassword(bCryptPasswordEncoder, requestPasswordDto);
+        userService.saveUser(user);
+    }
+
+    @GetMapping("/profile/verify-email")
+    public void requestVerifyEmail() {
+        String email = getUserEmail();
+        String code = verifyService.createVerifyCode(email);
+        VerifyEmailMessage verifyEmailMessage = new VerifyEmailMessage(email, "[devLog] 이메일 인증 코드", code);
+
+        verifyEmailPubService.sendVerifyEmail(verifyEmailMessage);
+    }
+
+    @PostMapping("/profile/verify-email/{code}")
+    public void sendVerifyEmail(@PathVariable String code) throws BadRequestException {
+        String email = getUserEmail();
+        if (!verifyService.checkVerifyCode(email, code)) {
+            throw new BadRequestException("이메일 인증에 실패했습니다.");
+        }
+
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("잘못된 요청입니다."));
+        user.certified();
+        userService.saveUser(user);
     }
 }

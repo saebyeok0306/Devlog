@@ -29,4 +29,12 @@ public class GlobalExceptionHandler {
         String path = request.getRequestURI();
         errorResponse.setResponse(response, status, error, path);
     }
+
+    @ExceptionHandler(NotMatchPasswordException.class)
+    public void nullJwtExceptionHandler(NotMatchPasswordException e, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Integer status = HttpServletResponse.SC_BAD_REQUEST;
+        String error = e.getMessage();
+        String path = request.getRequestURI();
+        errorResponse.setResponse(response, status, error, path);
+    }
 }

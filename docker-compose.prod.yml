@@ -1,0 +1,58 @@
+version: "3.9"
+
+networks:
+  ms-network:
+    driver: bridge
+
+services:
+  mainserver:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ms-network
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
+      DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
+
+  mailserver:
+    build:
+      context: ./mailserver
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8001:8001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ms-network
+    environment:
+      DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
+      DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
+
+  redis:
+    image: redis:7.4
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ms-network
+
+  dozzle:
+    image: amir20/dozzle:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ms-network

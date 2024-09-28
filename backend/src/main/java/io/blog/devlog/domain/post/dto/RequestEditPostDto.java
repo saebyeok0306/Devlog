@@ -27,6 +27,7 @@ public class RequestEditPostDto {
     private Long categoryId;
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();
+    private long views;
     private boolean isPrivate;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
@@ -45,6 +46,7 @@ public class RequestEditPostDto {
                 .previewUrl(this.previewUrl)
                 .category(category)
                 .user(user)
+                .views(this.views)
                 .isPrivate(this.isPrivate)
                 .build();
         newPost.setModifiedAt(this.modifiedAt);

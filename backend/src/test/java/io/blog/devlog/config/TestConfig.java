@@ -30,12 +30,14 @@ public class TestConfig {
             .password(password)
             .username(username)
             .role(role)
+            .certificate(true)
             .build();
     public User guestUser = User.builder()
             .email(guestEmail)
             .password(guestPassword)
             .username(guestUsername)
             .role(guestRole)
+            .certificate(true)
             .build();
 
     public JwtService createJwtService() {

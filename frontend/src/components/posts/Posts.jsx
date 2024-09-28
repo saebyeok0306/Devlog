@@ -45,7 +45,7 @@ function PostCard(idx, post, setSelectCategory) {
         </div>
         <div className="post-item-chore">
           <div className="post-item-create">{createdAtFormat}</div>
-          <div className="post-item-views">{`View ${post.views}`}</div>
+          <div className="post-item-views">{`view ${post.views}`}</div>
         </div>
       </div>
       {/* <div className="author">by {post.author}</div> */}

@@ -12,13 +12,17 @@ export class Auth {
     email = null,
     isLogin = false,
     role = "GUEST",
-    profileUrl = null
+    profileUrl = null,
+    provider = null,
+    certificate = false
   ) {
     this.username = username;
     this.email = email;
     this.isLogin = isLogin;
     this.role = role;
     this.profileUrl = profileUrl;
+    this.provider = provider;
+    this.certificate = certificate;
   }
 }
 

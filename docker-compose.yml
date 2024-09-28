@@ -5,12 +5,12 @@ networks:
     driver: bridge
 
 services:
-  spring:
+  mainserver:
     build: ./backend
     ports:
       - "8000:8000"
     depends_on:
-      database:
+      redis:
         condition: service_healthy
     networks:
       - ms-network
@@ -19,20 +19,45 @@ services:
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
 
-  database:
-    image: mysql:8.0
-    restart: on-failure
-    environment:
-      MYSQL_DATABASE: devlog
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+  mailserver:
+    build: ./mailserver
     ports:
-      - "3306:3306"
+      - "8001:8001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ms-network
+    environment:
+      DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
+      DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
+
+  redis:
+    image: redis:7.4
+    ports:
+      - "6379:6379"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    tty: true
     networks:
       - ms-network
+
+  # database:
+  #   image: mysql:8.0
+  #   restart: on-failure
+  #   environment:
+  #     MYSQL_DATABASE: devlog
+  #     MYSQL_ROOT_HOST: "%"
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+  #   ports:
+  #     - "3306:3306"
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   tty: true
+  #   networks:
+  #     - ms-network

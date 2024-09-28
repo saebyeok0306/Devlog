@@ -59,8 +59,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .email(email)
                     .provider(provider)
                     .providerId(providerId)
-                    .role(Role.GUEST)
+                    .role(Role.USER)
                     .password(providerId)
+                    .certificate(true) // 소셜 로그인은 인증이 필요 없음
                     .build();
             user.updateProfile(oauth2UserInfo.getImageUrl());
             userService.saveUser(user);

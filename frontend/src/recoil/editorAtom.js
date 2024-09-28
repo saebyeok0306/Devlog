@@ -11,7 +11,8 @@ export class PostContext {
     isPrivate = false,
     createdAt = null,
     modifiedAt = null,
-    url = ""
+    url = "",
+    views = 0
   ) {
     this.id = id;
     this.title = title;
@@ -23,6 +24,7 @@ export class PostContext {
     this.createdAt = createdAt;
     this.modifiedAt = modifiedAt;
     this.url = url;
+    this.views = views;
   }
 }
 

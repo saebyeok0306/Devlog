@@ -47,6 +47,16 @@
         * {
           background-color: inherit;
         }
+
+        iframe {
+          display: block;
+          margin: auto;
+        }
+
+        img {
+          display: block;
+          margin: auto;
+        }
       }
       .w-md-editor-preview {
         font-family: NanumGothic !important;

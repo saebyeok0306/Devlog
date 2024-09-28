@@ -55,7 +55,7 @@ export const warnSignOut = async (
   }
 };
 
-export const GetPayload = () => {
+export const GetPayload = (setIsLoading, setMaintenance) => {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
@@ -73,17 +73,25 @@ export const GetPayload = () => {
               payload.email,
               true,
               payload.role,
-              payload.profileUrl
+              payload.profileUrl,
+              payload.provider,
+              payload.certificate
             )
           );
         } else if (result.status === 204) {
           return;
         }
       } catch (error) {
-        // console.error("Failed to get user data:", error);
+        if (error?.message === "Network Error") {
+          console.error("server maintenance:", error);
+          setMaintenance(true);
+          return;
+        }
         await signOutProcess(setAuthDto);
         // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
+      } finally {
+        setIsLoading(false);
       }
     };
 
