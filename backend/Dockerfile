@@ -1,4 +1,4 @@
-FROM gradle:jdk21
+FROM gradle:jdk17
 
 WORKDIR /app
 ADD build.gradle .

@@ -1,6 +1,6 @@
-package io.blog.mail.service
+package io.blog.mail.mail.service
 
-import io.blog.mail.types.MessageType
+import io.blog.mail.mail.types.MessageType
 import jakarta.mail.internet.MimeMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.javamail.JavaMailSender

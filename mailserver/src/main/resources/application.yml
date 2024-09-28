@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: mailserver
+  config:
+    import:
+      - classpath:/yaml/application-docker.yml
+  profiles:
+    active: local
   mail:
     host: smtp.gmail.com
     port: 587

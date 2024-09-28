@@ -16,8 +16,17 @@ public class ResponseUserProfileDto {
     private String email;
     private String profileUrl;
     private Role role;
+    private String provider;
+    private Boolean certificate;
 
     public static ResponseUserProfileDto of(User user) {
-        return new ResponseUserProfileDto(user.getUsername(), user.getEmail(), user.getProfileUrl(), user.getRole());
+        return ResponseUserProfileDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .profileUrl(user.getProfileUrl())
+                .role(user.getRole())
+                .provider(user.getProvider())
+                .certificate(user.getCertificate())
+                .build();
     }
 }

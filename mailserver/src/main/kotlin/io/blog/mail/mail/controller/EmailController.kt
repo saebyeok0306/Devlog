@@ -1,8 +1,8 @@
-package io.blog.mail.controller
+package io.blog.mail.mail.controller
 
-import io.blog.mail.dto.AuthenticationMessage
-import io.blog.mail.service.EmailService
-import io.blog.mail.types.MessageType
+import io.blog.mail.mail.message.AuthenticationMessage
+import io.blog.mail.mail.service.EmailService
+import io.blog.mail.mail.types.MessageType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
