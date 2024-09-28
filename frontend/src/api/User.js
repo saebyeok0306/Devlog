@@ -62,3 +62,15 @@ export const jwt_refresh_api = mem(
   // 유저별로 캐시를 따로 관리하기 위해 email을 cacheKey로 사용
   { maxAge: 1000, cacheKey: (args) => args[0], cache: REFRESH_STORE }
 );
+
+export const renew_password_api = async ({ currentPassword, newPassword }) => {
+  const requestBody = {
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+  };
+  return await API.put("/profile/password", requestBody)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};

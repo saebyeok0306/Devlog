@@ -73,7 +73,9 @@ export const GetPayload = (setIsLoading, setMaintenance) => {
               payload.email,
               true,
               payload.role,
-              payload.profileUrl
+              payload.profileUrl,
+              payload.provider,
+              payload.certificate
             )
           );
         } else if (result.status === 204) {
