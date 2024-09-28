@@ -4,10 +4,10 @@ server:
 spring:
   config:
     import:
+      - classpath:/yaml/application-local-old.yml
       - classpath:/yaml/application-local.yml
       - classpath:/yaml/application-dev.yml
       - classpath:/yaml/application-prod.yml
-      - classpath:/yaml/application-docker.yml
   profiles:
     active: local
     include: oauth

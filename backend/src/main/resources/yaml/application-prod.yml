@@ -16,10 +16,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update # DDL (create/update/create-drop/validate/none)
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
+  data:
+    redis:
+      host: redis
+      port: 6379
 frontend:
   url: https://devlog.run
   domain: devlog.run

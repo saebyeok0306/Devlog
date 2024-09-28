@@ -17,9 +17,12 @@ services:
     networks:
       - ms-network
     environment:
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
+      ORACLE_USERNAME: ${ORACLE_USERNAME}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+    volumes:
+      - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
 
   mailserver:
     build:

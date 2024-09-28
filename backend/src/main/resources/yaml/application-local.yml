@@ -4,7 +4,8 @@ spring:
       on-profile: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://host.docker.internal:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://database:3306/devlog?serverTimezone=Asia/Seoul
     username: root
     password: ${MYSQL_PASSWORD}
   sql:
@@ -17,9 +18,12 @@ spring:
       ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
     properties:
       hibernate:
-#        show_sql: true
         format_sql: true
         hightlight_sql: true
+  data:
+    redis:
+      host: redis
+      port: 6379
 frontend:
   url: http://localhost:3000
   domain: localhost
