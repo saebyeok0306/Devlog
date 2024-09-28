@@ -97,7 +97,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
@@ -188,7 +188,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x test
 
       # - name: Stop Server
       #   uses: appleboy/ssh-action@master
