@@ -124,7 +124,10 @@ function Profile() {
       </header>
       <hr className="border-gray-300 dark:border-gray-500" />
       <div className="profile-body">
-        <ProfileEmail userProfile={userProfile} />
+        <ProfileEmail
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+        />
         <hr className="border-gray-300 dark:border-gray-500" />
         <ProfilePassword userProfile={userProfile} />
         <hr className="border-gray-300 dark:border-gray-500" />

@@ -1,13 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "./Email.scss";
 
 import { HiOutlineMail } from "react-icons/hi";
 import { Button } from "flowbite-react";
+import VerifyModal from "./VerifyModal";
+import { request_verify_email_api } from "api/User";
 
-export function ProfileEmail({ userProfile }) {
+export function ProfileEmail({ userProfile, setUserProfile }) {
+  const [verifyTimer, setVerifyTimer] = useState(300);
+  const [verifyModal, setVerifyModal] = useState(false);
+
+  const requestVerifyEmailHandler = async () => {
+    try {
+      await request_verify_email_api();
+      setVerifyModal(true);
+      setVerifyTimer(300);
+    } catch (error) {}
+  };
+
   return (
     <div className="profile-body-email-box">
+      <VerifyModal
+        verifyModal={verifyModal}
+        setVerifyModal={setVerifyModal}
+        verifyTimer={verifyTimer}
+        setVerifyTimer={setVerifyTimer}
+        setUserProfile={setUserProfile}
+        requestVerifyEmailHandler={requestVerifyEmailHandler}
+      />
       <div className="content-box">
         <div className="content-label">이메일</div>
         <div className="content-data">
@@ -20,7 +41,12 @@ export function ProfileEmail({ userProfile }) {
               이메일 인증완료
             </Button>
           ) : (
-            <Button color="green" size="xs">
+            <Button
+              color="green"
+              size="xs"
+              onClick={() => requestVerifyEmailHandler()}
+              disabled={verifyModal}
+            >
               이메일 인증하기
             </Button>
           )}

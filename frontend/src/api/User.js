@@ -74,3 +74,19 @@ export const renew_password_api = async ({ currentPassword, newPassword }) => {
       throw error;
     });
 };
+
+export const request_verify_email_api = async () => {
+  return await API.get("/profile/verify-email")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const send_verify_email_api = async (code) => {
+  return await API.post(`/profile/verify-email/${code}`)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
