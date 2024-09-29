@@ -14,10 +14,12 @@ function FileUploader({
   getState,
   textApi,
   dispatch,
+  editorRef,
   openLoader,
   setOpenLoader,
   postContext,
   setPostContext,
+  UploadFileAndInsertText,
 }) {
   // textApi.replaceSelection(value);
   // execute(); // execute the command
@@ -31,7 +33,6 @@ function FileUploader({
 
   const fileHandler = (e) => {
     setFile(e.target.files[0]);
-    console.log(e.target.files[0]);
     // file.type = "image/png" mimetype
   };
 
@@ -40,28 +41,28 @@ function FileUploader({
       toast.info("파일을 선택해주세요.");
       return;
     }
-    await upload_file_api(file)
-      .then((res) => {
-        // TODO: VIDEO를 업로드한 경우에는 따로 처리하기 rehype-video
-        if (res.data.fileType === "IMAGE") {
-          const fileName = res.data.fileName.replace(/\.[^/.]+$/, "");
-          textApi.replaceSelection(
-            `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl})\n`
-          );
-        } else if (res.data.fileType === "VIDEO") {
-          textApi.replaceSelection(
-            `${process.env.REACT_APP_API_FILE_URL}/${res.data.filePath}/${res.data.fileUrl}\n`
-          );
-        }
-        setPostContext({
-          ...postContext,
-          files: [...postContext.files, res.data],
-        });
-        // setFiles([...postContext.files, res.data]);
-      })
-      .catch((err) => {
-        toast.error(`파일 업로드에 실패했습니다.\n${err}`);
+    try {
+      const upload_result = await upload_file_api(file);
+      const data = upload_result.data;
+      let text = "";
+      // TODO: VIDEO를 업로드한 경우에는 따로 처리하기 rehype-video
+      if (data.fileType === "IMAGE") {
+        const fileName = data.fileName.replace(/\.[^/.]+$/, "");
+        text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${data.filePath}/${data.fileUrl})\n`;
+      } else if (data.fileType === "VIDEO") {
+        text = `${process.env.REACT_APP_API_FILE_URL}/${data.filePath}/${data.fileUrl}\n`;
+      }
+
+      await UploadFileAndInsertText({
+        ref: editorRef,
+        apiResult: data,
+        postContext: postContext,
+        setPostContext: setPostContext,
+        insertText: text,
       });
+    } catch (error) {
+      toast.error(`파일 업로드에 실패했습니다.\n${error}`);
+    }
     closeHandler();
   };
 

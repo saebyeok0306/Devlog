@@ -30,18 +30,19 @@ const ReturnInsertText = ({ ref, content, text }) => {
   return newContent;
 };
 
-const UploadFileAndInsertText = async ({
+export const UploadFileAndInsertText = async ({
   ref,
   apiResult,
   postContext,
   setPostContext,
+  insertText,
 }) => {
-  const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
-  const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
+  // const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
+  // const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
   const newContent = ReturnInsertText({
     ref: ref,
     content: postContext.content,
-    text: text,
+    text: insertText,
   });
   await setPostContext({
     ...postContext,
@@ -110,10 +111,12 @@ function PostEditor() {
     children: (props) => (
       <FileUploader
         {...props}
+        editorRef={editorRef}
         openLoader={openLoader}
         setOpenLoader={setOpenLoader}
         postContext={postContext}
         setPostContext={setPostContext}
+        UploadFileAndInsertText={UploadFileAndInsertText}
       />
     ),
     execute: (state, api) => {
@@ -128,7 +131,6 @@ function PostEditor() {
       return;
     }
     setPostContext((prev) => ({ ...prev, content: change_text }));
-    // setContent(change_text);
   };
 
   const handleDrop = async (event) => {
@@ -152,11 +154,15 @@ function PostEditor() {
       if (file.type.startsWith("image")) {
         await upload_file_api(file)
           .then(async (res) => {
+            const result = res.data;
+            const fileName = result.fileName.replace(/\.[^/.]+$/, "");
+            const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${result.filePath}/${result.fileUrl})\n`;
             await UploadFileAndInsertText({
               ref: editorRef,
-              apiResult: res.data,
+              apiResult: result,
               postContext: postContext,
               setPostContext: setPostContext,
+              insertText: text,
             });
           })
           .catch((err) => {
@@ -176,11 +182,15 @@ function PostEditor() {
           const file = item.getAsFile();
           await upload_file_api(file)
             .then(async (res) => {
+              const result = res.data;
+              const fileName = result.fileName.replace(/\.[^/.]+$/, "");
+              const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${result.filePath}/${result.fileUrl})\n`;
               await UploadFileAndInsertText({
                 ref: editorRef,
-                apiResult: res.data,
+                apiResult: result,
                 postContext: postContext,
                 setPostContext: setPostContext,
+                insertText: text,
               });
             })
             .catch((err) => {
@@ -203,12 +213,14 @@ function PostEditor() {
     }
 
     // files 중 content에 없는 파일은 files에서 제거
-    const newFiles = postContext.files.filter(
-      (file) =>
+    const fileFilter = (file) => {
+      return (
         postContext.content.indexOf(
           `(${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl})`
-        ) !== -1
-    );
+        ) !== -1 || file.fileType === "VIDEO"
+      );
+    };
+    const newFiles = postContext.files.filter((file) => fileFilter(file));
     setPostContext((prev) => ({
       ...prev,
       files: newFiles,
@@ -251,8 +263,8 @@ function PostEditor() {
           placeholder: "내용을 입력하세요.",
         }}
         previewOptions={{
-          rehypePlugins: [[rehypeVideo, { test: /\/(.*)(.mp4|.mov)$/ }]],
-          remarkPlugins: [[remarkYoutubePlugin, {}]],
+          rehypePlugins: [[rehypeVideo, { test: /\/(.*)(.mp4|.mov)$/i }]],
+          remarkPlugins: [[remarkYoutubePlugin]],
         }}
         commands={[
           commands.bold,
