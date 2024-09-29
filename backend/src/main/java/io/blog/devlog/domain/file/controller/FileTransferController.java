@@ -34,15 +34,14 @@ public class FileTransferController {
 
         MediaType mediaType = determineMediaType(path);
 
-        if (resource.exists() && resource.isReadable()) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                    .contentType(mediaType)
-                    .body(resource);
-        } else {
-            // 이미지를 찾을 수 없는 경우 또는 읽을 수 없는 경우
+        if (!resource.exists() || !resource.isReadable()) {
             return ResponseEntity.notFound().build();
         }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(mediaType)
+                .body(resource);
     }
 
     private MediaType determineMediaType(Path path) throws IOException {

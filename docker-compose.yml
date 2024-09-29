@@ -18,6 +18,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
+    volumes:
+      - C:\\Programming\\Blog\\devlog\\backend\\src\\main\\resources\\upload:/home/static/resource
 
   mailserver:
     build: ./mailserver
