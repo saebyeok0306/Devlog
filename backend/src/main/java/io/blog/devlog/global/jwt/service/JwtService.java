@@ -56,6 +56,10 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String get_claim_email(Claims claims) {
+        return (String) claims.get(CLAIM_EMAIL);
+    }
+
     public String createAccessToken(User user) {
         // 토큰의 expire 시간을 설정
         Date date = new Date();
@@ -75,7 +79,7 @@ public class JwtService {
         // claim 메소드를 통해 새롭게 추가할 수 있는 개념.
         return Jwts.builder()
                 .setSubject(ACCESS_TOKEN_SUBJECT) // Jwt Subject
-                .claim(CLAIM_NAME, user.getUsername()) // username 저장
+//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity) // set Expire Time 해당 옵션 안넣으면 expire안함
@@ -95,7 +99,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
-                .claim(CLAIM_NAME, user.getUsername()) // username 저장
+//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)

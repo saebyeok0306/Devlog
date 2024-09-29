@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // findBy 규칙 -> select * from user where username = 1?
     public Optional<User> findByUsername(String username); // JPA Query Methods
     public Optional<User> findByEmail(String email);
-    public Optional<User> findByRefreshToken(String refreshToken);
+//    public Optional<User> findByRefreshToken(String refreshToken);
     public List<User> findAllByRole(Role role);
 }
