@@ -19,7 +19,6 @@ class EmailServiceImpl : EmailService {
 
     override fun sendEmail(type: MessageType, email: String, subject: String, authCode: String) {
         val mimeMessage: MimeMessage = emailSender.createMimeMessage()
-//        val authCode = this.createAuthCode()
 
         try {
             val helper = MimeMessageHelper(mimeMessage, true, "utf-8")
@@ -28,30 +27,13 @@ class EmailServiceImpl : EmailService {
             helper.setText(this.setContext(type, authCode), true)
             emailSender.send(mimeMessage)
         } catch (e : Exception) {
-            println("Failed to send email")
+            println("Failed to send email $e")
         }
-    }
-
-    override fun createAuthCode(): String {
-        val random: Random = Random()
-        val sb = StringBuffer()
-
-        for (i in 0..7) {
-            val index = random.nextInt(4)
-
-            when (index) {
-                0 -> sb.append((random.nextInt(26) + 65).toChar())
-                1 -> sb.append((random.nextInt(26) + 97).toChar())
-                else -> sb.append(random.nextInt(10))
-            }
-        }
-
-        return sb.toString()
     }
 
     override fun setContext(type: MessageType, authCode: String): String {
         val context = Context()
         context.setVariable("authCode", authCode)
-        return templateEngine.process(type.name, context)
+        return templateEngine.process(type.name.lowercase(), context)
     }
 }

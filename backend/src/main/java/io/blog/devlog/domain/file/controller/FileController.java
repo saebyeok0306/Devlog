@@ -41,4 +41,10 @@ public class FileController {
         List<File> postFiles = fileService.getFilesByPostId(entityId);
         return ResponseEntity.ok(postFiles.stream().map(FileDto::of).toList());
     }
+
+    @GetMapping("/comment/{entityId}")
+    public ResponseEntity<List<FileDto>> getCommentFiles(@PathVariable Long entityId) {
+        List<File> postFiles = fileService.getFilesByCommentId(entityId);
+        return ResponseEntity.ok(postFiles.stream().map(FileDto::of).toList());
+    }
 }

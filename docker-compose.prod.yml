@@ -23,6 +23,7 @@ services:
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
     volumes:
       - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
+      - /home/static/resource:/home/static/resource
 
   mailserver:
     build:

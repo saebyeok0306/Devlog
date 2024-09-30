@@ -29,7 +29,7 @@ frontend:
   domain: localhost
 file:
   upload:
-    path: C:\Programming\Blog\devlog\backend\src\main\resources\upload
+    path: /home/static/resource
   request:
     path: res
 

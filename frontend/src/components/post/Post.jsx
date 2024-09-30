@@ -9,8 +9,6 @@ import {
   HiOutlineHeart,
   HiOutlineChatAlt2,
 } from "react-icons/hi";
-import MDEditor from "@uiw/react-md-editor";
-import RehypeVideo from "rehype-video";
 import { themeAtom } from "recoil/themeAtom";
 import { useRecoilValue } from "recoil";
 import { postAtom } from "recoil/postAtom";
@@ -19,7 +17,7 @@ import { Tooltip } from "flowbite-react";
 import { authAtom } from "recoil/authAtom";
 import { post_like_api, post_unlike_api } from "api/Like";
 import { toast } from "react-toastify";
-import remarkYoutubePlugin from "remark-youtube";
+import { commentsAtom } from "recoil/commentAtom";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -51,10 +49,11 @@ const onLikeCancelHandler = async (postUrl, likes, setLikes, authDto) => {
 };
 
 function Post({ ...props }) {
-  const { likes, setLikes, commentCount } = props;
+  const { likes, setLikes } = props;
   const isDark = useRecoilValue(themeAtom);
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
+  const CommentsData = useRecoilValue(commentsAtom);
 
   useEffect(() => {
     window.scrollTo({
@@ -62,7 +61,13 @@ function Post({ ...props }) {
       behavior: "instant",
     });
 
-    const images = document.querySelectorAll(".post-content img");
+    let toc_counter = 0;
+    document.querySelectorAll("h1, h2, h3, h4, h5").forEach((el) => {
+      el.setAttribute("id", el.tagName + "_" + toc_counter);
+      toc_counter += 1;
+    });
+
+    const images = document.querySelectorAll(".post-context img");
     const modal = document.querySelector(".post-image-modal");
     const modalImg = document.querySelector(".post-image-modal img");
 
@@ -139,20 +144,24 @@ function Post({ ...props }) {
           <img src={null} alt="fullscreen" />
           <p>클릭하면 이미지가 축소됩니다.</p>
         </div>
-        <MDEditor.Markdown
+        {/* <MDEditor.Markdown
           className="post-content"
           source={postContent?.content}
           rehypePlugins={[[RehypeVideo]]}
           remarkPlugins={[[remarkYoutubePlugin, {}]]}
           style={{ flex: "1", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-        />
+        /> */}
+        <div
+          className="post-context ck-content"
+          dangerouslySetInnerHTML={{ __html: postContent.content }}
+        ></div>
       </article>
       <hr />
       <footer>
         <Like />
         <div className="post-comment-count post-footer-item">
           <HiOutlineChatAlt2 />
-          <span>{`댓글 ${commentCount}개`}</span>
+          <span>{`댓글 ${CommentsData.commentCount}개`}</span>
         </div>
       </footer>
     </div>

@@ -27,19 +27,8 @@
   }
 
   .toc {
-    & ul:not(:first-child) {
-      margin-left: 1em;
-      & ul {
-        margin-left: 1em;
-        & ul {
-          margin-left: 1em;
-        }
-      }
-    }
-
-    .toc-active {
-      font-weight: 600;
-      color: cornflowerblue;
+    .is-active-link::before {
+      background-color: red;
     }
   }
 

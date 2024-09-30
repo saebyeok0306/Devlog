@@ -1,0 +1,237 @@
+import { upload_file_api } from "api/File";
+
+import {
+  ClassicEditor,
+  AccessibilityHelp,
+  Autoformat,
+  AutoImage,
+  Autosave,
+  BalloonToolbar,
+  Bold,
+  CloudServices,
+  Code,
+  CodeBlock,
+  Essentials,
+  Highlight,
+  HorizontalLine,
+  ImageBlock,
+  ImageCaption,
+  ImageInline,
+  ImageInsertViaUrl,
+  ImageResize,
+  ImageStyle,
+  ImageTextAlternative,
+  ImageToolbar,
+  ImageUpload,
+  Italic,
+  Link,
+  LinkImage,
+  List,
+  ListProperties,
+  Paragraph,
+  RemoveFormat,
+  SelectAll,
+  SpecialCharacters,
+  SpecialCharactersArrows,
+  SpecialCharactersCurrency,
+  SpecialCharactersEssentials,
+  SpecialCharactersLatin,
+  SpecialCharactersMathematical,
+  SpecialCharactersText,
+  Strikethrough,
+  Table,
+  TableCaption,
+  TableCellProperties,
+  TableColumnResize,
+  TableProperties,
+  TableToolbar,
+  TextTransformation,
+  TodoList,
+  Underline,
+  Undo,
+  MediaEmbed,
+} from "ckeditor5";
+
+import translations from "ckeditor5/translations/ko.js";
+
+const commentEditorConfig = {
+  toolbar: {
+    items: [
+      "undo",
+      "redo",
+      "|",
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "code",
+      "removeFormat",
+      "|",
+      "specialCharacters",
+      "horizontalLine",
+      "link",
+      "insertTable",
+      "highlight",
+      "codeBlock",
+      "|",
+      "bulletedList",
+      "numberedList",
+      "todoList",
+    ],
+    shouldNotGroupWhenFull: true,
+  },
+  plugins: [
+    AccessibilityHelp,
+    Autoformat,
+    AutoImage,
+    Autosave,
+    BalloonToolbar,
+    Bold,
+    CloudServices,
+    Code,
+    CodeBlock,
+    Essentials,
+    Highlight,
+    HorizontalLine,
+    ImageBlock,
+    ImageCaption,
+    ImageInline,
+    ImageInsertViaUrl,
+    ImageResize,
+    ImageStyle,
+    ImageTextAlternative,
+    ImageToolbar,
+    ImageUpload,
+    Italic,
+    Link,
+    LinkImage,
+    List,
+    ListProperties,
+    Paragraph,
+    RemoveFormat,
+    SelectAll,
+    SpecialCharacters,
+    SpecialCharactersArrows,
+    SpecialCharactersCurrency,
+    SpecialCharactersEssentials,
+    SpecialCharactersLatin,
+    SpecialCharactersMathematical,
+    SpecialCharactersText,
+    Strikethrough,
+    Table,
+    TableCaption,
+    TableCellProperties,
+    TableColumnResize,
+    TableProperties,
+    TableToolbar,
+    TextTransformation,
+    TodoList,
+    Underline,
+    Undo,
+    MediaEmbed,
+  ],
+  balloonToolbar: ["bold", "italic", "|", "link", "insertImage"],
+  image: {
+    toolbar: [
+      "toggleImageCaption",
+      "imageTextAlternative",
+      "|",
+      "imageStyle:inline",
+      "imageStyle:wrapText",
+      "imageStyle:breakText",
+      "|",
+      "resizeImage",
+    ],
+  },
+  language: "ko",
+  link: {
+    addTargetToExternalLinks: true,
+    defaultProtocol: "https://",
+    decorators: {
+      toggleDownloadable: {
+        mode: "manual",
+        label: "Downloadable",
+        attributes: {
+          download: "file",
+        },
+      },
+    },
+  },
+  list: {
+    properties: {
+      styles: true,
+      startIndex: true,
+      reversed: true,
+    },
+  },
+  mention: {
+    feeds: [
+      {
+        marker: "@",
+        feed: [
+          /* See: https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html */
+        ],
+      },
+    ],
+  },
+  placeholder: "댓글을 작성해주세요",
+  table: {
+    contentToolbar: [
+      "tableColumn",
+      "tableRow",
+      "mergeTableCells",
+      "tableProperties",
+      "tableCellProperties",
+    ],
+  },
+  translations: [translations],
+  // codeBlock: {
+  //   languages: [
+  //     { model: "plaintext", label: "Plain text" },
+  //     { model: "javascript", label: "JavaScript" },
+  //     { model: "typescript", label: "TypeScript" },
+  //     { model: "python", label: "Python" },
+  //     { model: "java", label: "Java" },
+  //     { model: "kotlin", label: "Kotlin" },
+  //     { model: "swift", label: "Swift" },
+  //     { model: "c", label: "C" },
+  //     { model: "cpp", label: "C++" },
+  //     { model: "csharp", label: "C#" },
+  //     { model: "ruby", label: "Ruby" },
+  //     { model: "php", label: "PHP" },
+  //     { model: "go", label: "Go" },
+  //     { model: "html", label: "HTML" },
+  //   ],
+  // },
+};
+
+class CustomCommentUploadAdapter {
+  constructor(loader, setFiles) {
+    this.loader = loader;
+    this.setFiles = setFiles;
+  }
+
+  upload() {
+    return this.loader.file.then(
+      (file) =>
+        new Promise(async (resolve, reject) => {
+          try {
+            const res = await upload_file_api(file);
+            const payload = res.data;
+            await this.setFiles((prev) => [...prev, payload]);
+            resolve({
+              default: `${process.env.REACT_APP_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
+            });
+          } catch (error) {
+            reject(error);
+          }
+        })
+    );
+  }
+
+  abort() {
+    // 파일 업로드 중단 시 처리 로직
+  }
+}
+
+export { commentEditorConfig, CustomCommentUploadAdapter };

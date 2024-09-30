@@ -5,6 +5,7 @@ import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.global.exception.NullJwtException;
 import io.blog.devlog.global.jwt.service.JwtService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,9 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByRefreshToken(String token) {
-        return userRepository.findByRefreshToken(token);
-    }
+//    public Optional<User> getUserByRefreshToken(String token) {
+//        return userRepository.findByRefreshToken(token);
+//    }
 
     public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
         log.info("reissueRequest : " + request.toString());
@@ -48,7 +49,8 @@ public class UserService {
             throw new BadRequestException("Invalid refresh token");
         }
 
-        User user = userRepository.findByRefreshToken(refreshToken).orElse(null);
+        Claims claims = jwtService.extractClaims(refreshToken);
+        User user = userRepository.findByEmail(jwtService.get_claim_email(claims)).orElse(null);
         if (user == null) throw new BadRequestException("Invalid refresh token");
         String newAccessToken = jwtService.createAccessToken(user);
         jwtService.sendAccessToken(response, newAccessToken);

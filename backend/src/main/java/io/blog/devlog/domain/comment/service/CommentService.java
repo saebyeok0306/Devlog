@@ -33,6 +33,7 @@ public class CommentService {
     public ResponseCommentDto saveComment(User user, RequestCommentDto requestCommentDto, Post post) {
         Comment comment = commentRepository.save(requestCommentDto.toEntity(user, post));
         fileService.uploadFileAndDeleteTempFile(comment, requestCommentDto.getFiles());
+        fileService.deleteTempFiles(); // 임시파일 제거
         return ResponseCommentDto.of(user.getEmail(), comment);
     }
 
@@ -44,13 +45,19 @@ public class CommentService {
         }
         comment = commentRepository.save(comment.toEdit(requestEditCommentDto));
         fileService.uploadFileAndDeleteTempFile(comment, requestEditCommentDto.getFiles());
+        fileService.deleteTempFiles(); // 임시파일 제거
+        fileService.deleteUnusedFilesByComment(comment, requestEditCommentDto.getFiles());
         return comment;
     }
 
     public List<ResponseCommentDto> getCommentsFromPost(User user, PostDetail postDetail) throws BadRequestException {
+        return this.getCommentsFromPost(user, postDetail.getPost().getId());
+    }
+
+    public List<ResponseCommentDto> getCommentsFromPost(User user, Long postId) throws BadRequestException {
         Long userId = user.getId() == null ? 0L : user.getId();
         boolean isAdmin = userService.isAdmin(user);
-        List<Comment> comments = commentRepository.findAllByPostId(postDetail.getPost().getId(), userId, isAdmin);
+        List<Comment> comments = commentRepository.findAllByPostId(postId, userId, isAdmin);
         return comments.stream()
                 .map(comment -> ResponseCommentDto.of(user.getEmail(), comment))
                 .toList();

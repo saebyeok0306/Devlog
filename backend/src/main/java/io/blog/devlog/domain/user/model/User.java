@@ -41,9 +41,9 @@ public class User extends BaseTime {
     @Nullable
     @Column(name = "provider_id")
     private String providerId;
-    @Nullable
-    @Column(name = "refresh_token", length = 500)
-    private String refreshToken;
+//    @Nullable
+//    @Column(name = "refresh_token", length = 500)
+//    private String refreshToken;
     @NotNull
     @ColumnDefault("0") // false
     private Boolean certificate = false;
@@ -68,10 +68,6 @@ public class User extends BaseTime {
             throw new NotMatchPasswordException("비밀번호가 일치하지 않습니다.");
         }
         this.password = bCryptPasswordEncoder.encode(requestPasswordDto.getNewPassword());
-    }
-
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 
     public void updateProfile(String url) {

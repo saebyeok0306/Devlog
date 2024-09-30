@@ -20,7 +20,6 @@ const requestAuthTokenInjector = async (request) => {
 };
 
 const responseSuccessHandler = (response) => {
-  console.log(response);
   return response;
 };
 

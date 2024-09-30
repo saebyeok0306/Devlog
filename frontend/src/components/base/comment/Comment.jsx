@@ -1,41 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./Comment.scss";
 import { Timeline } from "flowbite-react";
 import { timelineCustomTheme } from "styles/theme/timeline";
 import CommentEditor from "components/editor/commentEditor";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { themeAtom } from "recoil/themeAtom";
 import { authAtom } from "recoil/authAtom";
 import { postAtom } from "recoil/postAtom";
-import { commentAtom } from "recoil/commentAtom";
+import { commentAtom, commentsAtom, CommentsData } from "recoil/commentAtom";
 import Comments from "./comments/Comments";
 import {
   isWriteComment,
   uploadCommentHandler,
 } from "./comments/CommentsHandler";
+import { get_comments_by_post_api } from "api/Comment";
+import { sortComments } from "utils/sortComments";
+import { toast } from "react-toastify";
 
 function Comment({ ...props }) {
-  const { commentRef, comments } = props;
+  const { commentRef } = props;
   const authDto = useRecoilValue(authAtom);
   const isDark = useRecoilValue(themeAtom);
-  const [, setUpdater] = useState(0);
+  const [updater, setUpdater] = useState(0);
   const [reply, setReply] = useState({
     flag: false, // true: 답글 작성 false: 편집
     editId: null, // 편집 중인 댓글 id
     target: null, // 답글 대상
     content: "",
     private: false,
-    files: [],
   });
   const postContent = useRecoilValue(postAtom);
   const commentState = useRecoilValue(commentAtom);
+  const [commentsData, setCommentsData] = useRecoilState(commentsAtom);
 
   const [editorComment, setEditorComment] = useState({
     content: "",
-    files: [],
     private: false,
   });
+
+  useEffect(() => {
+    if (updater < 1) return;
+    get_comments_by_post_api(postContent.id)
+      .then((res) => {
+        const sortedComments = sortComments(res.data);
+        const commentsObj = new CommentsData(sortedComments, res.data?.length);
+        setCommentsData(commentsObj);
+      })
+      .catch((error) => {
+        toast.error("댓글을 불러오는데 실패했습니다.");
+        console.error("Failed to get comments:", error);
+        setCommentsData(new CommentsData());
+      });
+  }, [updater]);
 
   return (
     <div
@@ -45,25 +62,27 @@ function Comment({ ...props }) {
     >
       <Timeline className="comments" theme={timelineCustomTheme}>
         <Comments
-          comments={comments}
+          comments={commentsData.comments}
           reply={reply}
           setReply={setReply}
           setUpdater={setUpdater}
         />
       </Timeline>
       {/* Post Comment Editor */}
-      {isWriteComment({ commentState: commentState, authDto: authDto }) ? (
+      {!reply.editId &&
+      isWriteComment({ commentState: commentState, authDto: authDto }) ? (
         <CommentEditor
           comment={editorComment}
           setComment={setEditorComment}
           onSave={() =>
             uploadCommentHandler({
               postContent: postContent,
-              comments: comments,
+              comments: commentsData.comments,
               editorComment: editorComment,
               setEditorComment: setEditorComment,
             })
           }
+          setUpdater={setUpdater}
         />
       ) : null}
     </div>
