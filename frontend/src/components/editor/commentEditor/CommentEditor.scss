@@ -1,69 +1,24 @@
 @import "src/styles/commons";
 
-.comment-editor {
+.editor-container.comment-editor {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  .w-md-editor {
-    font-size: 1rem;
-    // line-height: 20px !important;
-    border-radius: 15px;
-    &:is(.dark *) {
-      background-color: #252e3a;
-    }
-    .w-md-editor-content {
+  width: 100%;
+  .editor-container__editor {
+    width: 100%;
+
+    .ck.ck-editor__editable:not(.ck-editor__nested-editable) {
       min-height: 100px;
-      height: 100% !important;
-      .w-md-editor-text {
-        font-size: inherit !important;
-        line-height: inherit !important;
-      }
-      // height: auto !important;
-      .w-md-editor-text-pre > code,
-      .w-md-editor-text-input {
-        font-family: NanumGothic !important;
-        font-size: 1em !important;
-        // line-height: 1em !important;
-        // font-size: 1.3em !important;
-        // line-height: 1.3em !important;
-      }
-      .wmde-markdown {
-        font-family: NanumGothic !important;
-        background-color: inherit;
-        font-size: 1em !important;
-        // line-height: 1em !important;
-        // font-size: 1.3em !important;
-        // line-height: 1.3em !important;
-      }
-      .w-md-editor-preview {
-        font-family: NanumGothic !important;
-        background-color: inherit;
-        position: inherit;
-        height: 100%;
-        padding: 10px;
-        // font-size: 1em !important;
-        // line-height: 1em !important;
-      }
+      padding: 0 3rem;
+      padding-bottom: 1rem;
     }
-    .w-md-editor-toolbar {
-      border-radius: 15px;
-      button {
-        width: 2em;
-        height: 2em;
-        svg {
-          width: 1.5em;
-          height: 1.5em;
-        }
-      }
+
+    .ck.ck-editor__main {
     }
-    .w-md-editor-toolbar-divider {
-      height: 1.5em;
-      vertical-align: baseline;
-      margin: -12px 12px 0 12px !important;
+
+    .ck.ck-content {
+      word-break: break-word;
     }
   }
-
   .comment-editor-bottom {
     display: flex;
     gap: 5px;

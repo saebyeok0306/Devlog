@@ -1,162 +1,53 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "./CommentEditor.scss";
-import MDEditor, { commands, EditorContext } from "@uiw/react-md-editor";
-import { upload_file_api } from "api/File";
 import { toast } from "react-toastify";
+import { ClassicEditor } from "ckeditor5";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import {
+  commentEditorConfig,
+  CustomCommentUploadAdapter,
+} from "./ClassicEditor";
+import hljs from "highlight.js";
+import { useRecoilState } from "recoil";
+import { commentFilesAtom } from "recoil/commentAtom";
 
-const Button = () => {
-  const { preview, dispatch } = useContext(EditorContext);
-  const click = () => {
-    dispatch({
-      preview: preview === "edit" ? "preview" : "edit",
-    });
-  };
-  if (preview === "edit") {
-    return (
-      <button onClick={click}>
-        <svg width="12" height="12" viewBox="0 0 520 520">
-          <polygon
-            fill="currentColor"
-            points="0 71.293 0 122 319 122 319 397 0 397 0 449.707 372 449.413 372 71.293"
-          />
-          <polygon
-            fill="currentColor"
-            points="429 71.293 520 71.293 520 122 481 123 481 396 520 396 520 449.707 429 449.413"
-          />
-        </svg>
-      </button>
-    );
-  }
-  return (
-    <button onClick={click}>
-      <svg width="12" height="12" viewBox="0 0 520 520">
-        <polygon
-          fill="currentColor"
-          points="0 71.293 0 122 38.023 123 38.023 398 0 397 0 449.707 91.023 450.413 91.023 72.293"
-        />
-        <polygon
-          fill="currentColor"
-          points="148.023 72.293 520 71.293 520 122 200.023 124 200.023 397 520 396 520 449.707 148.023 450.413"
-        />
-      </svg>
-    </button>
-  );
-};
-
-const codePreview = {
-  name: "preview",
-  keyCommand: "preview",
-  value: "preview",
-  icon: <Button />,
-};
-
-const ReturnInsertText = ({ ref, content, text }) => {
-  if (!ref.current.textarea) return null;
-  const textarea = ref.current.textarea;
-  const { selectionStart, selectionEnd } = textarea;
-  const newContent =
-    content.substring(0, selectionStart) +
-    text +
-    content.substring(selectionEnd);
-  return newContent;
-};
-
-const UploadFileAndInsertText = async ({
-  ref,
-  apiResult,
-  comment,
-  setComment,
-}) => {
-  const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
-  const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
-  const newContent = ReturnInsertText({
-    ref: ref,
-    content: comment.content,
-    text: text,
-  });
-  await setComment({
-    ...comment,
-    content: newContent,
-    files: [...comment.files, apiResult],
-  });
-  console.log("파일전송 완료");
-};
-
-function CommentEditor({ comment, setComment, onCancel, onSave }) {
+function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
+
+  const [editorInstance, setEditorInstance] = useState(null);
+  const [isLayoutReady, setIsLayoutReady] = useState(false);
   const [throttle, setThrottle] = useState(false);
+  const [commentFiles, setCommentFiles] = useRecoilState(commentFilesAtom);
 
-  const handleDrop = async (event) => {
-    event.preventDefault();
+  console.log(commentFiles);
 
-    if (!editorRef.current) return;
+  useEffect(() => {
+    setIsLayoutReady(true);
+    return () => {
+      setIsLayoutReady(false);
+    };
+  }, []);
 
-    const className = event.target.className;
-    if (
-      !className.startsWith("w-md-editor-text-input") ||
-      className.startsWith("w-md-editor-preview")
-    )
-      return;
-
-    console.log(event, event.dataTransfer?.files.length);
-    if (event.dataTransfer.files.length === 1) {
-      const file = event.dataTransfer.files[0];
-
-      if (!file) return;
-
-      // image type check
-      if (file.type.startsWith("image")) {
-        await upload_file_api(file)
-          .then(async (res) => {
-            await UploadFileAndInsertText({
-              ref: editorRef,
-              apiResult: res.data,
-              comment: comment,
-              setComment: setComment,
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
+  useEffect(() => {
+    if (editorInstance && comment.content) {
+      editorInstance.setData(comment.content);
     }
-  };
+  }, [editorInstance]);
 
-  const handlePaste = async (event) => {
-    if (!editorRef.current) return;
-    const clipboardData = event.clipboardData || window.clipboardData;
-    if (clipboardData && clipboardData.items) {
-      for (const item of clipboardData.items) {
-        if (item.type.startsWith("image")) {
-          event.preventDefault();
-          const file = item.getAsFile();
-          await upload_file_api(file)
-            .then(async (res) => {
-              await UploadFileAndInsertText({
-                ref: editorRef,
-                apiResult: res.data,
-                comment: comment,
-                setComment: setComment,
-              });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      }
-    }
-  };
-
-  const handleChangeContent = (change_text) => {
-    if (change_text.length <= MAX_LENGTH) {
-      setComment({ ...comment, content: change_text });
+  const handleChangeContent = async (editor) => {
+    const content = editor.getData();
+    if (content.length <= MAX_LENGTH) {
+      await setComment({ ...comment, content: content });
     } else {
+      const newContent = content.slice(0, MAX_LENGTH);
+      await setComment({ ...comment, content: newContent });
+      editor.setData(newContent);
       if (throttle) return;
       if (!throttle) {
-        setThrottle(true);
-        setTimeout(async () => {
+        await setThrottle(true);
+        await setTimeout(async () => {
           toast.info(`최대 ${MAX_LENGTH}자까지 입력 가능합니다.`, {
             position: "bottom-center",
           });
@@ -166,49 +57,71 @@ function CommentEditor({ comment, setComment, onCancel, onSave }) {
     }
   };
 
+  const onSaveHandler = async () => {
+    if (comment.content.length === 0) {
+      toast.info("댓글 내용을 입력해주세요.");
+      return;
+    }
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = comment.content;
+
+    // <pre><code> 태그에 하이라이트 적용
+    tempDiv.querySelectorAll("pre code").forEach((block) => {
+      hljs.highlightElement(block);
+    });
+
+    const fileFilter = (file) => {
+      return (
+        comment.content.indexOf(
+          `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
+        ) !== -1 || file.fileType === "VIDEO"
+      );
+    };
+    const newFiles = commentFiles.filter((file) => fileFilter(file));
+
+    setComment({ ...comment, content: tempDiv.innerHTML });
+
+    editorInstance.setData("");
+    await onSave(newFiles);
+    await setUpdater((prev) => prev + 1);
+  };
+
+  const onCancelHandler = async () => {
+    editorInstance.setData("");
+    await setCommentFiles([]);
+    await onCancel();
+  };
+
   return (
-    <div className="comment-editor">
-      <MDEditor
-        ref={editorRef}
-        preview="edit"
-        style={{ flex: "1", whiteSpace: "pre-wrap", paddingBottom: "10px" }}
-        value={comment?.content}
-        onChange={handleChangeContent}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onPaste={handlePaste}
-        height={"100%"}
-        textareaProps={{
-          placeholder: "댓글을 입력하세요.",
-        }}
-        commands={[
-          commands.bold,
-          commands.italic,
-          commands.strikethrough,
-          commands.hr,
-          commands.divider,
-          commands.link,
-          commands.quote,
-          commands.code,
-          commands.codeBlock,
-          commands.image,
-          commands.table,
-          commands.divider,
-          commands.unorderedListCommand,
-          commands.orderedListCommand,
-          commands.checkedListCommand,
-          commands.divider,
-          codePreview,
-          // commands.group([], fileUploader),
-        ]}
-        extraCommands={[]}
-      />
+    <div className="editor-container comment-editor">
+      <div className="editor-container__editor">
+        {isLayoutReady && (
+          <CKEditor
+            ref={editorRef}
+            className="ck-editor-container"
+            editor={ClassicEditor}
+            config={commentEditorConfig}
+            onReady={(editor) => {
+              setEditorInstance(editor);
+              editor.plugins.get("FileRepository").createUploadAdapter = (
+                loader
+              ) => {
+                return new CustomCommentUploadAdapter(loader, setCommentFiles);
+              };
+            }}
+            onChange={(event, editor) => {
+              handleChangeContent(editor);
+            }}
+          />
+        )}
+      </div>
       <div className="comment-editor-bottom">
         <span>
           {comment.content.length}/{MAX_LENGTH}
         </span>
-        {onSave ? <button onClick={onSave}>등록</button> : null}
-        {onCancel ? <button onClick={onCancel}>취소</button> : null}
+        {onSave ? <button onClick={onSaveHandler}>등록</button> : null}
+        {onCancel ? <button onClick={onCancelHandler}>취소</button> : null}
       </div>
     </div>
   );

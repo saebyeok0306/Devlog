@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Toc from "react-toc";
 import { useRecoilState } from "recoil";
 import { postAtom } from "recoil/postAtom";
 
@@ -16,6 +15,7 @@ import { PostContext, postContextAtom } from "recoil/editorAtom";
 import { delete_post_api, get_post_files_api } from "api/Posts";
 import { useNavigate } from "react-router-dom";
 import { POST_STORE } from "api/Cache";
+import tocbot from "tocbot";
 
 const scrollToTopHandler = () => {
   window.scrollTo({
@@ -55,6 +55,7 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
   const newContext = new PostContext(
     postContent.id,
     postContent.title,
+    "", // body
     postContent.content,
     postContent.category,
     files,
@@ -89,52 +90,26 @@ function TOC({ ...props }) {
   const [postContent] = useRecoilState(postAtom);
   const [, setPostContext] = useRecoilState(postContextAtom);
 
-  console.log(postContent);
-
   useEffect(() => {
-    const postContent = document.querySelector(".post-content");
-    if (!postContent) return;
+    tocbot.init({
+      // Where to render the table of contents.
+      tocSelector: ".toc",
+      // Where to grab the headings to build the table of contents.
+      contentSelector: ".post-context",
+      // Which headings to grab inside of the contentSelector element.
+      headingSelector: "h1, h2, h3",
+      // For headings inside relative or absolute positioned containers within content.
+      hasInnerContainers: true,
+      linkClass: "toc-link",
+      isCollapsedClass: "",
+      collapseDepth: 0,
 
-    const options = {
-      // root: postContent,
-      rootMargin: "0px 0px -80% 0px",
-      // rootMargin: "-20% 0px",
-      threshold: 1.0,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      const visibleHeadings = entries.filter((entry) => entry.isIntersecting);
-      if (visibleHeadings.length === 0) return;
-      const activeHeading = visibleHeadings[visibleHeadings.length - 1]; // visibleHeadings.length - 1
-      const id =
-        activeHeading.target
-          .getAttribute("id")
-          ?.toLowerCase()
-          ?.replace(/\.?-/g, " ") || "";
-      if (!id) return;
-      const tocRef = document.querySelector(".toc");
-      const tocList = tocRef.querySelectorAll("a");
-      if (!tocList) return;
-      for (const toc of tocList) {
-        const href =
-          toc
-            .getAttribute("href")
-            ?.slice(1)
-            .toLowerCase()
-            ?.replace(/\.?-/g, " ") || "";
-        if (id === href) {
-          toc.classList.add("toc-active");
-        } else {
-          toc.classList.remove("toc-active");
-        }
-      }
-    }, options);
-
-    const headings = postContent.querySelectorAll("h1, h2, h3, h4, h5, h6");
-    headings.forEach((heading) => observer.observe(heading));
+      disableTocScrollSync: true,
+      enableUrlHashUpdateOnScroll: true,
+    });
 
     return () => {
-      headings.forEach((heading) => observer.unobserve(heading));
+      tocbot.destroy();
     };
   });
 
@@ -142,11 +117,12 @@ function TOC({ ...props }) {
     <aside className="toc-box">
       <div className="toc-container">
         <span className="toc-title">목차</span>
-        <Toc
+        <div className="toc"></div>
+        {/* <Toc
           markdownText={postContent?.content}
           type="raw"
           className="toc text-gray-800 dark:text-gray-300"
-        />
+        /> */}
         <div className="toc-buttons">
           <Button
             className="toc-button"

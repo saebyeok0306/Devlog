@@ -1,99 +1,150 @@
 @import "src/styles/commons";
 
-.PostEditor {
+.editor-container {
   display: flex;
-  flex-direction: column;
   flex: 1;
-  .post-top {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    outline-width: 1px;
-    border-radius: 15px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-    overflow: hidden;
+  //   color: #000;
+  --ck-focus-ring: 1px solid #c5c5c5;
+  &:is(.dark *) {
+    --ltrs-color-white: #fff;
+    --ltrs-color-gray: #242424;
+    --ltrs-color-gray-blue: #59697d;
+    --ltrs-color-gray-purple: #795f86;
+    --ltrs-color-gray2: #343434;
+    --ck-color-input-background: #4a494b;
 
-    input.post-title {
-      flex: 1;
-      font-size: 1.3rem;
-      padding: 0.3em;
-      height: 2em;
-      background-color: inherit;
-    }
+    --ck-color-text: var(--ltrs-color-white);
+    --ck-color-toolbar-border: var(--ltrs-color-gray2) !important;
+    --ck-color-base-border: var(--ltrs-color-gray2);
+
+    --ck-color-toolbar-background: var(--ltrs-color-gray);
+    --ck-color-base-background: var(--ltrs-color-gray);
+    --ck-color-base-foreground: var(--ltrs-color-gray);
+    --ck-color-list-background: var(--ltrs-color-gray); // 리스트 배경
+    --ck-color-list-button-hover-background: var(
+      --ltrs-color-gray-purple
+    ); // 리스트 호버
+    --ck-color-dropdown-panel-background: var(--ltrs-color-gray);
+    --ck-color-dropdown-panel-hover-background: var(--ltrs-color-gray);
+    --ck-color-button-default-hover-background: var(--ltrs-color-gray-purple);
+
+    --ck-focus-ring: 1px solid #414141;
+
+    --ck-balloon-arrow-height: 11px;
+    --ck-balloon-arrow-half-width: 7px;
+    --ck-color-toolbar-border: var(--ltrs-color-gray);
+    --ck-color-panel-border: var(--ltrs-color-gray);
+    --ck-color-panel-background: var(--ltrs-color-gray);
+
+    /* Change the default button colors for all states. */
+    --ck-color-button-default-background: var(--ltrs-color-gray);
+    --ck-color-button-default-active-background: var(--ltrs-color-gray-blue);
+    --ck-color-button-default-active-shadow: var(--ltrs-color-gray-blue);
+    --ck-color-button-default-focus-background: var(--ltrs-color-gray-blue);
+    --ck-color-button-default-disabled-background: var(
+      --ck-color-button-default-background
+    );
+
+    --ck-color-button-on-background: #363636; // 툴바 버튼 클릭되었을 때
+    --ck-color-button-on-color: var(
+      --ltrs-color-gray-purple
+    ); // 툴바 버튼 클릭되었을 때
+    --ck-color-button-on-active-background: var(
+      --ltrs-color-gray-purple
+    ); // 툴바 버튼이 작동할 때
+    --ck-color-split-button-hover-background: var(
+      --ltrs-color-gray-purple
+    ); // 툴바 버튼 호버
+    --ck-color-button-on-active-shadow: hsl(138, 100%, 50%);
+    --ck-color-button-on-focus-background: hsl(61, 100%, 50%);
+
+    --ck-color-dialog-background: var(--ltrs-color-gray);
+    --ck-color-button-action-background: var(--ltrs-color-gray-purple);
   }
-  .w-md-editor {
-    font-size: 1rem;
-    border-radius: 0px;
+}
 
-    &:is(.dark *) {
-      background-color: #252e3a;
-    }
-    .w-md-editor-content {
+.editor-container.post-editor {
+  .editor-container__editor {
+    // display: flex;
+    // flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    .ck.ck-editor {
+      position: static !important;
+      display: flex;
+      flex-direction: column;
       flex: 1;
-      .w-md-editor-text {
-        font-size: inherit !important;
-        line-height: inherit !important;
-      }
-      .w-md-editor-text-pre > code,
-      .w-md-editor-text-input {
-        font-family: NanumGothic !important;
-        font-size: 1em !important;
-      }
-      .wmde-markdown {
-        font-family: NanumGothic !important;
-        background-color: inherit;
-        font-size: 1em !important;
-        * {
-          background-color: inherit;
-        }
-
-        iframe {
-          display: block;
-          margin: auto;
-        }
-
-        img {
-          display: block;
-          margin: auto;
-        }
-      }
-      .w-md-editor-preview {
-        font-family: NanumGothic !important;
-        background-color: inherit;
-        padding: 10px;
-        ul.contains-task-list {
-          white-space: nowrap;
-        }
-      }
     }
-    .w-md-editor-toolbar {
+    .ck.ck-editor__editable:not(.ck-editor__nested-editable) {
+      min-height: 1000px;
+      max-height: 1000px;
+      padding: 0 3rem;
+    }
+    .ck.ck-editor__main {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+
+      //   &:is(.dark *) {
+      //     background-color: #252e3a !important;
+      //   }
+    }
+    .ck.ck-toolbar {
+      justify-content: center;
+      width: 100%;
+    }
+    .ck.ck-toolbar__items {
+      max-width: 1300px;
+      justify-content: center;
+    }
+    .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
+      border-width: 0px;
+      border-top-width: 1px;
+      border-bottom-width: 1px;
+    }
+    .ck.ck-content {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      word-break: break-word;
+      margin-bottom: 1px;
+    }
+
+    .post-editor-publish-btn {
+      border: none;
       border-radius: 15px;
       border-top-left-radius: 0px;
       border-top-right-radius: 0px;
-      border-top: none;
-      button {
-        width: 2em;
-        height: 2em;
-        svg {
-          width: 1.5em;
-          height: 1.5em;
-        }
-      }
+      outline-width: 1px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
     }
-    .w-md-editor-toolbar-divider {
-      height: 1.5em;
-      vertical-align: baseline;
-      margin: -12px 12px 0 12px !important;
-    }
-  }
-
-  .post-editor-publish-btn {
-    margin-top: 1px;
-    border: none;
-    border-radius: 15px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-    outline-width: 1px;
   }
 }
+
+.ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+  border-top-width: 0px !important;
+  border-bottom-width: 1px !important;
+  border-radius: 0px !important;
+}
+
+.ck.ck-editor__editable {
+  border-top-width: 0 !important;
+}
+
+.ck-editor__main {
+  border-top-width: 0;
+}
+
+// .ck-publish {
+//   border-radius: 4px;
+//   background-color: #7286d3;
+//   padding: 0.3em 0.5em;
+//   color: white;
+//   transition: background-color 0.5s;
+// }

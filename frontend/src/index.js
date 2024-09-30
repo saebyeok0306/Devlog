@@ -9,6 +9,9 @@ import "styles/main.scss";
 import "styles/base/font.css";
 import "styles/base/tailwind.css";
 import "react-toastify/dist/ReactToastify.css";
+import "ckeditor5/ckeditor5.css";
+import "tocbot/dist/tocbot.css";
+import "highlight.js/styles/github-dark.css";
 
 function Index() {
   return (

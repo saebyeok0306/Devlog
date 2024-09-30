@@ -1,61 +1,44 @@
-import React, { useEffect, useRef, useState } from "react";
-import MDEditor, { commands } from "@uiw/react-md-editor";
-import rehypeVideo from "rehype-video";
+import react, { useEffect, useRef, useState } from "react";
+
+import { authAtom } from "recoil/authAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useNavigate } from "react-router-dom";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import { CustomUploadAdapter, editorConfig } from "./ClassicEditor";
+import { ClassicEditor } from "ckeditor5";
 
 import "./PostEditor.scss";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
 import { Button } from "flowbite-react";
-import { get_categories_readwrite_api } from "api/Category";
-import Responsive from "components/common/Responsive";
-import { upload_file_api } from "api/File";
-import Publish from "./publish";
-import { toast } from "react-toastify";
-import FileUploader from "./fileUploader";
-import UploadIcon from "assets/icons/Upload";
-import { authAtom } from "recoil/authAtom";
-import { useNavigate } from "react-router-dom";
 import { PostContext, postContextAtom } from "recoil/editorAtom";
-import remarkYoutubePlugin from "remark-youtube";
+import { toast } from "react-toastify";
+import { get_categories_readwrite_api } from "api/Category";
+import Publish from "./publish";
+import hljs from "highlight.js";
 
-const ReturnInsertText = ({ ref, content, text }) => {
-  if (!ref.current.textarea) return null;
-  if (content == null) return text;
-  const textarea = ref.current.textarea;
-  const { selectionStart, selectionEnd } = textarea;
-  const newContent =
-    content.substring(0, selectionStart) +
-    text +
-    content.substring(selectionEnd);
-  return newContent;
-};
-
-export const UploadFileAndInsertText = async ({
-  ref,
-  apiResult,
-  postContext,
-  setPostContext,
-  insertText,
-}) => {
-  // const fileName = apiResult.fileName.replace(/\.[^/.]+$/, "");
-  // const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${apiResult.filePath}/${apiResult.fileUrl})\n`;
-  const newContent = ReturnInsertText({
-    ref: ref,
-    content: postContext.content,
-    text: insertText,
-  });
-  await setPostContext({
-    ...postContext,
-    content: newContent,
-    files: [...postContext.files, apiResult],
-  });
+const divideTitleAndBody = (content) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(content, "text/html");
+  const header1 = doc.querySelector("h1");
+  if (!header1) {
+    return false;
+  }
+  const title = header1.textContent;
+  header1.remove();
+  const detail = doc.body.innerHTML;
+  const data = {
+    title: title.trim(),
+    body: detail,
+  };
+  return data;
 };
 
 function PostEditor() {
   const editorRef = useRef(null);
   const navigate = useNavigate();
   const authDto = useRecoilValue(authAtom);
-  const isDark = useRecoilValue(themeAtom);
+
+  const [editorInstance, setEditorInstance] = useState(null);
+  const [isLayoutReady, setIsLayoutReady] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   const [categories, setCategories] = useState([]);
@@ -63,9 +46,9 @@ function PostEditor() {
 
   const [openLoader, setOpenLoader] = useState(false);
 
-  const MAX_LENGTH = 50000;
-
   useEffect(() => {
+    setIsLayoutReady(true);
+
     get_categories_readwrite_api()
       .then((res) => {
         const response_categories = res.data;
@@ -84,9 +67,18 @@ function PostEditor() {
       setOpenModal(false);
       setOpenLoader(false);
       setPostContext(new PostContext());
+      setIsLayoutReady(false);
     };
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (editorInstance && postContext.title && postContext.content) {
+      const header = `<h1>${postContext.title}</h1>`;
+      const content = header + postContext.content;
+      editorInstance.setData(content);
+    }
+  }, [editorInstance]);
 
   useEffect(() => {
     if (!postContext.preview) {
@@ -104,110 +96,19 @@ function PostEditor() {
     // eslint-disable-next-line
   }, [postContext.files]);
 
-  const fileUploader = {
-    name: "FileUploader",
-    groupName: "FileUploader",
-    icon: <UploadIcon />,
-    children: (props) => (
-      <FileUploader
-        {...props}
-        editorRef={editorRef}
-        openLoader={openLoader}
-        setOpenLoader={setOpenLoader}
-        postContext={postContext}
-        setPostContext={setPostContext}
-        UploadFileAndInsertText={UploadFileAndInsertText}
-      />
-    ),
-    execute: (state, api) => {
-      setOpenLoader(true);
-    },
-    buttonProps: { "aria-label": "FileUploader" },
-  };
-
-  const contentChangeHandler = (value) => {
-    let change_text = value;
-    if (change_text.length > MAX_LENGTH) {
-      return;
-    }
-    setPostContext((prev) => ({ ...prev, content: change_text }));
-  };
-
-  const handleDrop = async (event) => {
-    event.preventDefault();
-
-    if (!editorRef.current) return;
-
-    const className = event.target.className;
-    if (
-      !className.startsWith("w-md-editor-content") ||
-      className.startsWith("w-md-editor-preview")
-    )
-      return;
-
-    if (event.dataTransfer.files.length === 1) {
-      const file = event.dataTransfer.files[0];
-
-      if (!file) return;
-
-      // image type check
-      if (file.type.startsWith("image")) {
-        await upload_file_api(file)
-          .then(async (res) => {
-            const result = res.data;
-            const fileName = result.fileName.replace(/\.[^/.]+$/, "");
-            const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${result.filePath}/${result.fileUrl})\n`;
-            await UploadFileAndInsertText({
-              ref: editorRef,
-              apiResult: result,
-              postContext: postContext,
-              setPostContext: setPostContext,
-              insertText: text,
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      }
-    }
-  };
-
-  const handlePaste = async (event) => {
-    if (!editorRef.current) return;
-    const clipboardData = event.clipboardData || window.clipboardData;
-    if (clipboardData && clipboardData.items) {
-      for (const item of clipboardData.items) {
-        if (item.type.startsWith("image")) {
-          event.preventDefault();
-          const file = item.getAsFile();
-          await upload_file_api(file)
-            .then(async (res) => {
-              const result = res.data;
-              const fileName = result.fileName.replace(/\.[^/.]+$/, "");
-              const text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${result.filePath}/${result.fileUrl})\n`;
-              await UploadFileAndInsertText({
-                ref: editorRef,
-                apiResult: result,
-                postContext: postContext,
-                setPostContext: setPostContext,
-                insertText: text,
-              });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      }
-    }
-  };
-
   const publishHandler = (e) => {
     e.preventDefault();
-    if (!postContext.title) {
+    const res = divideTitleAndBody(postContext.content);
+    if (!res) {
       toast.error("제목을 입력해주세요.");
       return;
     }
-    if (!postContext.content) {
+    const { title, body } = res;
+    if (!title) {
+      toast.error("제목을 입력해주세요.");
+      return;
+    }
+    if (!body) {
       toast.error("내용을 입력해주세요.");
       return;
     }
@@ -216,14 +117,25 @@ function PostEditor() {
     const fileFilter = (file) => {
       return (
         postContext.content.indexOf(
-          `(${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl})`
+          `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
         ) !== -1 || file.fileType === "VIDEO"
       );
     };
     const newFiles = postContext.files.filter((file) => fileFilter(file));
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = body;
+
+    // <pre><code> 태그에 하이라이트 적용
+    tempDiv.querySelectorAll("pre code").forEach((block) => {
+      hljs.highlightElement(block);
+    });
+
     setPostContext((prev) => ({
       ...prev,
       files: newFiles,
+      title: title,
+      body: tempDiv.innerHTML,
     }));
 
     setOpenModal(true);
@@ -234,79 +146,38 @@ function PostEditor() {
   }
 
   return (
-    <Responsive
-      className="PostEditor"
-      data-color-mode={isDark ? "dark" : "light"}
-    >
-      <div className="post-top outline outline-[#d0d7de] dark:outline-[#30363d] bg-[#ffffff] dark:bg-[#0d1117]">
-        <input
-          className="post-title"
-          placeholder="글 제목을 입력하세요."
-          value={postContext.title || ""}
-          onChange={(e) =>
-            setPostContext((prev) => ({ ...prev, title: e.target.value }))
-          }
-          // onChange={(e) => setTitle(e.target.value)}
-        />
+    <div className="editor-container post-editor">
+      <div className="editor-container__editor">
+        {isLayoutReady && (
+          <CKEditor
+            ref={editorRef}
+            className="ck-editor-container"
+            editor={ClassicEditor}
+            config={editorConfig}
+            onReady={(editor) => {
+              setEditorInstance(editor);
+              editor.plugins.get("FileRepository").createUploadAdapter = (
+                loader
+              ) => {
+                return new CustomUploadAdapter(loader, setPostContext);
+              };
+            }}
+            onChange={(event, editor) => {
+              setPostContext((prev) => ({
+                ...prev,
+                content: editor.getData(),
+              }));
+            }}
+          />
+        )}
+        <Button
+          className="post-editor-publish-btn outline outline-[#d0d7de] dark:outline-[#30363d]"
+          color="gray"
+          onClick={(e) => publishHandler(e)}
+        >
+          발행하기
+        </Button>
       </div>
-      <MDEditor
-        ref={editorRef}
-        preview={window.innerWidth > 768 ? "live" : "edit"}
-        style={{ flex: "1", whiteSpace: "pre-wrap" }}
-        value={postContext.content || ""}
-        onChange={(e) => contentChangeHandler(e)}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        onPaste={handlePaste}
-        height={"100%"}
-        textareaProps={{
-          placeholder: "내용을 입력하세요.",
-        }}
-        previewOptions={{
-          rehypePlugins: [[rehypeVideo, { test: /\/(.*)(.mp4|.mov)$/i }]],
-          remarkPlugins: [[remarkYoutubePlugin]],
-        }}
-        commands={[
-          commands.bold,
-          commands.italic,
-          commands.strikethrough,
-          commands.hr,
-          commands.group(
-            [
-              commands.title1,
-              commands.title2,
-              commands.title3,
-              commands.title4,
-            ],
-            {
-              name: "title",
-              groupName: "title",
-              buttonProps: { "aria-label": "Insert title" },
-            }
-          ),
-          commands.divider,
-          commands.link,
-          commands.quote,
-          commands.code,
-          commands.codeBlock,
-          commands.comment,
-          commands.image,
-          commands.table,
-          commands.divider,
-          commands.unorderedListCommand,
-          commands.orderedListCommand,
-          commands.checkedListCommand,
-          commands.divider,
-          commands.group([], fileUploader),
-        ]}
-      />
-      <Button
-        className="post-editor-publish-btn outline outline-[#d0d7de] dark:outline-[#30363d]"
-        color="gray"
-        onClick={(e) => publishHandler(e)}
-      >
-        발행하기
-      </Button>
       <Publish
         openModal={openModal}
         setOpenModal={setOpenModal}
@@ -315,14 +186,8 @@ function PostEditor() {
         postContext={postContext}
         setPostContext={setPostContext}
       />
-    </Responsive>
+    </div>
   );
 }
-
-/*
-<MDEditor.Markdown
-  rehypePlugins={[[rehypeVideo]]}
-/>
-*/
 
 export default PostEditor;
