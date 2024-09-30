@@ -114,7 +114,8 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
-                .claim(CLAIM_NAME, user.getUsername()) // username 저장
+//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
+                .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)
@@ -192,7 +193,7 @@ public class JwtService {
                 .findFirst();
     }
 
-    public Optional<String> extractUsername(String accessToken) {
+    public Optional<String> extractEmail(String accessToken) {
         try {
             Claims claims = Jwts
                     .parserBuilder()
@@ -200,8 +201,8 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-            log.info("extractUsername : {}", claims.get(CLAIM_NAME));
-            return Optional.ofNullable((String) claims.get(CLAIM_NAME));
+            log.info("extractUsername : {}", claims.get(CLAIM_EMAIL));
+            return Optional.ofNullable((String) claims.get(CLAIM_EMAIL));
         } catch (Exception e) {
             log.error("액세스 토큰이 유효하지 않습니다.");
             return Optional.empty();

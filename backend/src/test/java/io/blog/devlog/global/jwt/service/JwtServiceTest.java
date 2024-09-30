@@ -48,9 +48,9 @@ public class JwtServiceTest {
 
         // then
         Assertions.assertThat(jwtService.isTokenValid(token)).isTrue();
-        String name = jwtService.extractUsername(token).orElse(null);
-        Assertions.assertThat(name).isNotEqualTo(null);
-        Assertions.assertThat(name).isEqualTo(testConfig.username);
+        String email = jwtService.extractEmail(token).orElse(null);
+        Assertions.assertThat(email).isNotEqualTo(null);
+        Assertions.assertThat(email).isEqualTo(testConfig.email);
     }
 
     @Test
@@ -65,26 +65,9 @@ public class JwtServiceTest {
 
         // then
         Assertions.assertThat(jwtService.isTokenValid(token)).isTrue();
-        String name = jwtService.extractUsername(token).orElse(null);
-        Assertions.assertThat(name).isNotEqualTo(null);
-        Assertions.assertThat(name).isEqualTo(testConfig.username);
-    }
-
-    @Test
-    @DisplayName("UpdateRefreshToken 검증")
-    public void updateRefreshTokenTest() {
-        // given
-        User user = userRepository.save(testConfig.adminUser);
-        String token = jwtService.createRefreshToken(testConfig.adminUser);
-        user.updateRefreshToken(token);
-
-        // when
-        String test_token = jwtService.createRefreshToken(user, new Date(pastTime));
-        user.updateRefreshToken(test_token);
-
-        // then
-        Optional<User> optUser = userRepository.findByRefreshToken(test_token);
-        Assertions.assertThat(optUser).isNotNull();
+        String email = jwtService.extractEmail(token).orElse(null);
+        Assertions.assertThat(email).isNotEqualTo(null);
+        Assertions.assertThat(email).isEqualTo(testConfig.email);
     }
 
     @Test

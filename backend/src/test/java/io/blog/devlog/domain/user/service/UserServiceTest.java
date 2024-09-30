@@ -53,34 +53,11 @@ public class UserServiceTest {
     }
     
     @Test
-    @DisplayName("RefreshToken 갱신")
-    public void updateRefreshTokenTest() {
-        // given
-        String token = "imToken";
-        User refresh_user = User.builder()
-                .email(testConfig.email)
-                .password(testConfig.password)
-                .username(testConfig.username)
-                .build();
-        refresh_user.updateRefreshToken("123");
-        userService.saveUser(refresh_user);
-
-        // when
-        refresh_user.updateRefreshToken(token); // dirty checking
-
-        // then
-        User user = userRepository.findByEmail(testConfig.email).orElse(null);
-        Assertions.assertThat(user).isNotNull();
-        Assertions.assertThat(user.getRefreshToken()).isEqualTo(token);
-    }
-
-    @Test
     @DisplayName("Reissue Token 검증")
     public void reissueAccessTokenTest() throws BadRequestException {
         // given
         User testUser = userService.saveUser(testConfig.adminUser);
         String refreshToken = jwtService.createRefreshToken(testUser);
-        testUser.updateRefreshToken(refreshToken);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
