@@ -37,6 +37,7 @@ public class PostUploadService {
         Post post = postRepository.save(requestPostDto.toEntity(user, category));
 
         fileService.uploadFileAndDeleteTempFile(post, requestPostDto.getFiles());
+        fileService.deleteTempFiles(); // 임시파일 제거
         return post;
     }
 
@@ -48,8 +49,9 @@ public class PostUploadService {
                 .orElseThrow(() -> new BadRequestException("Category not found : " + requestEditPostDto.getCategoryId()));
 
         Post post = postRepository.save(requestEditPostDto.toEntity(user, category));
-
         fileService.uploadFileAndDeleteTempFile(post, requestEditPostDto.getFiles());
+        fileService.deleteTempFiles(); // 임시파일 제거
+        fileService.deleteUnusedFilesByPost(post, requestEditPostDto.getFiles());
         return post;
     }
 }

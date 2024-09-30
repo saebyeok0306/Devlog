@@ -12,9 +12,11 @@ import io.blog.devlog.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
@@ -48,5 +50,13 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable Long commentId) throws IOException {
         commentService.deleteComment(commentId);
+    }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<List<ResponseCommentDto>> getCommentsByPost(@PathVariable Long postId) throws BadRequestException {
+        String email = getUserEmail();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+        return ResponseEntity.ok(commentService.getCommentsFromPost(user, postId));
     }
 }

@@ -5,7 +5,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { authAtom } from "recoil/authAtom";
-import { commentAtom, CommentState } from "recoil/commentAtom";
+import {
+  commentAtom,
+  commentsAtom,
+  CommentsData,
+  CommentState,
+} from "recoil/commentAtom";
 import { postAtom } from "recoil/postAtom";
 import { sortComments } from "utils/sortComments";
 
@@ -15,8 +20,9 @@ function PostCommentContainer({ ...props }) {
   const [authDto] = useRecoilState(authAtom);
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
-  const [comments, setComments] = useState([]);
-  const [commentCount, setCommentCount] = useState(0);
+  const [, setComments] = useRecoilState(commentsAtom);
+  // const [comments, setComments] = useState([]);
+  // const [commentCount, setCommentCount] = useState(0);
   const [likes, setLikes] = useState();
 
   useEffect(() => {
@@ -27,8 +33,11 @@ function PostCommentContainer({ ...props }) {
         .then((res) => {
           setPostContent(res.data?.post);
           const sortedComments = sortComments(res.data?.comments);
-          setComments(sortedComments);
-          setCommentCount(res.data?.comments.length);
+          const commentsObj = new CommentsData(
+            sortedComments,
+            res.data?.comments.length
+          );
+          setComments(commentsObj);
           setCommentState(new CommentState(res.data?.commentFlag));
           setLikes(res.data?.likes);
         })
@@ -43,13 +52,8 @@ function PostCommentContainer({ ...props }) {
 
   return (
     <>
-      <Post
-        {...props}
-        likes={likes}
-        setLikes={setLikes}
-        commentCount={commentCount}
-      />
-      <Comment {...props} comments={comments} />
+      <Post {...props} likes={likes} setLikes={setLikes} />
+      <Comment {...props} />
     </>
   );
 }

@@ -1,8 +1,7 @@
 import CommentEditor from "components/editor/commentEditor";
 import { Dropdown, Timeline } from "flowbite-react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { replyTimelineTheme } from "./replyTimelineTheme";
-import MDEditor from "@uiw/react-md-editor";
 import { getDatetime } from "utils/getDatetime";
 
 import { HiAnnotation } from "react-icons/hi";
@@ -16,7 +15,7 @@ import {
   uploadReplyHandler,
 } from "./CommentsHandler";
 import { authAtom } from "recoil/authAtom";
-import { commentAtom } from "recoil/commentAtom";
+import { commentAtom, commentFilesAtom } from "recoil/commentAtom";
 import { postAtom } from "recoil/postAtom";
 
 const CommentReply = ({ rootComment, comments, reply, setReply }) => {
@@ -43,12 +42,13 @@ const CommentReply = ({ rootComment, comments, reply, setReply }) => {
                 setReply: setReply,
               })
             }
-            onSave={() =>
+            onSave={(files) =>
               uploadReplyHandler({
                 postContent: postContent,
                 comments: comments,
                 reply: reply,
                 setReply: setReply,
+                files: files,
               })
             }
           />
@@ -79,6 +79,7 @@ const CommentBox = ({ comment, comments, reply, setReply, setUpdater }) => {
             comments={comments}
             reply={reply}
             setReply={setReply}
+            setUpdater={setUpdater}
           />
         ) : (
           <CommentView
@@ -97,11 +98,13 @@ const CommentBox = ({ comment, comments, reply, setReply, setUpdater }) => {
 const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
   const authDto = useRecoilValue(authAtom);
   const commentState = useRecoilValue(commentAtom);
+  const [, setCommentFiles] = useRecoilState(commentFilesAtom);
+
   const CommentToolbar = () => {
     if (
       isWriteComment({ commentState: commentState, authDto: authDto }) &&
       comment.ownership &&
-      comment.deleted === false
+      !comment.deleted
     ) {
       return (
         <>
@@ -112,6 +115,7 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
                   comment: comment,
                   reply: reply,
                   setReply: setReply,
+                  setCommentFiles: setCommentFiles,
                 })
               }
             >
@@ -121,7 +125,6 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
               onClick={() =>
                 deleteCommentHandler({
                   comment: comment,
-                  comments: comments,
                   setUpdater: setUpdater,
                 })
               }
@@ -154,16 +157,12 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
           ) : null}
           {/* {comment.content} */}
           {!comment.deleted ? (
-            <MDEditor.Markdown
-              className="comment-md-content"
-              source={comment.content}
-              style={{
-                flex: "1",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-                backgroundColor: "inherit",
-              }}
-            />
+            <div className="comment-md-content">
+              <div
+                className="ck-content"
+                dangerouslySetInnerHTML={{ __html: comment.content }}
+              ></div>
+            </div>
           ) : (
             <div className="text-gray-700 dark:text-gray-400">
               삭제된 댓글입니다.
@@ -175,13 +174,14 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
             {getDatetime(comment.createdAt)}
           </time>
           {isWriteComment({ commentState: commentState, authDto: authDto }) &&
-          comment.deleted === false ? (
+          !comment.deleted ? (
             <button
               onClick={() =>
                 onReplyHandler({
                   targetComment: comment,
                   reply: reply,
                   setReply: setReply,
+                  setCommentFiles: setCommentFiles,
                 })
               }
             >
@@ -194,7 +194,7 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
   );
 };
 
-const CommentEdit = ({ comment, comments, reply, setReply }) => {
+const CommentEdit = ({ comment, comments, reply, setReply, setUpdater }) => {
   return (
     <>
       <CommentEditor
@@ -202,17 +202,20 @@ const CommentEdit = ({ comment, comments, reply, setReply }) => {
         setComment={setReply}
         onCancel={() =>
           cancelEditHandler({
+            reply: reply,
             setReply: setReply,
           })
         }
-        onSave={() =>
+        onSave={(files) =>
           updateEditHandler({
             comment: comment,
             comments: comments,
             reply: reply,
             setReply: setReply,
+            files: files,
           })
         }
+        setUpdater={setUpdater}
       />
     </>
   );
@@ -220,6 +223,9 @@ const CommentEdit = ({ comment, comments, reply, setReply }) => {
 
 const Comments = ({ comments, reply, setReply, setUpdater }) => {
   // const [content, setContent] = useRecoilState(replyAtom);
+  if (!comments) {
+    return null;
+  }
   return (
     <>
       {comments.map((comment, idx) => (

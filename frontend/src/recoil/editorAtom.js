@@ -4,6 +4,7 @@ export class PostContext {
   constructor(
     id = null,
     title = "",
+    body = "",
     content = "",
     category = null,
     files = [],
@@ -16,6 +17,7 @@ export class PostContext {
   ) {
     this.id = id;
     this.title = title;
+    this.body = body;
     this.content = content;
     this.category = category;
     this.files = files;

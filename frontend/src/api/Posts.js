@@ -7,7 +7,7 @@ export const upload_post_api = async ({ postContext, postUrl, previewUrl }) => {
   const requestBody = {
     url: postUrl,
     title: postContext.title,
-    content: postContext.content,
+    content: postContext.body,
     previewUrl: previewUrl,
     categoryId: postContext.category.id,
     files: postContext.files,
@@ -30,7 +30,7 @@ export const edit_post_api = async ({
     id: postContext.id,
     url: postUrl,
     title: postContext.title,
-    content: postContext.content,
+    content: postContext.body,
     previewUrl: previewUrl,
     categoryId: postContext.category.id,
     files: postContext.files,
