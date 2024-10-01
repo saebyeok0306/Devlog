@@ -185,6 +185,9 @@ const commentEditorConfig = {
     ],
   },
   translations: [translations],
+  mediaEmbed: {
+    previewsInData: true,
+  },
   // codeBlock: {
   //   languages: [
   //     { model: "plaintext", label: "Plain text" },

@@ -268,7 +268,9 @@ const editorConfig = {
     ],
   },
   translations: [translations],
-
+  mediaEmbed: {
+    previewsInData: true,
+  },
   // simpleUpload: {
   //   // The URL that the images are uploaded to.
   //   uploadUrl: `${process.env.REACT_APP_API_ENDPOINT}/files`,
