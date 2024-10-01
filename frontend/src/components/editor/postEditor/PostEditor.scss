@@ -79,7 +79,11 @@
     .ck.ck-editor__editable:not(.ck-editor__nested-editable) {
       min-height: 1000px;
       max-height: 1000px;
-      padding: 0 3rem;
+      padding: 0 3em;
+
+      @include mediaquery(medium) {
+        padding: 0 1em;
+      }
     }
     .ck.ck-editor__main {
       display: flex;

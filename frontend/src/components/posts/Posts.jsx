@@ -17,8 +17,8 @@ function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
-      <div className="post-item-top">
-        <Link to={`/post/${post.url}`}>
+      <Link to={`/post/${post.url}`}>
+        <div className="post-item-top">
           {post.previewUrl !== null ? (
             <img
               className="post-item-img"
@@ -29,27 +29,29 @@ function PostCard(idx, post, setSelectCategory) {
           ) : (
             <div className="post-item-img"></div>
           )}
-        </Link>
-      </div>
-      <div className="post-item-bottom">
-        <div className="post-item-content">
-          <button
+        </div>
+        <div className="post-item-bottom">
+          <div className="post-item-content">
+            {/* <button
             className="post-item-category"
             onClick={() => setSelectCategory(post.category.id)}
           >
             {post.category.name}
-          </button>
-          <Link to={`/post/${post.url}`} className="post-item-title">
+          </button> */}
+            <div className="post-item-category">{post.category.name}</div>
+            {/* <Link to={`/post/${post.url}`} className="post-item-title">
             {post.title}
-          </Link>
+          </Link> */}
+            <div className="post-item-title">{post.title}</div>
+          </div>
+          <div className="post-item-chore">
+            <div className="post-item-create">{createdAtFormat}</div>
+            <div className="post-item-views">{`조회 ${post.views}`}</div>
+          </div>
         </div>
-        <div className="post-item-chore">
-          <div className="post-item-create">{createdAtFormat}</div>
-          <div className="post-item-views">{`view ${post.views}`}</div>
-        </div>
-      </div>
-      {/* <div className="author">by {post.author}</div> */}
-      {/* <div className="content">{post.content}</div> */}
+        {/* <div className="author">by {post.author}</div> */}
+        {/* <div className="content">{post.content}</div> */}
+      </Link>
     </div>
   );
 }
