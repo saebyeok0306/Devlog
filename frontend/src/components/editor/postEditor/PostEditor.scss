@@ -141,6 +141,16 @@
   border-top-width: 0;
 }
 
+.ck.ck-content h1:first-child {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+
+  &:is(.dark *) {
+    border-bottom-color: #363636;
+  }
+}
+
 // .ck-publish {
 //   border-radius: 4px;
 //   background-color: #7286d3;

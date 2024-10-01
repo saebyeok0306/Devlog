@@ -1,7 +1,6 @@
 import { upload_file_api } from "api/File";
 
 import {
-  ClassicEditor,
   AccessibilityHelp,
   Autoformat,
   AutoImage,
@@ -53,6 +52,7 @@ import {
 } from "ckeditor5";
 
 import translations from "ckeditor5/translations/ko.js";
+import TableAutoFit from "../postEditor/custom/TableAutoFit";
 
 const commentEditorConfig = {
   toolbar: {
@@ -129,6 +129,7 @@ const commentEditorConfig = {
     Underline,
     Undo,
     MediaEmbed,
+    TableAutoFit,
   ],
   balloonToolbar: ["bold", "italic", "|", "link", "insertImage"],
   image: {
@@ -182,6 +183,7 @@ const commentEditorConfig = {
       "mergeTableCells",
       "tableProperties",
       "tableCellProperties",
+      "TableAutoFit",
     ],
   },
   translations: [translations],
