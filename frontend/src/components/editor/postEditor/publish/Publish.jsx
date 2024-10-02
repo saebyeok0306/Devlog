@@ -6,8 +6,11 @@ import { onErrorImg } from "utils/defaultImg";
 import { edit_post_api, upload_post_api } from "api/Posts";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import validator from "validator";
 import { POST_STORE } from "api/Cache";
+
+const safeUrlValidator = (url) => {
+  return url.replace(" ", "-").replace(/[^a-zA-Z0-9ㄱ-ㅎ가-힣-_]/g, "");
+};
 
 function Publish({
   openModal,
@@ -19,16 +22,15 @@ function Publish({
 }) {
   const navigate = useNavigate();
   const [postUrl, setPostUrl] = useState();
+  const [notEditUrl, setNotEditUrl] = useState(false);
 
   useEffect(() => {
     if (openModal && !postUrl && postContext.title) {
       if (postContext.url === "") {
-        const safeTitle = validator
-          .escape(postContext.title)
-          .replace(/ /g, "-");
-        setPostUrl(safeTitle);
+        setPostUrl(safeUrlValidator(postContext.title));
       } else {
         setPostUrl(postContext.url);
+        setNotEditUrl(true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,40 +54,45 @@ function Publish({
 
   const publishHandler = async () => {
     if (postContext.id === null) {
-      await upload_post_api({
-        postContext: postContext,
-        postUrl: postUrl,
-        previewUrl: postContext.preview
-          ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-          : `previewUrl`,
-      })
-        .then((res) => {
-          toast.info("게시글을 업로드했습니다!");
-          POST_STORE.clear();
-        })
-        .catch((err) => {
-          toast.error("게시글 업로드에 실패했습니다!");
+      try {
+        await upload_post_api({
+          postContext: postContext,
+          postUrl: postUrl,
+          previewUrl: postContext.preview
+            ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+            : `previewUrl`,
         });
+        toast.info("게시글을 업로드했습니다!");
+        POST_STORE.clear();
+      } catch (err) {
+        toast.error("게시글 업로드에 실패했습니다!");
+        return;
+      }
     } else {
       const modifiedAt = new Date().toISOString();
-      await edit_post_api({
-        postContext: postContext,
-        postUrl: postUrl,
-        previewUrl: postContext.preview
-          ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-          : `previewUrl`,
-        modifiedAt: modifiedAt,
-      })
-        .then((res) => {
-          toast.info("게시글을 수정했습니다!");
-          POST_STORE.clear();
-        })
-        .catch((err) => {
-          toast.error("게시글 수정에 실패했습니다!");
+      try {
+        await edit_post_api({
+          postContext: postContext,
+          postUrl: postUrl,
+          previewUrl: postContext.preview
+            ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+            : `previewUrl`,
+          modifiedAt: modifiedAt,
         });
+        toast.info("게시글을 수정했습니다!");
+        POST_STORE.clear();
+      } catch (err) {
+        toast.error("게시글 수정에 실패했습니다!");
+        return;
+      }
     }
     closeHandler();
     navigate(`/post/${postUrl}`);
+  };
+
+  const changePostUrlHandler = async (e) => {
+    if (notEditUrl) return;
+    await setPostUrl(safeUrlValidator(e.target.value));
   };
 
   const PreviewCarousel = () => {
@@ -181,7 +188,7 @@ function Publish({
                   required
                   color="gray"
                   value={postUrl || ""}
-                  onChange={(e) => console.log(e)}
+                  onChange={(e) => changePostUrlHandler(e)}
                 />
               </div>
             </div>
