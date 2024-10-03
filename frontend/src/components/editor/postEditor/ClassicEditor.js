@@ -65,7 +65,8 @@ import {
 } from "ckeditor5";
 
 import translations from "ckeditor5/translations/ko.js";
-import AIButton from "./ai/AIButton";
+import AIButton from "./custom/AIButton";
+import TableAutoFit from "./custom/TableAutoFit";
 
 const editorConfig = {
   toolbar: {
@@ -171,6 +172,7 @@ const editorConfig = {
     Undo,
     FileRepository,
     AIButton,
+    TableAutoFit,
   ],
   balloonToolbar: [
     "bold",
@@ -257,7 +259,7 @@ const editorConfig = {
       },
     ],
   },
-  placeholder: "내용을 작성해주세요",
+  placeholder: "본문 내용을 작성해주세요",
   table: {
     contentToolbar: [
       "tableColumn",
@@ -265,10 +267,13 @@ const editorConfig = {
       "mergeTableCells",
       "tableProperties",
       "tableCellProperties",
+      "TableAutoFit",
     ],
   },
   translations: [translations],
-
+  mediaEmbed: {
+    previewsInData: true,
+  },
   // simpleUpload: {
   //   // The URL that the images are uploaded to.
   //   uploadUrl: `${process.env.REACT_APP_API_ENDPOINT}/files`,

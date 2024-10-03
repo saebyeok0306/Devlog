@@ -18,6 +18,10 @@
   margin: revert;
 }
 
+.ck-content > blockquote {
+  font-style: revert !important;
+}
+
 .ck-content > ol,
 .ck-content > ul {
   list-style: revert;
@@ -47,4 +51,8 @@
 .ck-content pre {
   background-color: #212121 !important;
   color: rgb(210, 210, 210) !important;
+}
+
+.ck-content .table table th {
+  background: hsla(213, 67%, 32%, 0.12) !important;
 }

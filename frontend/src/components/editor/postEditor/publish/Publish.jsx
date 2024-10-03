@@ -85,7 +85,7 @@ function Publish({
         });
     }
     closeHandler();
-    navigate("/");
+    navigate(`/post/${postUrl}`);
   };
 
   const PreviewCarousel = () => {

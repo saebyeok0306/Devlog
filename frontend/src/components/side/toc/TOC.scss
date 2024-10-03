@@ -13,8 +13,8 @@
 
 .toc-container {
   position: sticky;
-  top: 50px;
-  margin-top: 140px;
+  top: 150px;
+  margin-top: 200px;
 
   @include mediaquery(large) {
     margin-top: 10px;
@@ -28,7 +28,7 @@
 
   .toc {
     .is-active-link::before {
-      background-color: red;
+      background-color: $point-color;
     }
   }
 

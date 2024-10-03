@@ -21,8 +21,6 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
   const [throttle, setThrottle] = useState(false);
   const [commentFiles, setCommentFiles] = useRecoilState(commentFilesAtom);
 
-  console.log(commentFiles);
-
   useEffect(() => {
     setIsLayoutReady(true);
     return () => {
