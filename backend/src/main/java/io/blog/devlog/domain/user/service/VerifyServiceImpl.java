@@ -84,7 +84,7 @@ public class VerifyServiceImpl implements VerifyService {
 
     @Override
     public void removeExpiredCode() {
-        // API가 호출 될 때마다 모든 HashMap을 순회하여 만료된 코드를 제거합니다.
+        // 모든 HashMap을 순회하여 만료된 코드를 제거합니다.
         verifyCodeMap.entrySet().removeIf(entry -> entry.getValue().isExpired());
     }
 

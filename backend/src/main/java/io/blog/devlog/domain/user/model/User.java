@@ -76,5 +76,6 @@ public class User extends BaseTime {
 
     public void certified() {
         this.certificate = true;
+        this.role = Role.USER;
     }
 }
