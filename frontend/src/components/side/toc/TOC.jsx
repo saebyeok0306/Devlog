@@ -38,15 +38,15 @@ const exportUrlHandler = (postContent) => {
 };
 
 const postEditHandler = async (navigate, postContent, setPostContext) => {
-  let files = [];
-  try {
-    const result = await get_post_files_api(postContent.id);
-    files = result.data;
-  } catch (error) {
-    console.error("Failed to get post files:", error);
-  }
+  // let files = [];
+  // try {
+  //   const result = await get_post_files_api(postContent.id);
+  //   files = result.data;
+  // } catch (error) {
+  //   console.error("Failed to get post files:", error);
+  // }
 
-  const preview = files.find(
+  const preview = postContent.files.find(
     (file) =>
       `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===
       postContent.previewUrl
@@ -58,7 +58,7 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
     "", // body
     postContent.content,
     postContent.category,
-    files,
+    postContent.files,
     preview,
     postContent.private,
     postContent.createdAt,
