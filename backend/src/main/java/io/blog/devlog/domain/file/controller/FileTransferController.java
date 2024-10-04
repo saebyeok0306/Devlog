@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 public class FileTransferController {
     @Value("${file.upload.path}")
     private String uploadPath;
+
     @GetMapping("/{year}/{month}/{day}/{fileName:.+}")
     public ResponseEntity<Resource> getImage( @PathVariable int year,
                                               @PathVariable int month,

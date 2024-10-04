@@ -49,6 +49,10 @@ public class FileService {
         }
     }
 
+    public File getFileByFileUrl(String fileUrl) {
+        return fileRepository.findByFileUrl(fileUrl).orElse(null);
+    }
+
     public List<File> getFilesByPostId(Long postId) {
         return fileRepository.findByEntityTypeAndEntityId(EntityType.POST, postId);
     }

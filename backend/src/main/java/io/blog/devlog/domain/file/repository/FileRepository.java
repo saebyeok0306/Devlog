@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f FROM File f WHERE f.entityType =:entityType AND f.entityId =:entityId")
     public List<File> findByEntityTypeAndEntityId(EntityType entityType, Long entityId);
+    public Optional<File> findByFileUrl(String fileUrl);
 }
