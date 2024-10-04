@@ -29,10 +29,10 @@ spring:
 
 jwt:
   #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
-  secret: 1248678ec3a15d17b4b60cfa6e3cb3617f2de559ad9cb710bc693ab3d01f5a09955fefa111a924860978536dbd845519e2915356b3cd558d5ec8d2fa7584ab63
+  secret: ${JWT_SECRET}
   access:
-    header: Authorization
+    header: Authorization # unused
     expiration: 3600
   refresh:
-    header: Authorization-Refresh
+    header: Authorization-Refresh # unused
     expiration: 1209600

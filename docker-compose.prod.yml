@@ -21,6 +21,7 @@ services:
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
       ORACLE_USERNAME: ${ORACLE_USERNAME}
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
       - /home/static/resource:/home/static/resource
@@ -39,6 +40,17 @@ services:
     environment:
       DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
       DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
+
+  llmserver:
+    build:
+      context: ./llmserver
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8100:8100"
+    networks:
+      - ms-network
+    environment:
+      - OPENAI_API_KEY: ${OPENAI_API_KEY}
 
   redis:
     image: redis:7.4
