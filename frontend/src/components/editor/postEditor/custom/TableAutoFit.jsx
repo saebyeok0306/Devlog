@@ -3,7 +3,7 @@ import { ButtonView, Plugin } from "ckeditor5";
 export default class TableAutoFit extends Plugin {
   init() {
     const editor = this.editor;
-    editor.ui.componentFactory.add("TableAutoFit", () => {
+    editor.ui.componentFactory.add("tableAutoFit", () => {
       const button = new ButtonView();
 
       button.set({
