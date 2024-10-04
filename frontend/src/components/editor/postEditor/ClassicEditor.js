@@ -62,11 +62,15 @@ import {
   Underline,
   Undo,
   FileRepository,
+  ListProperties,
+  List,
 } from "ckeditor5";
 
 import translations from "ckeditor5/translations/ko.js";
-import AIButton from "./custom/AIButton";
 import TableAutoFit from "./custom/TableAutoFit";
+import UpgradeSentence from "./custom/UpgradeSentence";
+import TitleSuggestion from "./custom/TitleSuggestion";
+import FileUploader from "./custom/FileUploader";
 
 const editorConfig = {
   toolbar: {
@@ -91,7 +95,7 @@ const editorConfig = {
       "superscript",
       "code",
       "removeFormat",
-      "|",
+      "-",
       "specialCharacters",
       "horizontalLine",
       "link",
@@ -103,9 +107,13 @@ const editorConfig = {
       "codeBlock",
       "|",
       "alignment",
+      "bulletedList",
+      "numberedList",
+      "todoList",
       "|",
       "outdent",
       "indent",
+      "fileUploader",
     ],
     shouldNotGroupWhenFull: true,
   },
@@ -144,6 +152,8 @@ const editorConfig = {
     Italic,
     Link,
     LinkImage,
+    List,
+    ListProperties,
     MediaEmbed,
     Mention,
     Paragraph,
@@ -171,8 +181,10 @@ const editorConfig = {
     Underline,
     Undo,
     FileRepository,
-    AIButton,
     TableAutoFit,
+    UpgradeSentence,
+    TitleSuggestion,
+    FileUploader,
   ],
   balloonToolbar: [
     "bold",
@@ -181,7 +193,8 @@ const editorConfig = {
     "link",
     "insertImage",
     "|",
-    "AIButton",
+    "upgradeSentence",
+    "titleSuggestion",
   ],
   fontFamily: {
     supportAllValues: true,
@@ -267,7 +280,7 @@ const editorConfig = {
       "mergeTableCells",
       "tableProperties",
       "tableCellProperties",
-      "TableAutoFit",
+      "tableAutoFit",
     ],
   },
   translations: [translations],

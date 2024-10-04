@@ -2,82 +2,107 @@ import { useState } from "react";
 import { Button, FileInput, Label, List, Modal } from "flowbite-react";
 import { upload_file_api } from "api/File";
 import { toast } from "react-toastify";
-import { onErrorImg } from "utils/defaultImg";
+import { HashLoader } from "react-spinners";
 
 import { HiOutlineX } from "react-icons/hi";
 
 import "./FileUploader.scss";
+import { useRecoilValue } from "recoil";
+import { themeAtom } from "recoil/themeAtom";
 
 function FileUploader({
-  close,
-  execute,
-  getState,
-  textApi,
-  dispatch,
-  editorRef,
   openLoader,
   setOpenLoader,
   postContext,
   setPostContext,
-  UploadFileAndInsertText,
+  uploaderFiles,
+  setUploaderFiles,
 }) {
-  // textApi.replaceSelection(value);
-  // execute(); // execute the command
-  const [file, setFile] = useState();
+  const isDark = useRecoilValue(themeAtom);
+  const [files, setFiles] = useState([]); // 임시파일
+  const [isLoading, setIsLoading] = useState(false);
 
   const closeHandler = () => {
-    setFile(null);
+    if (isLoading) {
+      return;
+    }
+    setFiles([]);
     setOpenLoader(false);
-    close();
+    window.sessionStorage.setItem("fileUploader", "false");
   };
 
-  const fileHandler = (e) => {
-    setFile(e.target.files[0]);
+  const fileHandler = async (e) => {
+    const temp_files = Array.from(e.target.files);
+    const uploaded_files = [];
+
+    setIsLoading(true);
+
+    for (let i = 0; i < temp_files.length; i++) {
+      const file = temp_files[i];
+      if (file.type.startsWith("image")) {
+        toast.info("이미지 파일은 업로드할 수 없습니다.");
+        continue;
+      }
+      try {
+        const upload_result = await upload_file_api(file);
+        const data = upload_result.data;
+        uploaded_files.push(data);
+      } catch (error) {
+        toast.error(`파일 업로드에 실패했습니다.\n${error}`);
+      }
+    }
+    setUploaderFiles([...uploaderFiles, ...uploaded_files]);
+    setFiles([...files, ...uploaded_files]);
+    setIsLoading(false);
+
     // file.type = "image/png" mimetype
   };
 
   const uploadHandler = async () => {
-    if (!file) {
-      toast.info("파일을 선택해주세요.");
-      return;
-    }
-    try {
-      const upload_result = await upload_file_api(file);
-      const data = upload_result.data;
-      let text = "";
-      // TODO: VIDEO를 업로드한 경우에는 따로 처리하기 rehype-video
-      if (data.fileType === "IMAGE") {
-        const fileName = data.fileName.replace(/\.[^/.]+$/, "");
-        text = `![${fileName}](${process.env.REACT_APP_API_FILE_URL}/${data.filePath}/${data.fileUrl})\n`;
-      } else if (data.fileType === "VIDEO") {
-        text = `${process.env.REACT_APP_API_FILE_URL}/${data.filePath}/${data.fileUrl}\n`;
-      }
-
-      await UploadFileAndInsertText({
-        ref: editorRef,
-        apiResult: data,
-        postContext: postContext,
-        setPostContext: setPostContext,
-        insertText: text,
-      });
-    } catch (error) {
-      toast.error(`파일 업로드에 실패했습니다.\n${error}`);
-    }
+    await setPostContext({
+      ...postContext,
+      files: [...postContext.files, ...files],
+    });
     closeHandler();
   };
 
+  const removeFileHandler = (file, idx) => {
+    for (let i = 0; i < postContext.files.length; i++) {
+      const target = postContext.files[i];
+      console.log(target);
+      if (target.fileUrl === file.fileUrl) {
+        setPostContext({
+          ...postContext,
+          files: postContext.files.filter((_, index) => index !== i),
+        });
+        setUploaderFiles(uploaderFiles.filter((_, index) => index !== idx));
+        return;
+      }
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const target = files[i];
+      if (target.fileUrl === file.fileUrl) {
+        console.log("removeFileHandler tempfiles", target, file);
+        setFiles(files.filter((_, index) => index !== i));
+        setUploaderFiles(uploaderFiles.filter((_, index) => index !== idx));
+        return;
+      }
+    }
+  };
+
   const UploadedFiles = () => {
-    const checkFiles = postContext.files.filter(
-      (file) => file.fileType !== "IMAGE"
-    );
-    if (checkFiles.length === 0) {
+    if (uploaderFiles.length === 0) {
       return <></>;
     }
     return (
       <List className="file-upload-files">
-        {checkFiles.map((file, idx) => (
+        {uploaderFiles.map((file, idx) => (
           <List.Item key={idx} className="file-upload-file">
-            <button className="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white">
+            <button
+              className="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+              onClick={() => removeFileHandler(file, idx)}
+            >
               <p className="file-upload-file-name">{file.fileName}</p>
               <HiOutlineX />
             </button>
@@ -89,33 +114,42 @@ function FileUploader({
 
   return (
     <>
-      <Modal show={openLoader} onClose={() => closeHandler()} size="xl" popup>
+      <Modal show={openLoader} onClose={closeHandler} size="xl" popup>
         <Modal.Header />
         <Modal.Body>
-          <div>
+          <div className="relative">
+            {isLoading && (
+              <div className="file-upload-loader">
+                <HashLoader
+                  color={isDark ? "#fff" : "#000"}
+                  loading={isLoading}
+                  size={50}
+                />
+              </div>
+            )}
             <div className="mb-2 block">
               <Label htmlFor="file-upload" value="Upload file" />
             </div>
-            <FileInput id="file-upload" onChange={(e) => fileHandler(e)} />
+            <FileInput
+              id="file-upload"
+              onChange={(e) => fileHandler(e)}
+              multiple
+            />
           </div>
-          {file && file.type.startsWith("image") ? (
-            <div>
-              <h3 className="text-l font-medium" style={{ marginTop: "1em" }}>
-                Preview
-              </h3>
-              <img
-                src={URL.createObjectURL(file)}
-                alt="preview"
-                onError={onErrorImg}
-                style={{ margin: "auto" }}
-              />
-            </div>
-          ) : null}
           <UploadedFiles />
         </Modal.Body>
         <Modal.Footer className="publish-footer">
-          <Button onClick={() => uploadHandler()}>첨부하기</Button>
-          <Button color="gray" onClick={() => closeHandler()}>
+          <Button
+            onClick={() => uploadHandler()}
+            disabled={isLoading ? true : false}
+          >
+            첨부하기
+          </Button>
+          <Button
+            color="gray"
+            onClick={() => closeHandler()}
+            disabled={isLoading ? true : false}
+          >
             취소
           </Button>
         </Modal.Footer>

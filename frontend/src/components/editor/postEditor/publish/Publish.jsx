@@ -53,6 +53,7 @@ function Publish({
   };
 
   const publishHandler = async () => {
+    console.log("publish", postContext.files);
     if (postContext.id === null) {
       try {
         await upload_post_api({
@@ -109,15 +110,19 @@ function Publish({
       <div className="publish-preview-list">
         <h3 className="text-xl font-medium">미리보기 선택</h3>
         <Carousel slide={false}>
-          {postContext.files.map((file, index) => (
-            <img
-              key={index}
-              className="publish-preview-list-image"
-              src={`${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
-              alt={`preview${index}`}
-              onClick={() => setPostContext({ ...postContext, preview: file })}
-            />
-          ))}
+          {postContext.files
+            .filter((file) => file.fileType === "IMAGE")
+            .map((file, index) => (
+              <img
+                key={index}
+                className="publish-preview-list-image"
+                src={`${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
+                alt={`preview${index}`}
+                onClick={() =>
+                  setPostContext({ ...postContext, preview: file })
+                }
+              />
+            ))}
         </Carousel>
       </div>
     );
