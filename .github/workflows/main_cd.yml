@@ -44,9 +44,11 @@ jobs:
     #   run:
     #     working-directory: backend
     outputs:
-      build-cache-key: ${{ steps.build-cache.outputs.key }}
-      current-datetime: ${{ steps.datetime.outputs.datetime }}
+      discovery-build-cache-key: ${{ steps.discovery-build-cache.outputs.key }}
+      gateway-build-cache-key: ${{ steps.gateway-build-cache.outputs.key }}
+      main-build-cache-key: ${{ steps.main-build-cache.outputs.key }}
       mail-build-cache-key: ${{ steps.mail-build-cache.outputs.key }}
+      current-datetime: ${{ steps.datetime.outputs.datetime }}
     steps:
       - uses: actions/checkout@v4
 
