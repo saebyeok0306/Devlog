@@ -32,8 +32,6 @@ file:
     path: /home/static/resource
   request:
     path: res
-llm:
-  url: http://llmserver:8100
 
 logging:
   level:
