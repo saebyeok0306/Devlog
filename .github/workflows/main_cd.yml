@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - "backend/**"
-      - "mailserver/**"
       - "docker-compose.yml"
     branches:
       - main
@@ -15,12 +14,27 @@ permissions: write-all
 env:
   DEVLOG_GOOGLE_CLIENT_ID: ${{secrets.DEVLOG_GOOGLE_CLIENT_ID}}
   DEVLOG_GOOGLE_CLIENT_SECRET: ${{secrets.DEVLOG_GOOGLE_CLIENT_SECRET}}
-  BACKEND_JAR_TARGET_PATH: "backend/build/libs/devlog.jar"
-  BACKEND_DOCKER_TARGET_PATH: "backend/Dockerfile.prod"
-  BACKEND_FOLDER_PATH: "/home/app/backend"
-  MAIL_JAR_TARGET_PATH: "mailserver/build/libs/mail.jar"
-  MAIL_DOCKER_TARGET_PATH: "mailserver/Dockerfile.prod"
-  MAIL_FOLDER_PATH: "/home/app/mailserver"
+
+  GATEWAY_JAR_TARGET_PATH: "backend/gateway-service/build/libs/gateway-service.jar"
+  GATEWAY_DOCKER_TARGET_PATH: "backend/gateway-service/Dockerfile.prod"
+  GATEWAY_FOLDER_PATH: "/home/app/backend/gateway-service"
+
+  DISCOVERY_JAR_TARGET_PATH: "backend/discovery-service/build/libs/discovery-service.jar"
+  DISCOVERY_DOCKER_TARGET_PATH: "backend/discovery-service/Dockerfile.prod"
+  DISCOVERY_FOLDER_PATH: "/home/app/backend/discovery-service"
+
+  MAIN_JAR_TARGET_PATH: "backend/main-service/build/libs/main-service.jar"
+  MAIN_DOCKER_TARGET_PATH: "backend/main-service/Dockerfile.prod"
+  MAIN_FOLDER_PATH: "/home/app/backend/main-service"
+
+  MAIL_JAR_TARGET_PATH: "backend/mail-service/build/libs/mail-service.jar"
+  MAIL_DOCKER_TARGET_PATH: "backend/mail-service/Dockerfile.prod"
+  MAIL_FOLDER_PATH: "/home/app/backend/mail-service"
+
+  LLM_ZIP_NAME: "llm-service.zip"
+  LLM_ZIP_TARGET_PATH: "backend/llm-service/llm-service.zip"
+  LLM_DOCKER_TARGET_PATH: "backend/llm-service/Dockerfile.prod"
+  LLM_FOLDER_PATH: "/home/app/backend/llm-service"
 
 jobs:
   # 사전 작업
@@ -43,13 +57,21 @@ jobs:
         id: datetime
         run: echo "datetime=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
 
-      - name: Generate backend build cache key
-        id: build-cache
-        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
+      - name: Generate discovery-service build cache key
+        id: discovery-build-cache
+        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/discovery-service/**/*.gradle*', 'backend/discovery-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
 
-      - name: Generate mailserver build cache key
+      - name: Generate gateway-service build cache key
+        id: gateway-build-cache
+        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/gateway-service/**/*.gradle*', 'backend/gateway-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
+
+      - name: Generate main-service build cache key
+        id: main-build-cache
+        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/main-service/**/*.gradle*', 'backend/main-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
+
+      - name: Generate mail-service build cache key
         id: mail-build-cache
-        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('mailserver/**/*.gradle*', 'mailserver/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
+        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/mail-service/**/*.gradle*', 'backend/mail-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
 
       - name: Modify permissions
         run: chmod o+rwx docker-compose.prod.yml
@@ -63,12 +85,12 @@ jobs:
           source: "docker-compose.prod.yml"
           target: "/home/app"
 
-  build-backend:
+  build-discovery-service:
     needs: setup
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/discovery-service
     steps:
       - uses: actions/checkout@v4
 
@@ -79,7 +101,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ needs.setup.outputs.build-cache-key }}
+          key: ${{ needs.setup.outputs.discovery-build-cache-key }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
@@ -99,27 +121,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-report
-          path: backend/build/reports/tests/test
-
-      # - name: Stop Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd ${{ env.BACKEND_FOLDER_PATH }}
-      #       ls -al
-      #       sh script/stop.sh
-
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
       - name: Modify permissions
-        run: chmod o+rwx build/libs/devlog.jar
+        run: chmod o+rwx build/libs/discovery-service.jar
 
       - name: Send jar
         uses: appleboy/scp-action@master
@@ -127,39 +131,155 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ${{ env.BACKEND_JAR_TARGET_PATH }}
-          target: ${{ env.BACKEND_FOLDER_PATH }}
-          strip_components: 3 # 파일을 복사할 때 source 경로에서 몇 개의 컴포넌트(디렉토리)를 제거할 것인지를 지정합니다. 3이므로, backend/build/libs/devlog.jar 에서 backend, build, libs가 사라짐.
+          source: ${{ env.DISCOVERY_JAR_TARGET_PATH }}
+          target: ${{ env.DISCOVERY_FOLDER_PATH }}
+          strip_components: 4 # 파일을 복사할 때 source 경로에서 몇 개의 컴포넌트(디렉토리)를 제거할 것인지를 지정합니다. 4이므로, backend/main-service/build/libs/devlog.jar 에서 backend, main-service, build, libs가 사라짐.
 
-      - name: Modify permissions Dockerfile.prd
+      - name: Modify permissions Dockerfile.prod
         run: chmod o+rwx Dockerfile.prod
 
-      - name: Send Dockerfile.prd
+      - name: Send Dockerfile.prod
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ${{ env.BACKEND_DOCKER_TARGET_PATH }}
-          target: ${{ env.BACKEND_FOLDER_PATH }}
-          strip_components: 1
+          source: ${{ env.DISCOVERY_DOCKER_TARGET_PATH }}
+          target: ${{ env.DISCOVERY_FOLDER_PATH }}
+          strip_components: 2
 
-      # - name: Restart Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd ${{ env.BACKEND_FOLDER_PATH }}
-      #       sh script/start.sh ${{ needs.setup.outputs.current-datetime }}
-
-  build-mailserver:
+  build-gateway-service:
     needs: setup
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: mailserver
+        working-directory: backend/gateway-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gradle Caching
+        id: cache-gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ needs.setup.outputs.gateway-build-cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Check
+        if: steps.cache-gradle.outputs.cache-hit == 'true'
+        run: echo 'Gradle cache hit!'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
+      - name: Modify permissions
+        run: chmod o+rwx build/libs/gateway-service.jar
+
+      - name: Send jar
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.GATEWAY_JAR_TARGET_PATH }}
+          target: ${{ env.GATEWAY_FOLDER_PATH }}
+          strip_components: 4 # 파일을 복사할 때 source 경로에서 몇 개의 컴포넌트(디렉토리)를 제거할 것인지를 지정합니다. 4이므로, backend/main-service/build/libs/devlog.jar 에서 backend, main-service, build, libs가 사라짐.
+
+      - name: Modify permissions Dockerfile.prod
+        run: chmod o+rwx Dockerfile.prod
+
+      - name: Send Dockerfile.prod
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.GATEWAY_DOCKER_TARGET_PATH }}
+          target: ${{ env.GATEWAY_FOLDER_PATH }}
+          strip_components: 2
+
+  build-main-service:
+    needs: setup
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend/main-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gradle Caching
+        id: cache-gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ needs.setup.outputs.main-build-cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Check
+        if: steps.cache-gradle.outputs.cache-hit == 'true'
+        run: echo 'Gradle cache hit!'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
+      - name: Modify permissions
+        run: chmod o+rwx build/libs/main-service.jar
+
+      - name: Send jar
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.MAIN_JAR_TARGET_PATH }}
+          target: ${{ env.MAIN_FOLDER_PATH }}
+          strip_components: 4 # 파일을 복사할 때 source 경로에서 몇 개의 컴포넌트(디렉토리)를 제거할 것인지를 지정합니다. 4이므로, backend/main-service/build/libs/devlog.jar 에서 backend, main-service, build, libs가 사라짐.
+
+      - name: Modify permissions Dockerfile.prod
+        run: chmod o+rwx Dockerfile.prod
+
+      - name: Send Dockerfile.prod
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.MAIN_DOCKER_TARGET_PATH }}
+          target: ${{ env.MAIN_FOLDER_PATH }}
+          strip_components: 2
+
+  build-mail-service:
+    needs: setup
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend/mail-service
     steps:
       - uses: actions/checkout@v4
 
@@ -190,20 +310,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      # - name: Stop Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd ${{ env.BACKEND_FOLDER_PATH }}
-      #       ls -al
-      #       sh script/stop.sh
-
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
       - name: Modify permissions
-        run: chmod o+rwx build/libs/mail.jar
+        run: chmod o+rwx build/libs/mail-service.jar
 
       - name: Send jar
         uses: appleboy/scp-action@master
@@ -213,12 +322,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ${{ env.MAIL_JAR_TARGET_PATH }}
           target: ${{ env.MAIL_FOLDER_PATH }}
-          strip_components: 3 # 파일을 복사할 때 source 경로에서 몇 개의 컴포넌트(디렉토리)를 제거할 것인지를 지정합니다. 3이므로, backend/build/libs/devlog.jar 에서 backend, build, libs가 사라짐.
+          strip_components: 4
 
-      - name: Modify permissions Dockerfile.prd
+      - name: Modify permissions Dockerfile.prod
         run: chmod o+rwx Dockerfile.prod
 
-      - name: Send Dockerfile.prd
+      - name: Send Dockerfile.prod
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -226,12 +335,64 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ${{ env.MAIL_DOCKER_TARGET_PATH }}
           target: ${{ env.MAIL_FOLDER_PATH }}
-          strip_components: 1
+          strip_components: 2
 
-  start-server:
+  build-llm-service:
+    needs: setup
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend/llm-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make zip file
+        run: zip -qq -r ./${{ env.LLM_ZIP_NAME }} . -x ".git/*" ".github/*"
+
+      # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
+      - name: Modify permissions of Zip file
+        run: chmod o+rwx ${{ env.LLM_ZIP_NAME }}
+
+      - name: Send Zip file
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.LLM_ZIP_TARGET_PATH }}
+          target: ${{ env.LLM_FOLDER_PATH }}
+          strip_components: 2
+
+      - name: Modify permissions Dockerfile.prod
+        run: chmod o+rwx Dockerfile.prod
+
+      - name: Send Dockerfile.prod
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.LLM_DOCKER_TARGET_PATH }}
+          target: ${{ env.LLM_FOLDER_PATH }}
+          strip_components: 2
+
+      - name: Unzip
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/app/backend/llm-service
+            unzip -o ${{ env.LLM_ZIP_NAME }}
+
+  startup:
     needs:
-      - build-backend
-      - build-mailserver
+      - build-discovery-service
+      - build-gateway-service
+      - build-main-service
+      - build-mail-service
+      - build-llm-service
     runs-on: ubuntu-22.04
     steps:
       - name: Restart Server

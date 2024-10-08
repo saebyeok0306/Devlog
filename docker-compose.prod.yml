@@ -5,9 +5,35 @@ networks:
     driver: bridge
 
 services:
-  mainserver:
+  discovery-service:
     build:
-      context: ./backend
+      context: ./backend/discovery-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8761:8761"
+    networks:
+      - ms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway-service:
+    build:
+      context: ./backend/gateway-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8760:8760"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - ms-network
+
+  main-service:
+    build:
+      context: ./backend/main-service
       dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
@@ -21,13 +47,14 @@ services:
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
       ORACLE_USERNAME: ${ORACLE_USERNAME}
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
       - /home/static/resource:/home/static/resource
 
-  mailserver:
+  mail-service:
     build:
-      context: ./mailserver
+      context: ./backend/mail-service
       dockerfile: Dockerfile.prod
     ports:
       - "8001:8001"
@@ -39,6 +66,17 @@ services:
     environment:
       DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
       DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
+
+  llm-service:
+    build:
+      context: ./backend/llm-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8100:8100"
+    networks:
+      - ms-network
+    environment:
+      - OPENAI_API_KEY: ${OPENAI_API_KEY}
 
   redis:
     image: redis:7.4

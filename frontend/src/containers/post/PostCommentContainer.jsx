@@ -1,4 +1,4 @@
-import { get_post_url_api } from "api/Posts";
+import { get_post_files_api, get_post_url_api } from "api/Posts";
 import Comment from "components/base/comment";
 import Post from "components/post";
 import React, { useEffect, useState } from "react";
@@ -30,8 +30,15 @@ function PostCommentContainer({ ...props }) {
       await setPostContent("");
       await setComments([]);
       await get_post_url_api(postUrl)
-        .then((res) => {
-          setPostContent(res.data?.post);
+        .then(async (res) => {
+          const postData = res.data?.post;
+          try {
+            const result = await get_post_files_api(postData.id);
+            postData["files"] = result.data || [];
+          } catch (error) {
+            console.error("Failed to get post files:", error);
+          }
+          setPostContent(postData);
           const sortedComments = sortComments(res.data?.comments);
           const commentsObj = new CommentsData(
             sortedComments,

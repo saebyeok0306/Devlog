@@ -13,7 +13,7 @@ import { themeAtom } from "recoil/themeAtom";
 import { useRecoilValue } from "recoil";
 import { postAtom } from "recoil/postAtom";
 import { Navigate } from "react-router-dom";
-import { Tooltip } from "flowbite-react";
+import { List, Tooltip } from "flowbite-react";
 import { authAtom } from "recoil/authAtom";
 import { post_like_api, post_unlike_api } from "api/Like";
 import { toast } from "react-toastify";
@@ -94,6 +94,46 @@ function Post({ ...props }) {
     return <Navigate replace to="/" />;
   }
 
+  const UploadedFiles = () => {
+    if (!postContent?.files) return <></>;
+    const files = postContent.files.filter((file) => file.fileType !== "IMAGE");
+    if (files.length === 0) {
+      return <></>;
+    }
+
+    const bytesToMB = (bytes) => {
+      return Math.round((bytes / (1024 * 1024)) * 100) / 100;
+    };
+    return (
+      <>
+        <hr />
+        <div>
+          <div>첨부파일</div>
+          <List className="file-upload-files">
+            {files.map((file, idx) => (
+              <List.Item key={idx} className="file-upload-file">
+                <button
+                  className="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                  onClick={null}
+                >
+                  <a
+                    href={`${process.env.REACT_APP_API_ENDPOINT}/download/${file.fileUrl}`}
+                    download={file.fileName}
+                  >
+                    <p className="file-upload-file-name">
+                      {file.fileName} ({bytesToMB(file.fileSize)}MB)
+                    </p>
+                    {/* <HiOutlineX /> */}
+                  </a>
+                </button>
+              </List.Item>
+            ))}
+          </List>
+        </div>
+      </>
+    );
+  };
+
   const Like = () => {
     const likers =
       likes?.users.length > 0
@@ -156,6 +196,7 @@ function Post({ ...props }) {
           dangerouslySetInnerHTML={{ __html: postContent.content }}
         ></div>
       </article>
+      <UploadedFiles />
       <hr />
       <footer>
         <Like />

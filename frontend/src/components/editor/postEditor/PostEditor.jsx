@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { get_categories_readwrite_api } from "api/Category";
 import Publish from "./publish";
 import hljs from "highlight.js";
+import FileUploader from "./fileUploader";
 
 const divideTitleAndBody = (content) => {
   const parser = new DOMParser();
@@ -45,6 +46,29 @@ function PostEditor() {
   const [postContext, setPostContext] = useRecoilState(postContextAtom);
 
   const [openLoader, setOpenLoader] = useState(false);
+  const [uploaderFiles, setUploaderFiles] = useState([]); // 업로드된 파일 + 임시파일
+
+  useEffect(() => {
+    const fileUploadListener = (e) => {
+      if (window.sessionStorage.getItem("fileUploader") === "true") {
+        setOpenLoader(true);
+      }
+    };
+    window.addEventListener("fileUploader", fileUploadListener);
+
+    return () => {
+      window.removeEventListener("fileUploader", fileUploadListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (openLoader) {
+      setUploaderFiles([
+        ...postContext.files.filter((file) => file.fileType !== "IMAGE"),
+      ]);
+    }
+    // eslint-disable-next-line
+  }, [openLoader]);
 
   useEffect(() => {
     setIsLayoutReady(true);
@@ -78,11 +102,16 @@ function PostEditor() {
       const content = header + postContext.content;
       editorInstance.setData(content);
     }
+    // eslint-disable-next-line
   }, [editorInstance]);
 
   useEffect(() => {
     if (!postContext.preview) {
-      setPostContext((prev) => ({ ...prev, preview: prev.files[0] }));
+      const images = postContext.files.filter(
+        (file) => file.fileType === "IMAGE"
+      );
+      if (images.length < 1) return;
+      setPostContext((prev) => ({ ...prev, preview: images[0] }));
     } else {
       // files 중 content에 없는 이미지가 preview인 경우 다시 files에서 첫번째 항목으로 선택.
       if (
@@ -94,7 +123,7 @@ function PostEditor() {
       }
     }
     // eslint-disable-next-line
-  }, [postContext.files]);
+  }, [openModal]);
 
   const publishHandler = (e) => {
     e.preventDefault();
@@ -118,7 +147,7 @@ function PostEditor() {
       return (
         postContext.content.indexOf(
           `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
-        ) !== -1 || file.fileType === "VIDEO"
+        ) !== -1 || file.fileType !== "IMAGE"
       );
     };
     const newFiles = postContext.files.filter((file) => fileFilter(file));
@@ -147,6 +176,14 @@ function PostEditor() {
 
   return (
     <div className="editor-container post-editor">
+      <FileUploader
+        openLoader={openLoader}
+        setOpenLoader={setOpenLoader}
+        postContext={postContext}
+        setPostContext={setPostContext}
+        uploaderFiles={uploaderFiles}
+        setUploaderFiles={setUploaderFiles}
+      />
       <div className="editor-container__editor">
         {isLayoutReady && (
           <CKEditor
