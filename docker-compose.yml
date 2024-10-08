@@ -5,12 +5,36 @@ networks:
     driver: bridge
 
 services:
-  mainserver:
-    build: ./backend
+  discovery-service:
+    build: ./backend/discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - ms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway-service:
+    build: ./backend/gateway-service
+    ports:
+      - "8760:8760"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - ms-network
+
+  main-service:
+    build: ./backend/main-service
     ports:
       - "8000:8000"
     depends_on:
       redis:
+        condition: service_healthy
+      discovery-service:
         condition: service_healthy
     networks:
       - ms-network
@@ -20,14 +44,16 @@ services:
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
       JWT_SECRET: ${JWT_SECRET}
     volumes:
-      - C:\\Programming\\Blog\\devlog\\backend\\src\\main\\resources\\upload:/home/static/resource
+      - C:\\Programming\\Blog\\devlog\\backend\\main-service\\src\\main\\resources\\upload:/home/static/resource
 
-  mailserver:
-    build: ./mailserver
+  mail-service:
+    build: ./backend/mail-service
     ports:
       - "8001:8001"
     depends_on:
       redis:
+        condition: service_healthy
+      discovery-service:
         condition: service_healthy
     networks:
       - ms-network
@@ -35,10 +61,13 @@ services:
       DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
       DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
 
-  llmserver:
-    build: ./llmserver
+  llm-service:
+    build: ./backend/llm-service
     ports:
       - "8100:8100"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
     networks:
       - ms-network
     environment:

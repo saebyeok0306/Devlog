@@ -1,0 +1,35 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@testdb_high?TNS_ADMIN=./src/main/resources/wallet
+    username: ${ORACLE_USERNAME}
+    password: ${ORACLE_PASSWORD}
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:/sql/data-oracle.sql
+  jpa:
+    defer-datasource-initialization: true # Hibernate 초기화 후 data-oracle.sql 실행
+    hibernate:
+      ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
+    properties:
+      hibernate:
+        format_sql: true
+        hightlight_sql: true
+  data:
+    redis:
+      host: redis
+      port: 6379
+frontend:
+  url: http://localhost:3000
+  domain: localhost
+file:
+  upload:
+    path: C:\Programming\Blog\devlog\backend\src\main\resources\upload
+  request:
+    path: res
+llm:
+  url: http://llmserver:8100

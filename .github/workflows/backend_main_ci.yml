@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "backend/**"
+      - "backend/main-service/**"
   workflow_dispatch:
 
 permissions: write-all
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/main-service
     steps:
       - uses: actions/checkout@v4
 
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/main-service
     steps:
       - uses: actions/checkout@v4
 

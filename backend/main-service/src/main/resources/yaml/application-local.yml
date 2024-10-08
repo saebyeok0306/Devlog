@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://host.docker.internal:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+#    url: jdbc:mysql://database:3306/devlog?serverTimezone=Asia/Seoul
+    username: root
+    password: ${MYSQL_PASSWORD}
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:/sql/data-mysql.sql
+  jpa:
+    defer-datasource-initialization: true # Hibernate 초기화 후 data-oracle.sql 실행
+    hibernate:
+      ddl-auto: create-drop # DDL (create/update/create-drop/validate/none)
+    properties:
+      hibernate:
+        format_sql: true
+        hightlight_sql: true
+  data:
+    redis:
+      host: redis
+      port: 6379
+frontend:
+  url: http://localhost:3000
+  domain: localhost
+file:
+  upload:
+    path: /home/static/resource
+  request:
+    path: res
+llm:
+  url: http://llmserver:8100
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm.jdbc.bind: TRACE

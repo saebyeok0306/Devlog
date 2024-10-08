@@ -11,7 +11,12 @@ import { ETC_STORE } from "./Cache";
 const REFRESH_URL = "/reissue";
 
 export const API = axios.create({
-  baseURL: `${process.env.REACT_APP_API_ENDPOINT}`,
+  baseURL: `${process.env.REACT_APP_API_ENDPOINT}/main`,
+  withCredentials: true,
+});
+
+export const LLM_API = axios.create({
+  baseURL: `${process.env.REACT_APP_API_ENDPOINT}/llm`,
   withCredentials: true,
 });
 
@@ -65,18 +70,35 @@ export const AuthTokenInterceptor = () => {
   const navigate = useNavigate();
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
-  const requestHandler = API.interceptors.request.use(requestAuthTokenInjector);
-  const rejectHandler = API.interceptors.response.use(
+  const mainRequestHandler = API.interceptors.request.use(
+    requestAuthTokenInjector
+  );
+  const mainRejectHandler = API.interceptors.response.use(
+    (response) => responseSuccessHandler(response),
+    (error) => responseRejectHandler(error, navigate, authDto, setAuthDto)
+  );
+
+  const llmRequestHandler = LLM_API.interceptors.request.use(
+    requestAuthTokenInjector
+  );
+  const llmRejectHandler = LLM_API.interceptors.response.use(
     (response) => responseSuccessHandler(response),
     (error) => responseRejectHandler(error, navigate, authDto, setAuthDto)
   );
 
   useEffect(() => {
     return () => {
-      API.interceptors.request.eject(requestHandler);
-      API.interceptors.response.eject(rejectHandler);
+      API.interceptors.request.eject(mainRequestHandler);
+      API.interceptors.response.eject(mainRejectHandler);
+      LLM_API.interceptors.request.eject(llmRequestHandler);
+      LLM_API.interceptors.response.eject(llmRejectHandler);
     };
-  }, [requestHandler, rejectHandler]);
+  }, [
+    mainRequestHandler,
+    mainRejectHandler,
+    llmRequestHandler,
+    llmRejectHandler,
+  ]);
 };
 
 export const AxiosProvider = ({ children }) => {
