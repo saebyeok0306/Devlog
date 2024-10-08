@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: backend
+        working-directory: backend/main-service
     outputs:
       build-cache-key: ${{ steps.build-cache.outputs.key }}
       current-datetime: ${{ steps.datetime.outputs.datetime }}
@@ -80,19 +80,19 @@ jobs:
         if: always()
         with:
           name: unit-test-report
-          path: backend/build/reports/tests/test
+          path: backend/main-service/build/reports/tests/test
 
       - name: publish unit test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: backend/build/test-results/test/TEST-*.xml
+          files: backend/main-service/build/test-results/test/TEST-*.xml
 
       - name: add comments to a pull request
         uses: mikepenz/action-junit-report@v4
         if: github.event_name == 'pull_request' && always()
         with:
-          report_paths: backend/build/test-results/test/TEST-*.xml
+          report_paths: backend/main-service/build/test-results/test/TEST-*.xml
 
   code-coverage-test:
     needs: setup
@@ -134,7 +134,7 @@ jobs:
         if: github.event_name == 'pull_request' && always()
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: backend/build/reports/jacoco/test/jacocoTestReport.xml
+          paths: backend/main-service/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 80
           min-coverage-changed-files: 80
@@ -146,4 +146,4 @@ jobs:
         if: always()
         with:
           name: jacoco-html-report
-          path: backend/build/reports/jacoco/test/html
+          path: backend/main-service/build/reports/jacoco/test/html
