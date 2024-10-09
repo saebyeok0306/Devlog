@@ -30,6 +30,8 @@ services:
         condition: service_healthy
     networks:
       - ms-network
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
 
   main-service:
     build:
