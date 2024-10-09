@@ -142,6 +142,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProcessingFilter authenticationProcessingFilter() {
-        return new AuthenticationProcessingFilter(errorResponse, jwtService);
+        return new AuthenticationProcessingFilter(jwtService, userService);
     }
 }

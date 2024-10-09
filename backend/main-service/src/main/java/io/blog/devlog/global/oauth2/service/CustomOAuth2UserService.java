@@ -70,8 +70,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             user = userEntity.get();
         }
         log.info("CustomOAuth2UserService Username : {}", user.getUsername());
-//        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole());
-
         log.info("userAttributes : {}", oauth2UserInfo);
         log.info("nameAttributesKey : {}", extractAttributes.getNameAttributeKey());
 

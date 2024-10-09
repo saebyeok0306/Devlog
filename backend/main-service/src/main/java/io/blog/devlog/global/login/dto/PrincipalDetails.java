@@ -8,10 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import io.blog.devlog.domain.user.model.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 // 시큐리티가 /login주소 요청이 오면 낚아채서 로그인을 진행시킴.
 // 로그인 진행이 완료가 되면, 시큐리티 session(일반적인 세션 X)을 만들어줍니다. (key: Security ContextHolder)
@@ -26,6 +23,7 @@ public class PrincipalDetails extends DefaultOAuth2User implements UserDetails {
     private final User user;
 
     public PrincipalDetails(User user) {
+        // User Entity에서 데이터를 가져올 것이기 때문에, super()는 더미 데이터를 넣어줌.
         super(null, new HashMap<>(){{put("id", null);}}, "id");
         this.user = user;
     }
@@ -38,9 +36,11 @@ public class PrincipalDetails extends DefaultOAuth2User implements UserDetails {
     // 해당 User의 권한을 리턴하는 곳!
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collect = new ArrayList<>();
-        collect.add(new SimpleGrantedAuthority(user.getRole().name()));
-        return collect;
+        return List.of(new SimpleGrantedAuthority(user.getRole().getNameKey()));
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public int getRoleKey() {

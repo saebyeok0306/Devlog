@@ -79,9 +79,7 @@ public class JwtService {
         // claim 메소드를 통해 새롭게 추가할 수 있는 개념.
         return Jwts.builder()
                 .setSubject(ACCESS_TOKEN_SUBJECT) // Jwt Subject
-//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .claim(CLAIM_EMAIL, user.getEmail())
-                .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity) // set Expire Time 해당 옵션 안넣으면 expire안함
                 .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512) // 사용할 암호화 알고리즘과 , signature 에 들어갈 secret값 세팅
@@ -99,9 +97,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
-//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .claim(CLAIM_EMAIL, user.getEmail())
-                .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -114,9 +110,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(REFRESH_TOKEN_SUBJECT)
-//                .claim(CLAIM_NAME, user.getUsername()) // username 저장
                 .claim(CLAIM_EMAIL, user.getEmail())
-                .claim(CLAIN_ROLE, user.getRole().name())
                 .setExpiration(validity)
                 .setIssuedAt(date)
                 .signWith(key, SignatureAlgorithm.HS512)
