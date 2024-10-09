@@ -14,9 +14,8 @@ logger = logging.getLogger(__name__)
 load_dotenv(verbose=True, override=True)
 
 origins = [
-    "http://localhost:3000",  # Example frontend URL
+    "http://localhost:3000",
     "https://devlog.run",
-    # Add more origins as needed
 ]
 
 
@@ -38,6 +37,7 @@ async def lifespan(app_: FastAPI):
         instance_id=f"llm-instance:{get_ip_address()}:8100",
         # instance_host="127.0.0.1",
         instance_port=8100,
+        health_check_url="/health"
     )
 
     yield
@@ -49,14 +49,6 @@ async def lifespan(app_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 for router in api_routers:
     app.include_router(router)
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,  # Allows all origins if set to ["*"]
-#     allow_credentials=True,
-#     allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
-#     allow_headers=["*"],  # Allows all headers
-# )
 
 
 @app.get("/health")

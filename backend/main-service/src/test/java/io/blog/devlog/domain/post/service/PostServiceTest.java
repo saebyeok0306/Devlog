@@ -9,14 +9,15 @@ import io.blog.devlog.domain.file.repository.FileRepository;
 import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.file.service.TempFileService;
-import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.dto.RequestPostDto;
 import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.jwt.service.JwtService;
+import io.blog.devlog.global.login.dto.PrincipalDetails;
 import org.apache.coyote.BadRequestException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,10 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -259,15 +257,11 @@ public class PostServiceTest {
         int page = 0;
         int size = 2;
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        UserDetails userDetails = User.builder()
-                .username(testConfig.email)
-                .password("")
-                .authorities(new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + Role.USER))))
-                .build();
+        PrincipalDetails principalDetails = new PrincipalDetails(testConfig.adminUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails,
+                principalDetails,
                 null,
-                userDetails.getAuthorities()
+                principalDetails.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Page<Post> posts = postService.getPosts(pageable);

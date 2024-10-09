@@ -43,7 +43,7 @@ spring:
       default-filters:
         - name: GlobalFilter
           args:
-            baseMessage: Spring Cloud Gateway GlobalFilter
+            baseMessage: Gateway GlobalFilter
             preLogger: true
             postLogger: true
       routes:
@@ -52,6 +52,11 @@ spring:
           predicates:
             - Path=/main/**
           filters:
+            - name: MainFilter
+              args:
+                baseMessage: Gateway MainFilter
+                preLogger: true
+                postLogger: true
             - RewritePath=/main/(?<segment>.*), /$\{segment}
         - id: llm-service
           uri: lb://LLM-SERVICE
@@ -59,3 +64,6 @@ spring:
             - Path=/llm/**
           filters:
             - RewritePath=/llm/(?<segment>.*), /$\{segment}
+
+jwt:
+  secret: ${JWT_SECRET}

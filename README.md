@@ -35,9 +35,22 @@
 
 ### 시스템 아키텍처
 
+![시스템 아키텍처](https://github.com/westreed/Devlog/blob/main/readme_src/system_architecture.png)
+
 ### WAS 아키텍처
 
-레이어드 아키텍처 기반
+API 게이트웨이 패턴(Spring Cloud Gateway)을 적용했습니다.
+
+LLM 서비스는 추후 확장을 생각해서 Langchain이나 여러 AI 모델을 활용하기 좋은 Python 서버로 결정하게 되었는데, `승인된 유저`만 LLM 서비스를 호출할 수 있게 하려면 JWT 검증이 필요하고 유저데이터 접근도 필요했습니다. 또한, 이런 문제를 해결하기 위해 Main 서버에서 먼저 검증하고 유저데이터도 처리한 후 LLM 서비스를 호출하는 방식은 Main 서버가 중계서버가 되어야 했습니다. 여기서 문제는 LLM 서비스의 Response Type은 SSE 통신이었기 때문에 Main 서버의 부담도 같이 늘어나기 때문에 API 게이트웨이 패턴을 적용하게 되었습니다.
+
+#### 장점
+
+- LLM 서비스의 Response Type은 SSE(Server Sent Event)로 응답을 보내는데, 중계서버 없이 바로 응답 가능.
+- Gateway 서버에서 요청에 대한 전처리 (JWT 검증), 후처리 용이함.
+
+#### 단점
+
+- 개발, 배포 및 관리해야 하는 포인트 증가.
 
 ### E-R 다이어그램
 

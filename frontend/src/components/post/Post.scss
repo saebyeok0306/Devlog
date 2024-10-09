@@ -8,6 +8,11 @@
   padding: 2em;
   border-radius: 15px;
   margin: 15px 0 15px 0;
+
+  @include mediaquery(medium) {
+    padding: 5px;
+  }
+
   hr {
     margin: 1em 0 1em 0;
   }
@@ -38,6 +43,8 @@
 
   article {
     margin: 2em 0 2em 0;
+    word-break: break-all;
+
     .wmde-markdown {
       background-color: inherit;
       * {

@@ -59,6 +59,13 @@ public class User extends BaseTime {
         this.certificate = certificate != null && certificate;
     }
 
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.role = Role.GUEST;
+        this.certificate = false;
+    }
+
     public void passwordEncode(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.password = bCryptPasswordEncoder.encode(this.password);
     }

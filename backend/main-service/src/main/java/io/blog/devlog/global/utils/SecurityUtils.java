@@ -1,12 +1,12 @@
 package io.blog.devlog.global.utils;
 
 import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.domain.user.model.User;
+import io.blog.devlog.global.login.dto.PrincipalDetails;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.util.Objects;
 
 public class SecurityUtils {
@@ -20,15 +20,8 @@ public class SecurityUtils {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof UserDetails) {
-            Collection<? extends GrantedAuthority> authorities = ((UserDetails) principal).getAuthorities();
-            for (GrantedAuthority authority : authorities) {
-                try {
-                return Role.fromNameKey(authority.getAuthority());
-                } catch (IllegalArgumentException e) {
-                    return null;
-                }
-            }
+        if (principal instanceof PrincipalDetails) {
+            return ((PrincipalDetails) principal).getUser().getRole();
         }
         return null;
     }
@@ -43,9 +36,24 @@ public class SecurityUtils {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
+            String username = ((PrincipalDetails) principal).getUsername();
             if (Objects.equals(username, "GUEST")) return null;
             return username;
+        }
+        return null;
+    }
+
+    public static User getUserEntity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof PrincipalDetails) {
+            return ((PrincipalDetails) principal).getUser();
         }
         return null;
     }

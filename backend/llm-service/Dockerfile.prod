@@ -1,4 +1,4 @@
-FROM westreed/python3.11-poetry:latest
+FROM python3.11-poetry:latest
 
 WORKDIR /app
 COPY . .

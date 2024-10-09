@@ -5,16 +5,11 @@ import io.blog.devlog.domain.file.service.TempFileService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.global.jwt.service.JwtService;
+import io.blog.devlog.global.login.dto.PrincipalDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestConfig {
     public String username = "admin";
@@ -60,16 +55,11 @@ public class TestConfig {
     }
 
     public void updateAuthentication(User user) {
-        List<GrantedAuthority> authorities = new ArrayList<>(List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password("")
-                .authorities(authorities)
-                .build();
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails,
+                principalDetails,
                 null,
-                userDetails.getAuthorities()
+                principalDetails.getAuthorities()
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -105,7 +105,7 @@ function TOC({ ...props }) {
       collapseDepth: 0,
 
       disableTocScrollSync: true,
-      enableUrlHashUpdateOnScroll: true,
+      enableUrlHashUpdateOnScroll: false,
     });
 
     return () => {

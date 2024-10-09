@@ -1,9 +1,9 @@
-package io.blog.gateway.filter;
+package io.blog.gateway.global.config;
 
 import lombok.Getter;
 
 @Getter
-public class Config {
+public class LoggerConfig {
     private final String baseMessage;
     private final boolean preLogger;
     private final boolean postLogger;
@@ -14,7 +14,7 @@ public class Config {
      preLogger : True인 경우, 해당 필터가 작동하기 전에 로그를 남긴다. (startpoint)
      postLogger : True인 경우, 해당 필터가 작동한 이후 로그를 남긴다. (endpoint)
      */
-    public Config(String baseMessage, boolean preLogger, boolean postLogger) {
+    public LoggerConfig(String baseMessage, boolean preLogger, boolean postLogger) {
         this.baseMessage = baseMessage;
         this.preLogger = preLogger;
         this.postLogger = postLogger;
