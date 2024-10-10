@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByEmail(String email);
 //    public Optional<User> findByRefreshToken(String refreshToken);
     public List<User> findAllByRole(Role role);
+    @Modifying
+    @Query("update User u set u.profileUrl = :profileUrl where u.email = :email")
+    public void updateProfileUrl(String email, String profileUrl);
 }

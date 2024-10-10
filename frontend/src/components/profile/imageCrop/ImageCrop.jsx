@@ -8,6 +8,8 @@ import "react-image-crop/dist/ReactCrop.css";
 import { canvasPreview } from "./canvasPreview";
 import { toast } from "react-toastify";
 import { resizeBlob } from "utils/ImageResizer";
+import { upload_file_api } from "api/File";
+import { upload_profile_url_api } from "api/User";
 
 // 레퍼런스
 // https://codesandbox.io/p/sandbox/react-image-crop-demo-with-react-hooks-y831o?file=%2Fsrc%2FApp.tsx%3A131%2C18
@@ -29,7 +31,7 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
   );
 }
 
-function ImageCrop({ imageCrop, setImageCrop, setUserProfile }) {
+function ImageCrop({ imageCrop, setImageCrop, setUserProfile, setAuthDto }) {
   const blobUrlRef = useRef(null);
   const imageRef = useRef(null);
   const previewCanvasRef = useRef(null);
@@ -102,10 +104,26 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile }) {
     }
 
     await resizeBlob(blob)
-      .then((output_blob) => {
-        const new_url = URL.createObjectURL(output_blob);
-        blobUrlRef.current = new_url;
-        setUserProfile((prev) => ({ ...prev, profileUrl: new_url }));
+      .then(async (output_blob) => {
+        try {
+          const output_file = new File([output_blob], "profile.jpg", {
+            type: "image/jpeg",
+            lastModified: new Date(),
+          });
+          const res = await upload_file_api(output_file);
+          const payload = res.data;
+          const profileUrl = `${process.env.REACT_APP_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`;
+          await upload_profile_url_api(payload, profileUrl);
+          // const new_url = URL.createObjectURL(output_blob);
+          blobUrlRef.current = profileUrl;
+          setUserProfile((prev) => ({
+            ...prev,
+            profileUrl: profileUrl,
+          }));
+          setAuthDto((prev) => ({ ...prev, profileUrl: profileUrl }));
+        } catch (error) {
+          toast.error("이미지 업로드에 실패했습니다.");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -113,6 +131,7 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile }) {
 
     // blobUrlRef.current = URL.createObjectURL(blob);
     // await setUserProfile(blobUrlRef.current);
+
     closeHandler();
   }
 

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class SecurityUtils {
 
@@ -43,18 +44,18 @@ public class SecurityUtils {
         return null;
     }
 
-    public static User getUserEntity() {
+    public static Optional<User> getUserEntity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
-            return null;
+            return Optional.empty();
         }
 
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof PrincipalDetails) {
-            return ((PrincipalDetails) principal).getUser();
+            return Optional.of(((PrincipalDetails) principal).getUser());
         }
-        return null;
+        return Optional.empty();
     }
 }

@@ -14,7 +14,7 @@ import {
 } from "./profileItem";
 import { signOutProcess } from "utils/authenticate";
 import { toast } from "react-toastify";
-import { user_profile_api } from "api/User";
+import { delete_profile_url_api, user_profile_api } from "api/User";
 
 function Profile() {
   const fileInputRef = useRef(null);
@@ -59,7 +59,13 @@ function Profile() {
   };
 
   const removeImageHandler = () => {
-    setUserProfile({ ...userProfile, profileUrl: authDto.profileUrl });
+    try {
+      delete_profile_url_api();
+      setAuthDto({ ...authDto, profileUrl: null });
+      setUserProfile({ ...userProfile, profileUrl: null });
+    } catch (error) {
+      toast.error("요청을 처리하는데 실패했습니다.");
+    }
   };
 
   const handleFileChange = (event) => {
@@ -89,6 +95,7 @@ function Profile() {
         imageCrop={imageCrop}
         setImageCrop={setImageCrop}
         setUserProfile={setUserProfile}
+        setAuthDto={setAuthDto}
       />
       <header className="profile-header">
         <div className="profile-info-box">

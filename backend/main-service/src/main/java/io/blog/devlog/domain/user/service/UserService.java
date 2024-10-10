@@ -69,4 +69,8 @@ public class UserService {
     public boolean isAdmin(User user) {
         return user.getRole() == Role.ADMIN;
     }
+
+    public void updateProfileUrl(String email, String profileUrl) {
+        userRepository.updateProfileUrl(email, profileUrl);
+    }
 }

@@ -90,3 +90,24 @@ export const send_verify_email_api = async (code) => {
       throw error;
     });
 };
+
+export const upload_profile_url_api = async (file, profileUrl) => {
+  const requestBody = {
+    file: file,
+    profileUrl: profileUrl,
+  };
+
+  return await API.post("/profile/picture", requestBody)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const delete_profile_url_api = async () => {
+  return await API.delete("/profile/picture")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
