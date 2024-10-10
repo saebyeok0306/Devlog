@@ -78,10 +78,10 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     };
     const newFiles = commentFiles.filter((file) => fileFilter(file));
 
-    setComment({ ...comment, content: tempDiv.innerHTML });
+    await setComment({ ...comment, content: tempDiv.innerHTML });
 
     editorInstance.setData("");
-    await onSave(newFiles);
+    await onSave(tempDiv.innerHTML, newFiles);
     await setUpdater((prev) => prev + 1);
   };
 

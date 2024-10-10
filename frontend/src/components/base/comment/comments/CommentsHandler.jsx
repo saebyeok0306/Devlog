@@ -18,13 +18,14 @@ const uploadReplyHandler = async ({
   comments,
   reply,
   setReply,
+  content,
   files,
 }) => {
   try {
     const result = await upload_comment_api(
       postContent,
       reply.target.id,
-      reply.content,
+      content, // reply.content,
       files,
       reply.private
     );
@@ -43,13 +44,15 @@ const uploadCommentHandler = async ({
   comments,
   editorComment,
   setEditorComment,
+  content,
+  files,
 }) => {
   try {
     const result = await upload_comment_api(
       postContent,
       0,
-      editorComment.content,
-      editorComment.files,
+      content, // editorComment.content,
+      files, // editorComment.files,
       editorComment.private
     );
     // const comment = result.data;
@@ -121,10 +124,11 @@ const updateEditHandler = async ({
   comments,
   reply,
   setReply,
+  content,
   files,
 }) => {
   try {
-    await edit_comment_api(comment.id, reply.content, files, reply.private);
+    await edit_comment_api(comment.id, content, files, reply.private); // reply.content
     await cancelEditHandler({ reply: reply, setReply: setReply });
     return true;
   } catch (err) {

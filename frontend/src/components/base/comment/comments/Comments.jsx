@@ -18,7 +18,13 @@ import { authAtom } from "recoil/authAtom";
 import { commentAtom, commentFilesAtom } from "recoil/commentAtom";
 import { postAtom } from "recoil/postAtom";
 
-const CommentReply = ({ rootComment, comments, reply, setReply }) => {
+const CommentReply = ({
+  rootComment,
+  comments,
+  reply,
+  setReply,
+  setUpdater,
+}) => {
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
 
@@ -42,15 +48,17 @@ const CommentReply = ({ rootComment, comments, reply, setReply }) => {
                 setReply: setReply,
               })
             }
-            onSave={(files) =>
+            onSave={(content, files) =>
               uploadReplyHandler({
                 postContent: postContent,
                 comments: comments,
                 reply: reply,
                 setReply: setReply,
+                content: content,
                 files: files,
               })
             }
+            setUpdater={setUpdater}
           />
         </Timeline.Body>
       </Timeline.Content>
@@ -206,12 +214,13 @@ const CommentEdit = ({ comment, comments, reply, setReply, setUpdater }) => {
             setReply: setReply,
           })
         }
-        onSave={(files) =>
+        onSave={(content, files) =>
           updateEditHandler({
             comment: comment,
             comments: comments,
             reply: reply,
             setReply: setReply,
+            content: content,
             files: files,
           })
         }
@@ -222,7 +231,6 @@ const CommentEdit = ({ comment, comments, reply, setReply, setUpdater }) => {
 };
 
 const Comments = ({ comments, reply, setReply, setUpdater }) => {
-  // const [content, setContent] = useRecoilState(replyAtom);
   if (!comments) {
     return null;
   }
@@ -254,6 +262,7 @@ const Comments = ({ comments, reply, setReply, setUpdater }) => {
               comments={comments}
               reply={reply}
               setReply={setReply}
+              setUpdater={setUpdater}
             />
           ) : null}
         </div>
