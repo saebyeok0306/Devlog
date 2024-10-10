@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { GetPayload } from "utils/authenticate";
 import Profile from "pages/Profile";
 import { ClockLoader, HashLoader } from "react-spinners";
+import PostStatistics from "pages/PostStatistics";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -94,11 +95,14 @@ function App() {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/callback" element={<Callback />} />
-                    </Route>
-                    <Route element={<PrivateRoute role={ROLE_TYPE.USER} />}>
                       <Route path="/editor" element={<Editor />} />
                       <Route path="/profile" element={<Profile />} />
+                      <Route
+                        path="/post/:postUrl/static"
+                        element={<PostStatistics />}
+                      />
                     </Route>
+                    {/* TODO: editor는 내부적으로 따로 권한처리 */}
                     <Route
                       path="/manager"
                       element={<PrivateRoute role={ROLE_TYPE.ADMIN} />}

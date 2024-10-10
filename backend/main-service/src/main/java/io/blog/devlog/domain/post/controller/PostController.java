@@ -13,6 +13,7 @@ import io.blog.devlog.domain.post.service.PostViewsService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.domain.views.service.PostViewCountService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,7 @@ public class PostController {
     private final PostLikeService postLikeService;
     private final PostUploadService postUploadService;
     private final PostViewsService postViewsService;
+    private final PostViewCountService postViewCountService;
 
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
@@ -83,7 +85,10 @@ public class PostController {
                     .build();
         }
         PostDetail postDetail = postService.getPostByUrl(url, user);
-        postViewsService.increaseViewCount(postDetail.getPost().getId(), request);
+        boolean increased = postViewsService.increaseViewCount(postDetail.getPost().getId(), request);
+        if (increased) {
+            postViewCountService.increaseViewCount(postDetail.getPost().getId());
+        }
         List<ResponseCommentDto> comments = commentService.getCommentsFromPost(user, postDetail);
         PostLikeDetail postLikeDetail = postLikeService.likeDetailFromPost(postDetail.getPost(), user);
         return ResponseEntity.ok(ResponsePostCommentDto.of(email, postDetail, comments, postLikeDetail));
