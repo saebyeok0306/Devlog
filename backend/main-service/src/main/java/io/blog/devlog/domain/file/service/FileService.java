@@ -8,6 +8,7 @@ import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.file.model.TempFile;
 import io.blog.devlog.domain.file.repository.FileRepository;
 import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +39,19 @@ public class FileService {
                 }
                 System.out.println("uploadFile = " + uploadFile.toString());
                 tempFileService.deleteTempFile(uploadFile.getTempId());
-                File file = null;
-                if (original.getClass().equals(Post.class)) {
-                    file = this.addFile(uploadFile.toEntity((Post) original));
-                } else if(original.getClass().equals(Comment.class)) {
-                    file = this.addFile(uploadFile.toEntity((Comment) original));
+
+                switch (original.getClass().getSimpleName()) {
+                    case "Post":
+                        this.addFile(uploadFile.toEntity((Post) original));
+                        break;
+                    case "Comment":
+                        this.addFile(uploadFile.toEntity((Comment) original));
+                        break;
+                    case "User":
+                        this.addFile(uploadFile.toEntity((User) original));
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown entity type" + original.getClass().getSimpleName());
                 }
             } catch (Exception e) {
                 log.error("Temp file not found : " + uploadFile.getTempId());
@@ -59,6 +69,12 @@ public class FileService {
 
     public List<File> getFilesByCommentId(Long commentId) {
         return fileRepository.findByEntityTypeAndEntityId(EntityType.COMMENT, commentId);
+    }
+
+    public Optional<File> getFileByUserId(Long userId) {
+        List<File> files = fileRepository.findByEntityTypeAndEntityId(EntityType.USER, userId);
+        if (files.isEmpty()) return Optional.empty();
+        return Optional.of(files.get(0));
     }
 
     public void deleteFileFromComment(Comment comment) {
@@ -84,6 +100,19 @@ public class FileService {
             } catch (IOException e) {
                 log.error("File not found : " + file.getFileUrl());
             }
+        }
+    }
+
+    public void deleteFileFromUser(User user) {
+        Optional<File> file = this.getFileByUserId(user.getId());
+        if (file.isEmpty()) return;
+
+        File targetFile = file.get();
+        try {
+            fileHandler.deleteFile(targetFile.getFileUrl());
+            fileRepository.delete(targetFile);
+        } catch (IOException e) {
+            log.error("File not found : " + targetFile.getFileUrl());
         }
     }
 

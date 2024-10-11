@@ -17,6 +17,7 @@ public class File extends CreateTime {
     private Long id;
     private String fileName;
     private long fileSize;
+    @Column(unique = true)
     private String fileUrl; // year/month/day/fileName
     private String filePath; // res
     @Enumerated(EnumType.STRING)

@@ -12,7 +12,7 @@ import {
 } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { PostContext, postContextAtom } from "recoil/editorAtom";
-import { delete_post_api, get_post_files_api } from "api/Posts";
+import { delete_post_api } from "api/Posts";
 import { useNavigate } from "react-router-dom";
 import { POST_STORE } from "api/Cache";
 import tocbot from "tocbot";
@@ -37,15 +37,8 @@ const exportUrlHandler = (postContent) => {
   toast.info("URL이 복사되었습니다.", { position: "bottom-center" });
 };
 
+// TODO: 게시글 수정은 /editor/{url} 형태로 새로고침해도 유지되도록 변경
 const postEditHandler = async (navigate, postContent, setPostContext) => {
-  // let files = [];
-  // try {
-  //   const result = await get_post_files_api(postContent.id);
-  //   files = result.data;
-  // } catch (error) {
-  //   console.error("Failed to get post files:", error);
-  // }
-
   const preview = postContent.files.find(
     (file) =>
       `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===

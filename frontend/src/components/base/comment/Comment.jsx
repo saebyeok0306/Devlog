@@ -74,12 +74,14 @@ function Comment({ ...props }) {
         <CommentEditor
           comment={editorComment}
           setComment={setEditorComment}
-          onSave={() =>
+          onSave={(content, files) =>
             uploadCommentHandler({
               postContent: postContent,
               comments: commentsData.comments,
               editorComment: editorComment,
               setEditorComment: setEditorComment,
+              content: content,
+              files: files,
             })
           }
           setUpdater={setUpdater}

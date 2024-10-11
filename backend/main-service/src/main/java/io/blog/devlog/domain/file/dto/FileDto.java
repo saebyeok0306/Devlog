@@ -5,6 +5,7 @@ import io.blog.devlog.domain.file.model.EntityType;
 import io.blog.devlog.domain.file.model.File;
 import io.blog.devlog.domain.file.model.FileType;
 import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.user.model.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,10 @@ public class FileDto {
 
     public File toEntity(Comment comment) {
         return this.toEntity().setEntity(EntityType.COMMENT, comment.getId());
+    }
+
+    public File toEntity(User user) {
+        return this.toEntity().setEntity(EntityType.USER, user.getId());
     }
 
     public static FileDto of(File file) {
