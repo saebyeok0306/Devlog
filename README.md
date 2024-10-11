@@ -41,16 +41,9 @@
 
 API 게이트웨이 패턴(Spring Cloud Gateway)을 적용했습니다.
 
-LLM 서비스는 추후 확장을 생각해서 Langchain이나 여러 AI 모델을 활용하기 좋은 Python 서버로 결정하게 되었는데, `승인된 유저`만 LLM 서비스를 호출할 수 있게 하려면 JWT 검증이 필요하고 유저데이터 접근도 필요했습니다. 또한, 이런 문제를 해결하기 위해 Main 서버에서 먼저 검증하고 유저데이터도 처리한 후 LLM 서비스를 호출하는 방식은 Main 서버가 중계서버가 되어야 했습니다. 여기서 문제는 LLM 서비스의 Response Type은 SSE 통신이었기 때문에 Main 서버의 부담도 같이 늘어나기 때문에 API 게이트웨이 패턴을 적용하게 되었습니다.
+LLM 서비스는 Langchain이나 여러 AI 모델을 활용하기 좋은 Python 서버로 결정하게 되었는데, `승인된 유저`만 LLM 서비스를 호출할 수 있게 하려면 JWT 검증이 필요하고 유저데이터 접근도 필요했습니다.
 
-#### 장점
-
-- LLM 서비스의 Response Type은 SSE(Server Sent Event)로 응답을 보내는데, 중계서버 없이 바로 응답 가능.
-- Gateway 서버에서 요청에 대한 전처리 (JWT 검증), 후처리 용이함.
-
-#### 단점
-
-- 개발, 배포 및 관리해야 하는 포인트 증가.
+그래서 다양한 언어의 서버를 사용할 수 있는 API 게이트웨이 패턴, MSA (Micro Service Architecture)를 적용하게 되었습니다. Eureka로 서버들을 관리하고, Gateway 서버에서 전처리로 JWT를 검증하고 적절한 서버로 라우팅해줄 수 있게 되어 가지고 있던 문제들을 해결하게 되었습니다.
 
 ### E-R 다이어그램
 
@@ -62,7 +55,7 @@ Frontend는 React, Backend는 Spring을 사용하여 웹서비스를 만들고 �
 2. Backend에서 OAuth 로그인을 처리하면, `Resource Server`로부터 받은 유저 정보를 기반으로 JWT를 발급할 수 있지만 프론트에 로그인이 완료되었음을 알리기 위한 방법이 필요합니다.
    1번 방법은 실제로 관련 라이브러리도 많이 존재했지만, 프론트에서 관리하는 것은 불안하다고 생각하여 2번 방법을 선택하게 되었습니다. 그렇다면, 프론트에서 로그인이 완료되었음을 어떻게 알릴 수 있을지 고민을 하게 되었습니다.
 
-결론적으로, 백엔드 서버에서 로그인이 완료되었을 때 작동하는 `SuccessHandler`에서 set-cookie로 JWT를 함께 실어서 Redirect하는 방식으로 구현할 수 있었습니다. 이때, Redirect하는 주소는 프론트에서 로그인에 성공했음을 명확히 알 수 있도록 별도의 `callback` 경로로 설정하였습니다.
+결론적으로, 백엔드 서버에서 로그인이 완료되었을 때 작동하는 `SuccessHandler`에서 set-cookie로 JWT를 함께 실어서 Redirect하는 방식으로 구현할 수 있었습니다. 이때, Redirect하는 주소는 프론트에서 로그인에 성공했음을 명확히 알 수 있도록 별도의 `callback` Url로 설정하였습니다.
 
 ![OAuth 2.0 로그인 구현](https://github.com/westreed/Devlog/blob/main/readme_src/OAuth2_Sequencediagram.png)
 
