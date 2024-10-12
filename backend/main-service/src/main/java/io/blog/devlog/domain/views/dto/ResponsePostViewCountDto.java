@@ -13,13 +13,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePostViewCountDto {
-    private Long postId;
     private String viewDate;
     private int viewCount;
 
     public static ResponsePostViewCountDto of(PostViewCount postViewCount) {
         return ResponsePostViewCountDto.builder()
-                .postId(postViewCount.getPostId())
                 .viewDate(postViewCount.getViewDate().toString())
                 .viewCount(postViewCount.getViewCount())
                 .build();
@@ -29,7 +27,6 @@ public class ResponsePostViewCountDto {
         LocalDate localDate = (LocalDate) dailyView[0];
         Long viewCount = (Long) dailyView[1];
         return ResponsePostViewCountDto.builder()
-                .postId(postId)
                 .viewDate(localDate.toString())
                 .viewCount(viewCount.intValue())
                 .build();
@@ -38,7 +35,6 @@ public class ResponsePostViewCountDto {
     public static ResponsePostViewCountDto ofMonthlyView(Long postId, Object[] monthlyView) {
         Long viewCount = (Long) monthlyView[2];
         return ResponsePostViewCountDto.builder()
-                .postId(postId)
                 .viewDate(String.format("%d-%02d", (int) monthlyView[0], (int) monthlyView[1]))
                 .viewCount(viewCount.intValue())
                 .build();
@@ -47,7 +43,6 @@ public class ResponsePostViewCountDto {
     public static ResponsePostViewCountDto ofYearlyView(Long postId, Object[] yearlyView) {
         Long viewCount = (Long) yearlyView[1];
         return ResponsePostViewCountDto.builder()
-                .postId(postId)
                 .viewDate(String.format("%d", (int) yearlyView[0]))
                 .viewCount(viewCount.intValue())
                 .build();

@@ -22,6 +22,7 @@ import { GetPayload } from "utils/authenticate";
 import Profile from "pages/Profile";
 import { ClockLoader, HashLoader } from "react-spinners";
 import PostStatistics from "pages/PostStatistics";
+import UserRoute from "routes/UserRoute";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -95,10 +96,12 @@ function App() {
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/callback" element={<Callback />} />
+                    </Route>
+                    <Route element={<UserRoute />}>
                       <Route path="/editor" element={<Editor />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route
-                        path="/post/:postUrl/static"
+                        path="/post/:postUrl/statistics"
                         element={<PostStatistics />}
                       />
                     </Route>

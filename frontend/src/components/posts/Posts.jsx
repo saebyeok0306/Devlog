@@ -122,8 +122,8 @@ function Posts() {
         <h1 className="post-count">{page.totalElements} 포스트</h1>
         <div className="post-detail">
           <Dropdown label={`${viewSize}개 보기`} inline>
-            <Dropdown.Item onClick={(e) => onDropdownHandler(e, 5)}>
-              5개 보기
+            <Dropdown.Item onClick={(e) => onDropdownHandler(e, 6)}>
+              6개 보기
             </Dropdown.Item>
             <Dropdown.Item onClick={(e) => onDropdownHandler(e, 10)}>
               10개 보기
