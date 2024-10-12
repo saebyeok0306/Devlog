@@ -18,6 +18,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: on-failure
 
   gateway-service:
     build:
@@ -32,6 +33,7 @@ services:
       - ms-network
     environment:
       JWT_SECRET: ${JWT_SECRET}
+    restart: on-failure
 
   main-service:
     build:
@@ -53,6 +55,7 @@ services:
     volumes:
       - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
       - /home/static/resource:/home/static/resource
+    restart: on-failure
 
   mail-service:
     build:
@@ -68,6 +71,7 @@ services:
     environment:
       DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
       DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
+    restart: on-failure
 
   llm-service:
     build:
@@ -79,6 +83,7 @@ services:
       - ms-network
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+    restart: on-failure
 
   redis:
     image: redis:7.4
@@ -91,6 +96,7 @@ services:
       retries: 5
     networks:
       - ms-network
+    restart: on-failure
 
   dozzle:
     image: amir20/dozzle:latest
@@ -100,3 +106,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ms-network
+    restart: on-failure

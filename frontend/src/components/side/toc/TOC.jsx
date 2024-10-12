@@ -77,6 +77,10 @@ const postDeleteHandler = async (navigate, postContent) => {
   }
 };
 
+const postStatisticsHandler = async (navigate, postContent) => {
+  navigate(`/post/${postContent.url}/statistics`);
+};
+
 function TOC({ ...props }) {
   const { commentRef } = props;
   const navigate = useNavigate();
@@ -152,6 +156,11 @@ function TOC({ ...props }) {
                 </Button>
               )}
             >
+              <Dropdown.Item
+                onClick={() => postStatisticsHandler(navigate, postContent)}
+              >
+                통계
+              </Dropdown.Item>
               <Dropdown.Item
                 onClick={() =>
                   postEditHandler(navigate, postContent, setPostContext)

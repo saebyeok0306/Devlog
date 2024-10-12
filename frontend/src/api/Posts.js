@@ -97,3 +97,11 @@ export const delete_post_api = async (postUrl) => {
       throw error;
     });
 };
+
+export const get_post_daily_statistics_api = async (postUrl, start, end) => {
+  return await API.get(`/views/post/${postUrl}/daily?start=${start}&end=${end}`)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};

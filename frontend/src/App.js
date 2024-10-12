@@ -101,7 +101,7 @@ function App() {
                       <Route path="/editor" element={<Editor />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route
-                        path="/post/:postUrl/static"
+                        path="/post/:postUrl/statistics"
                         element={<PostStatistics />}
                       />
                     </Route>
