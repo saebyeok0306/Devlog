@@ -49,7 +49,7 @@ function Login() {
   const oauthLoginAction = (e) => {
     e.preventDefault();
     const provider = "google";
-    const link = `${process.env.REACT_APP_API_ENDPOINT}${OAUTH2_URI}${provider}`;
+    const link = `${process.env.REACT_APP_API_ENDPOINT}/main/${OAUTH2_URI}/${provider}`;
     window.location.href = link;
   };
 

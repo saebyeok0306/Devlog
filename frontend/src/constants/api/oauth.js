@@ -1,1 +1,1 @@
-export const OAUTH2_URI = "/oauth2/authorization/";
+export const OAUTH2_URI = "oauth2/authorization";

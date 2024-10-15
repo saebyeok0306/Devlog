@@ -1,50 +1,26 @@
 package io.blog.devlog.domain.views.dto;
 
-import io.blog.devlog.domain.views.model.PostViewCount;
+import io.blog.devlog.domain.post.dto.ResponsePostNonContentDto;
+import io.blog.devlog.domain.post.model.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponsePostViewCountDto {
-    private String viewDate;
-    private int viewCount;
+    private ResponsePostNonContentDto post;
+    private List<PostViewCountDto> viewCounts;
 
-    public static ResponsePostViewCountDto of(PostViewCount postViewCount) {
+    public static ResponsePostViewCountDto of(Post post, List<PostViewCountDto> postViewCountDtoList) {
         return ResponsePostViewCountDto.builder()
-                .viewDate(postViewCount.getViewDate().toString())
-                .viewCount(postViewCount.getViewCount())
-                .build();
-    }
-
-    public static ResponsePostViewCountDto ofDailyView(Long postId, Object[] dailyView) {
-        LocalDate localDate = (LocalDate) dailyView[0];
-        Long viewCount = (Long) dailyView[1];
-        return ResponsePostViewCountDto.builder()
-                .viewDate(localDate.toString())
-                .viewCount(viewCount.intValue())
-                .build();
-    }
-
-    public static ResponsePostViewCountDto ofMonthlyView(Long postId, Object[] monthlyView) {
-        Long viewCount = (Long) monthlyView[2];
-        return ResponsePostViewCountDto.builder()
-                .viewDate(String.format("%d-%02d", (int) monthlyView[0], (int) monthlyView[1]))
-                .viewCount(viewCount.intValue())
-                .build();
-    }
-
-    public static ResponsePostViewCountDto ofYearlyView(Long postId, Object[] yearlyView) {
-        Long viewCount = (Long) yearlyView[1];
-        return ResponsePostViewCountDto.builder()
-                .viewDate(String.format("%d", (int) yearlyView[0]))
-                .viewCount(viewCount.intValue())
+                .post(ResponsePostNonContentDto.of(post))
+                .viewCounts(postViewCountDtoList)
                 .build();
     }
 }

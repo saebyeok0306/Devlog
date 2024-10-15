@@ -24,6 +24,15 @@ spring:
     redis:
       host: redis
       port: 6379
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${DEVLOG_GOOGLE_CLIENT_ID}
+            client-secret: ${DEVLOG_GOOGLE_CLIENT_SECRET}
+            redirect-uri: "http://localhost:8760/main/login/oauth2/code/{registrationId}"
+            scope: profile, email
 frontend:
   url: http://localhost:3000
   domain: localhost

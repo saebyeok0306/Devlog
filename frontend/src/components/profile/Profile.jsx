@@ -29,7 +29,6 @@ function Profile() {
     provider: null,
     certificate: false,
   });
-  // const [profileUrl, setProfileUrl] = useState(authDto.profileUrl);
 
   const [imageCrop, setImageCrop] = useState({
     openModal: false,
@@ -53,7 +52,6 @@ function Profile() {
     fetchUserProfile();
   }, [authDto]);
 
-  console.log("프로필 정보:", userProfile);
   const uploadImageHandler = () => {
     fileInputRef.current.click();
   };

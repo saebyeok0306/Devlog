@@ -1,15 +1,14 @@
 package io.blog.devlog.domain.views.controller;
 
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
+import io.blog.devlog.domain.views.dto.PostViewCountDto;
 import io.blog.devlog.domain.views.dto.ResponsePostViewCountDto;
 import io.blog.devlog.domain.views.service.PostViewCountService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,20 +19,23 @@ public class PostViewCountController {
     private final PostViewCountService postViewCountService;
 
     @GetMapping("/{postUrl}/daily")
-    public List<ResponsePostViewCountDto> getDailyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) throws BadRequestException {
+    public ResponsePostViewCountDto getDailyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) throws BadRequestException {
         Post post = postService.getSimplePostByUrl(postUrl);
-        return postViewCountService.getDailyPostViewCount(post.getId(), start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getDailyPostViewCount(post, start, end);
+        return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 
     @GetMapping("/{postUrl}/monthly")
-    public List<ResponsePostViewCountDto> getMonthlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
+    public ResponsePostViewCountDto getMonthlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
         Post post = postService.getSimplePostByUrl(postUrl);
-        return postViewCountService.getMonthlyPostViewCount(post.getId(), start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getMonthlyPostViewCount(post, start, end);
+        return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 
     @GetMapping("/{postUrl}/yearly")
-    public List<ResponsePostViewCountDto> getYearlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
+    public ResponsePostViewCountDto getYearlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
         Post post = postService.getSimplePostByUrl(postUrl);
-        return postViewCountService.getYearlyPostViewCount(post.getId(), start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getYearlyPostViewCount(post, start, end);
+        return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 }

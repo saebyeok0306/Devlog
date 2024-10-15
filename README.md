@@ -5,9 +5,9 @@
 
 ## Stack
 
-- Frontend: React.js (CRA), flowbite, axios
-- Backend: Spring Boot, Spring Security, JPA
-- Database: MySQL (Local), Oracle DB (Product)
+- Frontend: React.js (CRA)
+- Backend: Spring Boot, FastAPI
+- Database: MySQL (Local), Oracle DB (Product), Redis
 - DevOps: Github Actions, Nginx, Oracle Cloud
 
 ## Libraries
@@ -16,16 +16,26 @@
 
 - react-router-dom
 - react-toastify
-- react-toc
 - recoil
-- @uiw/react-md-editor
-- rehype-video
+- ckeditor5
+- tocbot
+- react-chartjs-2
+- flowbite-react
+- react-image-crop
+- react-image-file-resizer
+- highlight.js
 - mem
+- moment-timezone
 
 ### Backend
 
+- spring-cloud-gateway
+- spring-cloud-netflix-eureka
+- spring-cloud-openfeign
+- spring-data-jpa
+- spring-security
+- spring-mail
 - oauth2-client
-- lombok
 - jjwt
 - jacocoTestCoverageVerification
 

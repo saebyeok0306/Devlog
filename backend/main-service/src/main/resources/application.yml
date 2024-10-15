@@ -17,22 +17,12 @@ spring:
       enabled: false
   config:
     import:
-      - classpath:/yaml/application-local-old.yml
       - classpath:/yaml/application-local.yml
-      - classpath:/yaml/application-dev.yml
       - classpath:/yaml/application-prod.yml
   profiles:
     active: local
   application:
     name: main-service
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${DEVLOG_GOOGLE_CLIENT_ID}
-            client-secret: ${DEVLOG_GOOGLE_CLIENT_SECRET}
-            scope: profile, email
   servlet:
     multipart:
       enabled: true

@@ -1,6 +1,7 @@
 package io.blog.devlog.domain.views.service;
 
-import io.blog.devlog.domain.views.dto.ResponsePostViewCountDto;
+import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.views.dto.PostViewCountDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +14,7 @@ public interface PostViewCountService {
     LocalDate parseStartYear(String year);
     LocalDate parseEndYear(String year);
 
-    List<ResponsePostViewCountDto> getDailyPostViewCount(Long postId, String start, String end);
-    List<ResponsePostViewCountDto> getMonthlyPostViewCount(Long postId, String start, String end);
-    List<ResponsePostViewCountDto> getYearlyPostViewCount(Long postId, String start, String end);
+    List<PostViewCountDto> getDailyPostViewCount(Post post, String start, String end);
+    List<PostViewCountDto> getMonthlyPostViewCount(Post post, String start, String end);
+    List<PostViewCountDto> getYearlyPostViewCount(Post post, String start, String end);
 }
