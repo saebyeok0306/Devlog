@@ -53,7 +53,7 @@ function Statistics() {
     category: null,
     views: 0,
   });
-  const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
+  const [, setSelectCategory] = useRecoilState(categoryAtom);
   const [statistics, setStatistics] = useState({ labels: [], datasets: [] });
   const [datasets, setDatasets] = useState([]);
 
