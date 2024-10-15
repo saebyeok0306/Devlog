@@ -1,6 +1,7 @@
 package io.blog.devlog.domain.views.service;
 
-import io.blog.devlog.domain.views.dto.ResponsePostViewCountDto;
+import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.views.dto.PostViewCountDto;
 import io.blog.devlog.domain.views.model.PostViewCount;
 import io.blog.devlog.domain.views.repository.PostViewCountRepository;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,7 @@ public class PostViewCountServiceImpl implements PostViewCountService {
     }
 
     @Override
-    public List<ResponsePostViewCountDto> getDailyPostViewCount(Long postId, String start, String end) {
+    public List<PostViewCountDto> getDailyPostViewCount(Post post, String start, String end) {
         LocalDate startDate = this.parseDate(start);
         LocalDate endDate = this.parseDate(end);
 
@@ -90,12 +91,12 @@ public class PostViewCountServiceImpl implements PostViewCountService {
         if (startDate.plusMonths(12).isBefore(endDate)) {
             throw new IllegalArgumentException("The difference between the two dates must be less than 12 months");
         }
-        List<Object[]> dailyViews = postViewCountRepository.findDailyViews(postId, startDate, endDate);
-        return dailyViews.stream().map(dailyView -> ResponsePostViewCountDto.ofDailyView(postId, dailyView)).toList();
+        List<Object[]> dailyViews = postViewCountRepository.findDailyViews(post.getId(), startDate, endDate);
+        return dailyViews.stream().map(PostViewCountDto::ofDailyView).toList();
     }
 
     @Override
-    public List<ResponsePostViewCountDto> getMonthlyPostViewCount(Long postId, String start, String end) {
+    public List<PostViewCountDto> getMonthlyPostViewCount(Post post, String start, String end) {
         LocalDate startDate = this.parseStartMonth(start);
         LocalDate endDate = this.parseEndMonth(end);
 
@@ -105,12 +106,12 @@ public class PostViewCountServiceImpl implements PostViewCountService {
         if (startDate.plusMonths(12).isBefore(endDate)) {
             throw new IllegalArgumentException("The difference between the two dates must be less than 12 months");
         }
-        List<Object[]> monthlyViews = postViewCountRepository.findMonthlyViews(postId, startDate, endDate);
-        return monthlyViews.stream().map(monthlyView -> ResponsePostViewCountDto.ofMonthlyView(postId, monthlyView)).toList();
+        List<Object[]> monthlyViews = postViewCountRepository.findMonthlyViews(post.getId(), startDate, endDate);
+        return monthlyViews.stream().map(PostViewCountDto::ofMonthlyView).toList();
     }
 
     @Override
-    public List<ResponsePostViewCountDto> getYearlyPostViewCount(Long postId, String start, String end) {
+    public List<PostViewCountDto> getYearlyPostViewCount(Post post, String start, String end) {
         LocalDate startDate = this.parseStartYear(start);
         LocalDate endDate = this.parseEndYear(end);
 
@@ -120,7 +121,7 @@ public class PostViewCountServiceImpl implements PostViewCountService {
         if (startDate.plusYears(3).isBefore(endDate)) {
             throw new IllegalArgumentException("The difference between the two dates must be less than 3 years");
         }
-        List<Object[]> yearlyViews = postViewCountRepository.findYearlyViews(postId, startDate, endDate);
-        return yearlyViews.stream().map(yearlyView -> ResponsePostViewCountDto.ofYearlyView(postId, yearlyView)).toList();
+        List<Object[]> yearlyViews = postViewCountRepository.findYearlyViews(post.getId(), startDate, endDate);
+        return yearlyViews.stream().map(PostViewCountDto::ofYearlyView).toList();
     }
 }
