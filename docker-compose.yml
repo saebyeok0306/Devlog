@@ -63,6 +63,16 @@ services:
       DEVLOG_MAIL_USERNAME: ${DEVLOG_MAIL_USERNAME}
       DEVLOG_MAIL_PASSWORD: ${DEVLOG_MAIL_PASSWORD}
 
+  sitemap-service:
+    build: ./backend/sitemap-service
+    ports:
+      - "8002:8002"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - ms-network
+
   llm-service:
     build: ./backend/llm-service
     ports:

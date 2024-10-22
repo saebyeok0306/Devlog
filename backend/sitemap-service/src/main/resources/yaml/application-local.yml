@@ -1,0 +1,6 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+sitemap:
+  path: /app/sitemap/sitemap.xml

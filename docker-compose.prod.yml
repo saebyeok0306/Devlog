@@ -85,6 +85,19 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     restart: on-failure
 
+  sitemap-service:
+    build: ./backend/sitemap-service
+    ports:
+      - "8002:8002"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - ms-network
+    volumes:
+      - /home/app/frontend/build:/app/sitemap
+    restart: on-failure
+
   redis:
     image: redis:7.4
     ports:
