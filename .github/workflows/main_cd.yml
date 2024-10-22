@@ -31,6 +31,10 @@ env:
   MAIL_DOCKER_TARGET_PATH: "backend/mail-service/Dockerfile.prod"
   MAIL_FOLDER_PATH: "/home/app/backend/mail-service"
 
+  SITEMAP_JAR_TARGET_PATH: "backend/sitemap-service/build/libs/sitemap-service.jar"
+  SITEMAP_DOCKER_TARGET_PATH: "backend/sitemap-service/Dockerfile.prod"
+  SITEMAP_FOLDER_PATH: "/home/app/backend/sitemap-service"
+
   LLM_ZIP_NAME: "llm-service.zip"
   LLM_ZIP_TARGET_PATH: "backend/llm-service/llm-service.zip"
   LLM_DOCKER_TARGET_PATH: "backend/llm-service/Dockerfile.prod"
@@ -48,6 +52,7 @@ jobs:
       gateway-build-cache-key: ${{ steps.gateway-build-cache.outputs.key }}
       main-build-cache-key: ${{ steps.main-build-cache.outputs.key }}
       mail-build-cache-key: ${{ steps.mail-build-cache.outputs.key }}
+      sitemap-build-cache-key: ${{ steps.sitemap-build-cache.outputs.key }}
       current-datetime: ${{ steps.datetime.outputs.datetime }}
     steps:
       - uses: actions/checkout@v4
@@ -74,6 +79,10 @@ jobs:
       - name: Generate mail-service build cache key
         id: mail-build-cache
         run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/mail-service/**/*.gradle*', 'backend/mail-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
+
+      - name: Generate sitemap-service build cache key
+        id: sitemap-build-cache
+        run: echo "key=$(echo build-${{ runner.os }}-gradle-${{ hashFiles('backend/sitemap-service/**/*.gradle*', 'backend/sitemap-service/**/gradle-wrapper.properties') }})" >> $GITHUB_OUTPUT
 
       - name: Modify permissions
         run: chmod o+rwx docker-compose.prod.yml
@@ -339,6 +348,69 @@ jobs:
           target: ${{ env.MAIL_FOLDER_PATH }}
           strip_components: 2
 
+  build-sitemap-service:
+    needs: setup
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: backend/sitemap-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gradle Caching
+        id: cache-gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ needs.setup.outputs.sitemap-build-cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Check
+        if: steps.cache-gradle.outputs.cache-hit == 'true'
+        run: echo 'Gradle cache hit!'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
+      - name: Modify permissions
+        run: chmod o+rwx build/libs/sitemap-service.jar
+
+      - name: Send jar
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.SITEMAP_JAR_TARGET_PATH }}
+          target: ${{ env.SITEMAP_FOLDER_PATH }}
+          strip_components: 4
+
+      - name: Modify permissions Dockerfile.prod
+        run: chmod o+rwx Dockerfile.prod
+
+      - name: Send Dockerfile.prod
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.SITEMAP_DOCKER_TARGET_PATH }}
+          target: ${{ env.SITEMAP_FOLDER_PATH }}
+          strip_components: 2
+
   build-llm-service:
     needs: setup
     runs-on: ubuntu-22.04
@@ -396,6 +468,7 @@ jobs:
       - build-gateway-service
       - build-main-service
       - build-mail-service
+      - build-sitemap-service
       - build-llm-service
     runs-on: ubuntu-22.04
     steps:
