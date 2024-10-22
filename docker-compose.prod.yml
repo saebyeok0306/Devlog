@@ -86,7 +86,9 @@ services:
     restart: on-failure
 
   sitemap-service:
-    build: ./backend/sitemap-service
+    build:
+      context: ./backend/sitemap-service
+      dockerfile: Dockerfile.prod
     ports:
       - "8002:8002"
     depends_on:
