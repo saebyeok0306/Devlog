@@ -1,6 +1,5 @@
 package io.blog.sitemap.service
 
-import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -10,13 +9,6 @@ class SitemapServiceImpl(
         @Value("\${sitemap.path}") private val sitemapPath: String,
         private val mainService: MainService
 ) : SitemapService {
-
-    @PostConstruct
-    fun startup() {
-        val generateSitemap = this.generateSitemap()
-        val file = this.generateSitemapXml(generateSitemap)
-        println("Sitemap generated ${file.absolutePath}")
-    }
 
     override fun generateSitemap(): String {
         val site = "https://devlog.run"
