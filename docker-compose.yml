@@ -40,6 +40,11 @@ services:
         condition: service_healthy
     networks:
       - ms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
@@ -69,6 +74,8 @@ services:
       - "8002:8002"
     depends_on:
       discovery-service:
+        condition: service_healthy
+      main-service:
         condition: service_healthy
     networks:
       - ms-network

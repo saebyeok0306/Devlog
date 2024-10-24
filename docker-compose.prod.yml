@@ -46,6 +46,11 @@ services:
         condition: service_healthy
     networks:
       - ms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
@@ -93,6 +98,8 @@ services:
       - "8002:8002"
     depends_on:
       discovery-service:
+        condition: service_healthy
+      main-service:
         condition: service_healthy
     networks:
       - ms-network
