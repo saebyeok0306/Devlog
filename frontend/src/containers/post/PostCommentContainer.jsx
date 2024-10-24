@@ -2,8 +2,8 @@ import { get_post_files_api, get_post_url_api } from "api/Posts";
 import Comment from "components/base/comment";
 import Post from "components/post";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { authAtom } from "recoil/authAtom";
 import {
   commentAtom,
@@ -11,13 +11,17 @@ import {
   CommentsData,
   CommentState,
 } from "recoil/commentAtom";
+import { ga4Atom } from "recoil/ga4Atom";
 import { postAtom } from "recoil/postAtom";
+import { sendPageView } from "utils/reactGA4";
 import { sortComments } from "utils/sortComments";
 
 function PostCommentContainer({ ...props }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { postUrl } = useParams();
   const [authDto] = useRecoilState(authAtom);
+  const initialized = useRecoilValue(ga4Atom);
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
   const [, setComments] = useRecoilState(commentsAtom);
@@ -32,6 +36,7 @@ function PostCommentContainer({ ...props }) {
       await get_post_url_api(postUrl)
         .then(async (res) => {
           const postData = res.data?.post;
+          sendPageView(location.pathname, postData.title, initialized);
           try {
             const result = await get_post_files_api(postData.id);
             postData["files"] = result.data || [];

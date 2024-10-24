@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,14 +118,22 @@ public class FileService {
     }
 
     public void deleteTempFiles() {
+        deleteTempFilesByHour(24);
+    }
+
+    public void deleteTempFilesByHour(int afterHour) {
         List<TempFile> tempFiles = tempFileService.getTempFiles();
         if (tempFiles.isEmpty()) return;
+
+        LocalDateTime now = LocalDateTime.now();
         for (TempFile tempFile : tempFiles) {
-            try {
-                fileHandler.deleteFile(tempFile.getFileUrl());
-                tempFileService.deleteTempFile(tempFile.getId());
-            } catch (IOException e) {
-                log.error("Temp file not found : " + tempFile.getFileUrl());
+            if (now.minusHours(afterHour).isAfter(tempFile.getCreatedAt())) {
+                try {
+                    fileHandler.deleteFile(tempFile.getFileUrl());
+                    tempFileService.deleteTempFile(tempFile.getId());
+                } catch (IOException e) {
+                    log.error("Temp file not found : " + tempFile.getFileUrl());
+                }
             }
         }
     }

@@ -2,128 +2,224 @@ package io.blog.devlog.domain.category.service;
 
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
+import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.Role;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-@DataJpaTest // Component Scan을 하지 않아 컨테이너에 @Component 빈들이 등록되지 않는다.
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
-
-    @Autowired
+    @Mock
     private CategoryRepository categoryRepository;
+    @Mock
+    private PostService postService;
+    @InjectMocks
     private CategoryService categoryService;
 
-    @BeforeEach
-    public void beforeSetUp() {
-        categoryService = new CategoryService(categoryRepository);
+    final static int MAX_SIZE = 5;
+    final static List<Role> CATEGORY_WRITE_ROLES = List.of(Role.GUEST, Role.GUEST, Role.USER, Role.PARTNER, Role.ADMIN);
+    final static List<Role> CATEGORY_READ_ROLES = List.of(Role.GUEST, Role.GUEST, Role.GUEST, Role.USER, Role.ADMIN);
+    public List<Category> createCategories() {
+        List<Category> categories = new ArrayList<>();
+        for (var i=0; i<MAX_SIZE; i++) {
+            Category category = Category.builder()
+                    .id((long) i+1)
+                    .name(String.format("카테고리 테스트%d", i))
+                    .layer(i)
+                    .writePostAuth(CATEGORY_WRITE_ROLES.get(i))
+                    .readCategoryAuth(CATEGORY_READ_ROLES.get(i))
+                    .writeCommentAuth(CATEGORY_READ_ROLES.get(i))
+                    .build();
+            categories.add(category);
+        }
+        return categories;
+    }
+    
+    @Test
+    @DisplayName("카테고리id로 가져오기")
+    public void getCategoryById() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(0);
+        Long id = category.getId();
+        given(categoryRepository.findById(id)).willReturn(Optional.of(category));
+
+        // when
+        Optional<Category> foundCategory = categoryService.getCategoryById(id);
+
+        // then
+        assertThat(foundCategory).isPresent();
+        assertThat(foundCategory.get().getId()).isEqualTo(category.getId());
+    }
+
+    @Test
+    @DisplayName("카테고리이름으로 가져오기")
+    public void getCategoryByName() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(0);
+        String name = category.getName();
+        given(categoryRepository.findByName(name)).willReturn(Optional.of(category));
+
+        // when
+        Optional<Category> foundCategory = categoryService.getCategoryByName(name);
+
+        // then
+        assertThat(foundCategory).isPresent();
+        assertThat(foundCategory.get().getName()).isEqualTo(category.getName());
     }
 
     @Test
     @DisplayName("카테고리 정렬 검증")
-    public void categoriesSortTest() {
+    public void sortCategories() {
         // given
-        final int MAX_SIZE = 10;
-        List<Category> categories = new ArrayList<>();
-        for (var i=0; i<MAX_SIZE; i++) {
-            Category category = Category.builder()
-                    .name(String.format("카테고리 테스트%d", i))
-                    .layer(i)
-                    .writePostAuth(Role.GUEST)
-                    .readCategoryAuth(Role.GUEST)
-                    .writeCommentAuth(Role.GUEST)
-                    .build();
-            categories.add(category);
-        }
+        List<Category> categories = createCategories();
         Collections.shuffle(categories);
-        categoryRepository.saveAll(categories);
 
         // when
-        List<Category> categories_sort = categoryService.getCategories();
-        for (Category category : categories_sort) {
-            System.out.println(category);
-        }
+        List<Category> sortedCategories = categoryService.sortCategories(categories);
 
         // then
-        for (var layer=0; layer<MAX_SIZE; layer++) {
-            Assertions.assertThat(categories_sort.get(layer).getLayer()).isEqualTo(layer);
+        Long last_layer = -1L;
+        for (Category sortedCategory : sortedCategories) {
+            Long layer = sortedCategory.getLayer();
+            assertThat(layer).isGreaterThan(last_layer);
+            last_layer = layer;
         }
     }
 
     @Test
-    @DisplayName("카테고리 업데이트 검증")
-    public void categoriesUpdateTest() {
+    @DisplayName("카테고리 목록 가져오기 (읽기 GUEST)")
+    public void getCategories() {
         // given
-        final int MAX_SIZE = 10;
-        List<Category> categories = new ArrayList<>();
-        for (var i=0; i<MAX_SIZE; i++) {
-            Category category = Category.builder()
-                    .name(String.format("카테고리 테스트%d", i))
-                    .layer(i)
-                    .writePostAuth(Role.GUEST)
-                    .readCategoryAuth(Role.GUEST)
-                    .writeCommentAuth(Role.GUEST)
-                    .build();
-            categories.add(category);
-        }
-        Collections.shuffle(categories);
-        categoryRepository.saveAll(categories);
+        List<Category> categories = createCategories();
+        given(categoryRepository.findAll()).willReturn(categories);
 
         // when
-        List<Category> categories1 = categoryService.getCategories();
-        for (Category category : categories1) {
-            category.setName(String.format("테스트%d", category.getId()));
-        }
-//        categoryRepository.saveAll(categories1);
+        List<Category> guest_categories = categoryService.getCategories();
 
         // then
-        List<Category> categories2 = categoryService.getCategories();
-        for (Category category : categories2) {
-            Assertions.assertThat(category.getName()).isEqualTo(String.format("테스트%d", category.getId()));
-        }
+        assertThat(guest_categories.size()).isEqualTo(3);
     }
 
     @Test
-    @DisplayName("카테고리 보기 권한 검증")
-    public void categoriesReadAuthTest() {
+    @DisplayName("카테고리 목록 가져오기 (읽기,쓰기 GUEST)")
+    public void getCategoriesReadWrite() {
         // given
-        int guest_category_size = 0;
-        List<Role> roles = List.of(Role.GUEST, Role.USER, Role.ADMIN);
-        List<Category> categories = new ArrayList<>();
-        for (var i=0; i<roles.size(); i++) {
-            Role role = roles.get(i);
-            if (role == Role.GUEST) {
-                guest_category_size += 1;
-            }
-            Category category = Category.builder()
-                    .name(String.format("%s 카테고리", role.name()))
-                    .layer(i)
-                    .writePostAuth(Role.GUEST)
-                    .readCategoryAuth(role)
-                    .writeCommentAuth(Role.GUEST)
-                    .build();
-            categories.add(category);
-        }
-        categoryRepository.saveAll(categories);
+        List<Category> categories = createCategories();
+        given(categoryRepository.findAll()).willReturn(categories);
 
         // when
-        // GUEST 권한으로 카테고리 조회
-        List<Category> test_categories = categoryService.getCategories();
+        List<Category> categoriesReadWrite = categoryService.getCategoriesReadWrite();
 
         // then
-        Assertions.assertThat(test_categories.size()).isEqualTo(guest_category_size);
+        assertThat(categoriesReadWrite.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("카테고리 업데이트")
+    public void updateCategories() throws BadRequestException {
+        // given
+        List<Category> find_categories = createCategories();
+        List<Category> update_categories = find_categories.subList(0, 3);
+        List<Category> delete_categories = find_categories.subList(3, 5);
+        given(categoryRepository.findAll()).willReturn(find_categories);
+        given(categoryRepository.saveAll(update_categories)).willReturn(update_categories);
+
+        // when
+        List<Category> updatedCategories = categoryService.updateCategories(update_categories);
+
+        // then
+        verify(categoryRepository).deleteAll(delete_categories);
+        assertThat(updatedCategories.size()).isEqualTo(update_categories.size());
+    }
+
+    @Test
+    @DisplayName("카테고리 전부 정리")
+    public void cleanUpCategories() {
+        // given
+
+        // when
+        categoryService.cleanUpCategories();
+
+        // then
+        verify(categoryRepository).truncate();
+    }
+
+
+    @Test
+    @DisplayName("카테고리 읽기 권한 검증 (Category category)")
+    void hasReadCategoryAuth() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(3); // w,r,c 파트너, 유저, 유저
+
+        // when
+        boolean hasReadCategoryAuth = categoryService.hasReadCategoryAuth(category); // GUEST
+
+        // then
+        assertThat(hasReadCategoryAuth).isFalse();
+    }
+
+    @Test
+    @DisplayName("카테고리 읽기 권한 검증 (Category category, Role role)")
+    void hasReadCategoryAuth2() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(3); // w,r,c 파트너, 유저, 유저
+
+        // when
+        boolean hasReadCategoryAuth = categoryService.hasReadCategoryAuth(category, Role.USER);
+
+        // then
+        assertThat(hasReadCategoryAuth).isTrue();
+    }
+
+    @Test
+    @DisplayName("카테고리 읽기,쓰기 권한 검증")
+    void hasReadWriteCategoryAuth() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(3); // w,r,c 파트너, 유저, 유저
+
+        // when
+        boolean userAuth = categoryService.hasReadWriteCategoryAuth(category, Role.USER);
+        boolean partnerAuth = categoryService.hasReadWriteCategoryAuth(category, Role.PARTNER);
+
+        // then
+        assertThat(userAuth).isFalse();
+        assertThat(partnerAuth).isTrue();
+    }
+
+    @Test
+    @DisplayName("카테고리 댓글쓰기 권한 검증")
+    void hasCommentCategoryAuth() {
+        // given
+        List<Category> categories = createCategories();
+        Category category = categories.get(3); // w,r,c 파트너, 유저, 유저
+
+        // when
+        boolean guestAuth = categoryService.hasCommentCategoryAuth(category, Role.GUEST);
+        boolean partnerAuth = categoryService.hasCommentCategoryAuth(category, Role.PARTNER);
+
+        // then
+        assertThat(guestAuth).isFalse();
+        assertThat(partnerAuth).isTrue();
     }
 }

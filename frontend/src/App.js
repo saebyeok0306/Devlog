@@ -23,12 +23,14 @@ import Profile from "pages/Profile";
 import { ClockLoader, HashLoader } from "react-spinners";
 import PostStatistics from "pages/PostStatistics";
 import UserRoute from "routes/UserRoute";
+import { Initizalize } from "utils/reactGA4";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [maintenance, setMaintenance] = useState(false);
   const isDark = useRecoilValue(themeAtom);
   GetPayload(setIsLoading, setMaintenance);
+  Initizalize();
 
   useEffect(() => {
     if (isDark) {

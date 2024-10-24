@@ -64,4 +64,8 @@ public class TestConfig {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    public void clearAuthentication() {
+        SecurityContextHolder.clearContext();
+    }
 }

@@ -3,6 +3,8 @@ package io.blog.devlog.domain.category.service;
 import io.blog.devlog.domain.category.dto.CategoryDto;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
+import io.blog.devlog.domain.post.model.Post;
+import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -22,11 +24,14 @@ import static io.blog.devlog.global.utils.SecurityUtils.getPrincipalRole;
 @Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final PostService postService;
 
+    @Transactional(readOnly = true)
     public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Category> getCategoryByName(String name) {
         return categoryRepository.findByName(name);
     }
@@ -35,6 +40,7 @@ public class CategoryService {
         return categories.stream().sorted(Comparator.comparingLong(Category::getLayer)).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Category> getCategories() {
         Role role = getPrincipalRole();
         if (role == null) {
@@ -48,6 +54,7 @@ public class CategoryService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<Category> getCategoriesReadWrite() {
         Role role = getPrincipalRole();
         if (role == null) {
@@ -61,13 +68,19 @@ public class CategoryService {
                 .toList();
     }
 
-    public List<Category> updateCategories(List<Category> categories) {
+    public List<Category> updateCategories(List<Category> categories) throws BadRequestException {
         List<Category> prevCategories = categoryRepository.findAll();
         // categories 없는 카테고리는 삭제
         List<Category> deleteCategories = prevCategories.stream()
                 .filter(category -> categories.stream().noneMatch(c -> c.getId().equals(category.getId())))
                 .toList();
-        // TODO: 카테고리 삭제 시 해당 카테고리의 게시글들도 삭제 (혹은 휴지통으로 이동)
+        // TODO: 최적화가 필요한 부분 (카테고리를 삭제하면, 해당 카테고리 안의 모든 게시글을 조회하고, 해당 게시글과 연결된 파일을 조회하게 됨)
+        for (Category deleteCategory : deleteCategories) {
+            List<Post> posts = postService.getAllPostsByCategoryId(deleteCategory.getId());
+            for (Post post : posts) {
+                postService.deletePost(post);
+            }
+        }
         categoryRepository.deleteAll(deleteCategories);
 
         return categoryRepository.saveAll(categories);
