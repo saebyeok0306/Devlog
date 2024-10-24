@@ -3,7 +3,7 @@ import ReactGA from "react-ga4";
 import { useRecoilState } from "recoil";
 import { ga4Atom } from "recoil/ga4Atom";
 
-const PRODCUTION = process.env.REACT_APP_ENV !== "prod";
+const PRODCUTION = process.env.REACT_APP_ENV === "prod";
 
 function Initizalize() {
   const [initialized, setInitialized] = useRecoilState(ga4Atom);
