@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.user.model;
 
+import io.blog.devlog.domain.like.model.PostLike;
 import io.blog.devlog.domain.user.dto.RequestPasswordDto;
 import io.blog.devlog.global.exception.NotMatchPasswordException;
 import io.blog.devlog.global.time.BaseTime;
@@ -12,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
 
 // 기본 생성자의 접근 수준을 Protected로 설정합니다.
 @Table(name="USERS", indexes = {
@@ -47,6 +50,8 @@ public class User extends BaseTime {
     @NotNull
     @ColumnDefault("0") // false
     private Boolean certificate = false;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes;
 
     @Builder
     public User(String username, String password, String email, Role role, String provider, String providerId, Boolean certificate) {
