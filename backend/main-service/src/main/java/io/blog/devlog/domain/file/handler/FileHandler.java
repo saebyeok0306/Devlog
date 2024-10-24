@@ -17,7 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -28,6 +30,8 @@ public class FileHandler {
     private String uploadPath;
     @Value("${file.request.path}")
     private String requestPath;
+
+    private List<String> resourceRoots = List.of("resource", "upload");
 
     public FileDto uploadFile(MultipartFile file) throws FileUploadException {
         String uploadFolderPath = this.getFolder();
@@ -80,7 +84,26 @@ public class FileHandler {
         System.out.println(file.toFile());
         if(!file.toFile().exists()) return false;
         Files.delete(file);
+        Path folder = file.getParent();
+        deleteEmptyFolder(folder);
         return true;
+    }
+
+    public void deleteEmptyFolder(Path folder) {
+        try (Stream<Path> paths = Files.list(folder)) {
+            if (paths.findAny().isEmpty()) {
+                Files.delete(folder);
+                folder = folder.getParent();
+                for (String root : resourceRoots) {
+                    if (folder.getFileName().toString().equals(root)) {
+                        return;
+                    }
+                }
+                deleteEmptyFolder(folder);
+            }
+        } catch (IOException e) {
+            log.error("Failed to delete folder: " + folder);
+        }
     }
 
     private String getFolder() {
