@@ -16,6 +16,7 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.post.service.PostService;
+import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
 import io.blog.devlog.domain.user.service.UserService;
@@ -30,9 +31,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static io.blog.devlog.domain.post.service.PostServiceTest.createCategory;
 
 @DataJpaTest // Component Scan을 하지 않아 컨테이너에 @Component 빈들이 등록되지 않는다.
 @ActiveProfiles("test")
@@ -67,15 +67,30 @@ public class CommentServiceTest {
     public void beforeSetUp() {
         jwtService = testConfig.createJwtService();
         userService = new UserService(userRepository, jwtService);
-        categoryService = new CategoryService(categoryRepository);
         tempFileService = new TempFileService(tempFileRepository);
         fileHandler = new FileHandler(tempFileService);
         fileService = new FileService(fileRepository, tempFileService, fileHandler);
         postService = new PostService(postRepository, userService, fileService);
+        categoryService = new CategoryService(categoryRepository, postService);
         commentService = new CommentService(commentRepository, userService, fileService);
     }
 
-    public void setupUserAndCategoryAndPost() {
+    public List<Category> createCategory() {
+        List<Category> categories = new ArrayList<>();
+        for (var i=0; i<3; i++) {
+            Category category = Category.builder()
+                    .name(String.format("카테고리%d", i))
+                    .layer(i)
+                    .writePostAuth(Role.USER)
+                    .readCategoryAuth(Role.GUEST)
+                    .writeCommentAuth(Role.USER)
+                    .build();
+            categories.add(category);
+        }
+        return categories;
+    }
+
+    public void setupUserAndCategoryAndPost() throws BadRequestException {
         userService.saveUser(testConfig.adminUser);
         User guestUser = userService.saveUser(testConfig.guestUser);
         List<Category> categories = categoryService.updateCategories(createCategory());
