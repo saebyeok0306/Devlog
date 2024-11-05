@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@Sql(value="/sql/test/post/post.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(value= "/testsql/post/post.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class PostRepositoryTest {
     @Autowired
     private PostRepository postRepository;
