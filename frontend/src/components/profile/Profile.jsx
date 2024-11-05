@@ -50,6 +50,7 @@ function Profile() {
     };
 
     fetchUserProfile();
+    // eslint-disable-next-line
   }, [authDto]);
 
   const uploadImageHandler = () => {

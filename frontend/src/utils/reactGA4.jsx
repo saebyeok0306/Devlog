@@ -13,6 +13,7 @@ function Initizalize() {
       ReactGA.initialize(process.env.REACT_APP_GOOGLE_GTAG_ID);
       setInitialized(true);
     }
+    // eslint-disable-next-line
   }, []);
 }
 

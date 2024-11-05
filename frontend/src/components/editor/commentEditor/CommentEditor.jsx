@@ -32,6 +32,7 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     if (editorInstance && comment.content) {
       editorInstance.setData(comment.content);
     }
+    // eslint-disable-next-line
   }, [editorInstance]);
 
   const handleChangeContent = async (editor) => {

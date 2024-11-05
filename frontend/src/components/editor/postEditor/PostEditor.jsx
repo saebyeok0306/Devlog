@@ -1,4 +1,4 @@
-import react, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { authAtom } from "recoil/authAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
