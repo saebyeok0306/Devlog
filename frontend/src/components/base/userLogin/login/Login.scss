@@ -7,6 +7,7 @@
   margin-top: 1em;
 
   .login-box {
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -46,9 +47,30 @@
       }
     }
 
+    .hidden-login {
+      transform: translateX(-100%);
+    }
+
+    .hidden-captcha {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .show-captcha {
+      transform: translateX(0%);
+      opacity: 1;
+    }
+
+    .verify-align {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.5s ease-in-out;
+    }
+
     .login-align {
       display: flex;
       flex-direction: row;
+      transition: transform 0.5s ease-in-out;
 
       @include mediaquery(medium) {
         flex-direction: column;
@@ -110,27 +132,27 @@
           margin-right: 0.5em;
         }
       }
+    }
+    .buttons {
+      flex: 1;
+      .button {
+        margin: 0.5em;
+        height: 3em;
+        padding: 0 1em 0 1em;
+        color: $font-white-color;
+        background-color: $background-blue-color;
+        line-height: 3em;
+      }
 
-      .buttons {
-        flex: 1;
-        .button {
-          margin: 0.5em;
-          height: 3em;
-          color: $font-white-color;
-          background-color: $background-blue-color;
-          line-height: 3em;
-        }
+      .button.pick {
+        color: $font-gray-color;
+        background-color: $button-gray-color;
+      }
 
-        .button.pick {
-          color: $font-gray-color;
-          background-color: $button-gray-color;
-        }
-
-        .button.oauth {
-          &.google {
-            color: $font-black-color;
-            background-color: $button-google-color;
-          }
+      .button.oauth {
+        &.google {
+          color: $font-black-color;
+          background-color: $button-google-color;
         }
       }
     }

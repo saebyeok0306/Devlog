@@ -22,14 +22,13 @@ const uploadReplyHandler = async ({
   files,
 }) => {
   try {
-    const result = await upload_comment_api(
+    await upload_comment_api(
       postContent,
       reply.target.id,
       content, // reply.content,
       files,
       reply.private
     );
-    const comment = result.data;
     cancelEditHandler({ reply: reply, setReply: setReply });
 
     toast.info("댓글이 등록되었습니다.");
@@ -48,7 +47,7 @@ const uploadCommentHandler = async ({
   files,
 }) => {
   try {
-    const result = await upload_comment_api(
+    await upload_comment_api(
       postContent,
       0,
       content, // editorComment.content,

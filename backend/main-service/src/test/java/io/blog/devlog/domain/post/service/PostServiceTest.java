@@ -7,9 +7,9 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
-import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import org.apache.coyote.BadRequestException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +26,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 
 @ActiveProfiles("test")
@@ -41,6 +43,11 @@ public class PostServiceTest {
     @InjectMocks
     private PostService postService;
     private static final TestConfig testConfig = new TestConfig();
+
+    @BeforeEach
+    void setUp() {
+        testConfig.clearAuthentication();
+    }
 
 
     @Test
@@ -87,7 +94,6 @@ public class PostServiceTest {
 
         // then
         assertThat(postByUrl.getPost()).isEqualTo(post);
-        testConfig.clearAuthentication();
     }
 
     @Test
@@ -125,42 +131,77 @@ public class PostServiceTest {
 
         // then
         assertThat(getPosts).isEqualTo(posts);
-        testConfig.clearAuthentication();
     }
 
     @Test
-    void getPostsByCategory() {
+    void getPostsByCategory() throws BadRequestException {
         // given
+        testConfig.updateAuthentication(testConfig.adminUser);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Post post = Post.builder().build();
+        Page<Post> posts = new PageImpl<>(List.of(post));
+
+        given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
+        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
+        given(postRepository.findAllPageByCategory(pageRequest, "카테고리", null, true, Role.ADMIN)).willReturn(posts);
 
         // when
+        Page<Post> getPosts = postService.getPostsByCategory("카테고리", pageRequest);
 
         // then
+        assertThat(getPosts).isEqualTo(posts);
     }
 
     @Test
-    void getPostsByCategoryId() {
+    void getPostsByCategoryId() throws BadRequestException {
         // given
+        testConfig.updateAuthentication(testConfig.adminUser);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Post post = Post.builder().build();
+        Page<Post> posts = new PageImpl<>(List.of(post));
+
+        given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
+        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
+        given(postRepository.findAllPageByCategoryId(pageRequest, 1L, null, true, Role.ADMIN)).willReturn(posts);
+
 
         // when
+        Page<Post> getPosts = postService.getPostsByCategoryId(1L, pageRequest);
 
         // then
+        assertThat(getPosts).isEqualTo(posts);
     }
 
     @Test
     void getAllPostsByCategoryId() {
         // given
+        testConfig.updateAuthentication(testConfig.adminUser);
+        Post post = Post.builder().build();
+        List<Post> posts = List.of(post);
+
+        given(postRepository.findAllByCategoryId(1L)).willReturn(List.of(post));
+
 
         // when
+        List<Post> getPosts = postService.getAllPostsByCategoryId(1L);
 
         // then
+        assertThat(getPosts).isEqualTo(posts);
     }
 
     @Test
-    void deletePost() {
+    void deletePost() throws BadRequestException {
         // given
+        Post post = Post.builder().build();
+
+        doAnswer(invocation -> {System.out.println("deleteFileFromPost"); return null;}).when(fileService).deleteFileFromPost(post);
+        doAnswer(invocation -> {System.out.println("delete"); return null;}).when(postRepository).delete(post);
 
         // when
+        postService.deletePost(post);
 
         // then
+        verify(fileService).deleteFileFromPost(post);
+        verify(postRepository).delete(post);
     }
 }

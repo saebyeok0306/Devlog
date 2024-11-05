@@ -17,6 +17,7 @@ function VerfiyTimerObj({ verifyTimer, setVerifyTimer }) {
       // 컴포넌트가 언마운트될 때 setInterval을 정리
       return () => clearInterval(timerInterval);
     }
+    // eslint-disable-next-line
   }, [verifyTimer]);
 
   const minutes = Math.floor(verifyTimer / 60);

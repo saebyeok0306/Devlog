@@ -57,6 +57,7 @@ services:
       ORACLE_USERNAME: ${ORACLE_USERNAME}
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      RECAPTCHA_PRIVATE_KEY: ${RECAPTCHA_PRIVATE_KEY}
     volumes:
       - ${ORACLE_WALLET_PATH}:${ORACLE_WALLET_PATH}
       - /home/static/resource:/home/static/resource

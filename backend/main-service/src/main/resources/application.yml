@@ -38,3 +38,7 @@ jwt:
   refresh:
     header: Authorization-Refresh # unused
     expiration: 1209600
+
+recaptcha:
+  secret_key: ${RECAPTCHA_PRIVATE_KEY}
+  verify_url: "https://www.google.com/recaptcha/api/siteverify"

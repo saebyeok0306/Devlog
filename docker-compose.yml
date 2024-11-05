@@ -50,6 +50,7 @@ services:
       DEVLOG_GOOGLE_CLIENT_ID: ${DEVLOG_GOOGLE_CLIENT_ID}
       DEVLOG_GOOGLE_CLIENT_SECRET: ${DEVLOG_GOOGLE_CLIENT_SECRET}
       JWT_SECRET: ${JWT_SECRET}
+      RECAPTCHA_PRIVATE_KEY: ${RECAPTCHA_PRIVATE_KEY}
     volumes:
       - C:\\Programming\\Blog\\devlog\\backend\\main-service\\src\\main\\resources\\upload:/home/static/resource
 

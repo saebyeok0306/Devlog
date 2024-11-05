@@ -46,7 +46,8 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
   );
 
   if (config.url === REFRESH_URL) {
-    await signOutToast("다시 로그인을 해주세요.", "/login", navigate);
+    if (data?.error !== "refreshToken is null")
+      await signOutToast("다시 로그인을 해주세요.", "/login", navigate);
     return Promise.reject(err);
   }
 

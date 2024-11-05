@@ -52,6 +52,7 @@ function Comment({ ...props }) {
         console.error("Failed to get comments:", error);
         setCommentsData(new CommentsData());
       });
+    // eslint-disable-next-line
   }, [updater]);
 
   return (

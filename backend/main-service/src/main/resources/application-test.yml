@@ -52,3 +52,7 @@ file:
     path: /home/resource
   request:
     path: res
+
+recaptcha:
+  secret_key: 123
+  verify_url: "https://www.google.com/recaptcha/api/siteverify"

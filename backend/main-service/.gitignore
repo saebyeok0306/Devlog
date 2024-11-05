@@ -39,6 +39,6 @@ out/
 
 ### Private Data ###
 /src/main/resources/wallet
-*.sql
+/src/main/resources/sql/
 server.pid
 /src/main/resources/upload

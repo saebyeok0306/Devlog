@@ -13,8 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { themeAtom } from "recoil/themeAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import moment from "moment-timezone";
 import { Breadcrumb, List } from "flowbite-react";
 import { HiFire, HiFlag, HiCalendar, HiHome } from "react-icons/hi";
@@ -44,7 +43,6 @@ const generateDateRange = (startDate, endDate) => {
 function Statistics() {
   const navigate = useNavigate();
   const { postUrl } = useParams();
-  const isDark = useRecoilValue(themeAtom);
   const [post, setPost] = useState({
     url: "",
     title: "",
@@ -102,6 +100,7 @@ function Statistics() {
     };
 
     getPostStatistics();
+    // eslint-disable-next-line
   }, []);
 
   const returnToHomeHandler = (e) => {

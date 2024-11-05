@@ -111,3 +111,14 @@ export const delete_profile_url_api = async () => {
       throw error;
     });
 };
+
+export const verify_captcha_api = async (token) => {
+  const requestBody = {
+    token: token,
+  };
+  return await API.post("/captcha/verify", requestBody)
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};
