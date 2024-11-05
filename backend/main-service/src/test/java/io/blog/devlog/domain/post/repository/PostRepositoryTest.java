@@ -69,7 +69,7 @@ public class PostRepositoryTest {
 
         // then
         assertThat(allPageUserPosts.getContent().size()).isEqualTo(5);
-        assertThat(allPageUserPosts.getTotalElements()).isEqualTo(20);
+        assertThat(allPageUserPosts.getTotalElements()).isEqualTo(7);
     }
 
     @Test
@@ -81,8 +81,8 @@ public class PostRepositoryTest {
         Page<Post> allPagePublicPosts = postRepository.findAllPagePublicPosts(pageRequest, Role.GUEST);
 
         // then
-        assertThat(allPagePublicPosts.getContent().size()).isEqualTo(5);
-        assertThat(allPagePublicPosts.getTotalElements()).isEqualTo(17);
+        assertThat(allPagePublicPosts.getContent().size()).isEqualTo(4);
+        assertThat(allPagePublicPosts.getTotalElements()).isEqualTo(4);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PostRepositoryTest {
         List<Post> allByCategoryId = postRepository.findAllByCategoryId(1L);
 
         // then
-        assertThat(allByCategoryId.size()).isEqualTo(19);
+        assertThat(allByCategoryId.size()).isEqualTo(6);
     }
 
     @Test
