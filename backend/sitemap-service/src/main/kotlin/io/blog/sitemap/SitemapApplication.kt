@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableScheduling
+//@EnableScheduling
 class SitemapApplication
 
 fun main(args: Array<String>) {
