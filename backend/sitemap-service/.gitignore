@@ -39,5 +39,5 @@ out/
 ### Kotlin ###
 .kotlin
 
-/resources/sitemap/
-/resources/sub-sitemap/
+**/resources/sitemap/
+**/resources/sub-sitemap/
