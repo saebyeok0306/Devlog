@@ -80,6 +80,9 @@ services:
         condition: service_healthy
     networks:
       - ms-network
+    volumes:
+      - C:\\Programming\\Blog\\devlog\\backend\\sitemap-service\\src\\main\\resources\\sitemap:/app/sitemap
+      - C:\\Programming\\Blog\\devlog\\backend\\sitemap-service\\src\\main\\resources\\sub-sitemap:/app/sub-sitemap
 
   llm-service:
     build: ./backend/llm-service

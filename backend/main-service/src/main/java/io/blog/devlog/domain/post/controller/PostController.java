@@ -14,6 +14,7 @@ import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.domain.views.service.PostViewCountService;
+import io.blog.devlog.global.client.SitemapClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
@@ -35,6 +37,7 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @RequestMapping("/posts")
 @Slf4j
 public class PostController {
+    private final SitemapClient sitemapClient;
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
@@ -47,12 +50,22 @@ public class PostController {
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
         log.info("Post uploaded : " + requestPostDto.getTitle());
         postUploadService.savePost(requestPostDto);
+        sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
     }
 
     @PostMapping("/edit")
     public void editPost(@RequestBody RequestEditPostDto requestEditPostDto) throws BadRequestException {
         log.info("Post edited : " + requestEditPostDto.getTitle());
-        postUploadService.editPost(requestEditPostDto);
+        Post post = postService.getPostById(requestEditPostDto.getId());
+        if (post == null) {
+            log.info("Post not found : " + requestEditPostDto.getId());
+            throw new BadRequestException("Post not found : " + requestEditPostDto.getId());
+        }
+        Post renewPost = postUploadService.editPost(requestEditPostDto);
+        if (!Objects.equals(post.getUrl(), renewPost.getUrl()) || !Objects.equals(post.getCategory().getId(), renewPost.getCategory().getId())) {
+            sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(post.getCategory().getId(), post.getUrl()));
+            sitemapClient.addPostSitemap(ResponsePostUrlDto.of(renewPost.getCategory().getId(), renewPost.getUrl()));
+        }
     }
 
     @GetMapping
@@ -141,6 +154,6 @@ public class PostController {
         }
         commentService.deleteCommentsByPostId(postDetail.getPost().getId());
         postService.deletePost(postDetail.getPost());
-//        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(postCommentFlag);
+        sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(postDetail.getPost().getCategory().getId(), postDetail.getPost().getUrl()));
     }
 }
