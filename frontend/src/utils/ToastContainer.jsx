@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import { useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 
 function ToastContainerComponent() {
   const isDark = useRecoilValue(themeAtom);

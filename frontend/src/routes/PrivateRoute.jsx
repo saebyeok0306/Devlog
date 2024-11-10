@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { ROLE_TYPE } from "utils/RoleType";
+import { ROLE_TYPE } from "@/utils/RoleType";
 import { toast } from "react-toastify";
 import { useRecoilValue } from "recoil";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 
 const PrivateRoute = ({ role = null, email = null }) => {
   const authDto = useRecoilValue(authAtom);

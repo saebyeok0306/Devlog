@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 
 import "./EditCategory.scss";
-import FolderIcon from "assets/icons/Folder";
+import FolderIcon from "@/assets/icons/Folder";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
-import { get_categories_detail_api, set_categories_api } from "api/Category";
+import { themeAtom } from "@/recoil/themeAtom";
+import { get_categories_detail_api, set_categories_api } from "@/api/Category";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Table } from "flowbite-react";
-import { CategoryDetail } from "model/CategoryDetail";
+import { CategoryDetail } from "@/model/CategoryDetail";
 import EditCategoryModal from "./modal/EditCategoryModal";
 import { useNavigate } from "react-router-dom";
-import { categoryUpdaterAtom } from "recoil/categoryAtom";
+import { categoryUpdaterAtom } from "@/recoil/categoryAtom";
 
 function allCheckCategoryHandler(allChecked, setAllChecked, setCheckedList) {
   if (!allChecked) {

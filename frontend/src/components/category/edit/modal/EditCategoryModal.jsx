@@ -2,7 +2,7 @@ import React from "react";
 
 import "./EditCategoryModal.scss";
 import { Button, Dropdown, Modal, TextInput } from "flowbite-react";
-import { ROLE_TYPE } from "utils/RoleType";
+import { ROLE_TYPE } from "@/utils/RoleType";
 
 const authNameList = [
   ["writePostAuth", "글쓰기 권한"],

@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import ReactGA from "react-ga4";
 import { useRecoilState } from "recoil";
-import { ga4Atom } from "recoil/ga4Atom";
+import { ga4Atom } from "@/recoil/ga4Atom";
 
-const PRODCUTION = process.env.REACT_APP_ENV === "prod";
+const PRODCUTION = import.meta.env.REACT_APP_ENV === "prod";
 
 function Initizalize() {
   const [initialized, setInitialized] = useRecoilState(ga4Atom);
   useEffect(() => {
     console.log("ReactGA4 Initialize");
     if (PRODCUTION && !initialized) {
-      ReactGA.initialize(process.env.REACT_APP_GOOGLE_GTAG_ID);
+      ReactGA.initialize(import.meta.env.REACT_APP_GOOGLE_GTAG_ID);
       setInitialized(true);
     }
     // eslint-disable-next-line

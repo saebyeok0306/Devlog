@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { Dropdown, Pagination } from "flowbite-react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 import "./Posts.scss";
-import { onErrorImg } from "utils/defaultImg";
-import { get_posts_api } from "api/Posts";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { categoryAtom } from "recoil/categoryAtom";
-import { Dropdown, Pagination } from "flowbite-react";
-import { paginationCustomTheme } from "styles/theme/pagination";
-import { getDatetime } from "utils/getDatetime";
+import { onErrorImg } from "@/utils/defaultImg";
+import { get_posts_api } from "@/api/Posts";
+import { categoryAtom } from "@/recoil/categoryAtom";
+import { paginationCustomTheme } from "@/styles/theme/pagination";
+import { getDatetime } from "@/utils/getDatetime";
 import { Link } from "react-router-dom";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 
-import nopostImg from "assets/nopost.png";
+import nopostImg from "@/assets/nopost.png";
 
 function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);

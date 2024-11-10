@@ -1,6 +1,6 @@
-import { jwt_refresh_api, user_check_api } from "api/User";
+import { jwt_refresh_api, user_check_api } from "@/api/User";
 import { useRecoilState } from "recoil";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { signIn, signOut } from "./authenticate";
 
 import murmurhash from "murmurhash";
@@ -9,7 +9,7 @@ import { getCookie } from "./hooks/useCookie";
 import {
   ACCESS_TOKEN_STRING,
   REFRESH_TOKEN_STRING,
-} from "constants/user/login";
+} from "@/constants/user/login";
 import { useEffect, useState } from "react";
 
 function AuthProvider({ children }) {

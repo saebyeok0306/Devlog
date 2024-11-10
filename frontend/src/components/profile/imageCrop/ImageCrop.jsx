@@ -7,9 +7,9 @@ import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { canvasPreview } from "./canvasPreview";
 import { toast } from "react-toastify";
-import { resizeBlob } from "utils/ImageResizer";
-import { upload_file_api } from "api/File";
-import { upload_profile_url_api } from "api/User";
+import { resizeBlob } from "@/utils/ImageResizer";
+import { upload_file_api } from "@/api/File";
+import { upload_profile_url_api } from "@/api/User";
 
 // 레퍼런스
 // https://codesandbox.io/p/sandbox/react-image-crop-demo-with-react-hooks-y831o?file=%2Fsrc%2FApp.tsx%3A131%2C18
@@ -112,7 +112,7 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile, setAuthDto }) {
           });
           const res = await upload_file_api(output_file);
           const payload = res.data;
-          const profileUrl = `${process.env.REACT_APP_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`;
+          const profileUrl = `${import.meta.env.VITE_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`;
           await upload_profile_url_api(payload, profileUrl);
           // const new_url = URL.createObjectURL(output_blob);
           blobUrlRef.current = profileUrl;

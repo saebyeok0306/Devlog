@@ -4,7 +4,7 @@ import "./Password.scss";
 
 import { Button } from "flowbite-react";
 import { toast } from "react-toastify";
-import { renew_password_api } from "api/User";
+import { renew_password_api } from "@/api/User";
 
 const passwordInit = {
   currentPassword: "",

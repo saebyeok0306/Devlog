@@ -1,8 +1,8 @@
-import CommentEditor from "components/editor/commentEditor";
+import CommentEditor from "@/components/editor/commentEditor";
 import { Dropdown, Timeline } from "flowbite-react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { replyTimelineTheme } from "./replyTimelineTheme";
-import { getDatetime } from "utils/getDatetime";
+import { getDatetime } from "@/utils/getDatetime";
 
 import { HiAnnotation } from "react-icons/hi";
 import {
@@ -14,9 +14,9 @@ import {
   updateEditHandler,
   uploadReplyHandler,
 } from "./CommentsHandler";
-import { authAtom } from "recoil/authAtom";
-import { commentAtom, commentFilesAtom } from "recoil/commentAtom";
-import { postAtom } from "recoil/postAtom";
+import { authAtom } from "@/recoil/authAtom";
+import { commentAtom, commentFilesAtom } from "@/recoil/commentAtom";
+import { postAtom } from "@/recoil/postAtom";
 
 const CommentReply = ({
   rootComment,

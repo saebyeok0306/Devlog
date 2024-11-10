@@ -1,5 +1,5 @@
 import React from "react";
-import Responsive from "components/common/Responsive";
+import Responsive from "@/components/common/Responsive";
 
 import { Footer } from "flowbite-react";
 

@@ -1,20 +1,20 @@
-import { get_post_files_api, get_post_url_api } from "api/Posts";
-import Comment from "components/base/comment";
-import Post from "components/post";
+import { get_post_files_api, get_post_url_api } from "@/api/Posts";
+import Comment from "@/components/base/comment";
+import Post from "@/components/post";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import {
   commentAtom,
   commentsAtom,
   CommentsData,
   CommentState,
-} from "recoil/commentAtom";
-import { ga4Atom } from "recoil/ga4Atom";
-import { postAtom } from "recoil/postAtom";
-import { sendPageView } from "utils/reactGA4";
-import { sortComments } from "utils/sortComments";
+} from "@/recoil/commentAtom";
+import { ga4Atom } from "@/recoil/ga4Atom";
+import { postAtom } from "@/recoil/postAtom";
+import { sendPageView } from "@/utils/reactGA4";
+import { sortComments } from "@/utils/sortComments";
 
 function PostCommentContainer({ ...props }) {
   const navigate = useNavigate();

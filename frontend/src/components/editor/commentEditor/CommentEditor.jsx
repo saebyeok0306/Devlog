@@ -10,7 +10,7 @@ import {
 } from "./ClassicEditor";
 import hljs from "highlight.js";
 import { useRecoilState } from "recoil";
-import { commentFilesAtom } from "recoil/commentAtom";
+import { commentFilesAtom } from "@/recoil/commentAtom";
 
 function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
   const MAX_LENGTH = 5000;
@@ -73,7 +73,7 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     const fileFilter = (file) => {
       return (
         comment.content.indexOf(
-          `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
+          `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
         ) !== -1 || file.fileType === "VIDEO"
       );
     };

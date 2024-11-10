@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import "./Profile.scss";
-import { get_info_api, set_info_api } from "api/Info";
-import EditIcon from "assets/icons/Edit";
+import { get_info_api, set_info_api } from "@/api/Info";
+import EditIcon from "@/assets/icons/Edit";
 import { useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 import { Tooltip } from "flowbite-react";
-import { onErrorImg } from "utils/defaultImg";
-import { authAtom } from "recoil/authAtom";
+import { onErrorImg } from "@/utils/defaultImg";
+import { authAtom } from "@/recoil/authAtom";
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {

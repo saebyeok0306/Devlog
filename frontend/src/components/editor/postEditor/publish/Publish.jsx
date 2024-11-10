@@ -2,11 +2,11 @@ import { Button, Carousel, Dropdown, Modal, TextInput } from "flowbite-react";
 
 import "./Publish.scss";
 import { useEffect, useState } from "react";
-import { onErrorImg } from "utils/defaultImg";
-import { edit_post_api, upload_post_api } from "api/Posts";
+import { onErrorImg } from "@/utils/defaultImg";
+import { edit_post_api, upload_post_api } from "@/api/Posts";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { POST_STORE } from "api/Cache";
+import { POST_STORE } from "@/api/Cache";
 
 const safeUrlValidator = (url) => {
   return url.replace(" ", "-").replace(/[^a-zA-Z0-9ㄱ-ㅎ가-힣-_]/g, "");
@@ -60,7 +60,7 @@ function Publish({
           postContext: postContext,
           postUrl: postUrl,
           previewUrl: postContext.preview
-            ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+            ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
             : `previewUrl`,
         });
         toast.info("게시글을 업로드했습니다!");
@@ -76,7 +76,7 @@ function Publish({
           postContext: postContext,
           postUrl: postUrl,
           previewUrl: postContext.preview
-            ? `${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+            ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
             : `previewUrl`,
           modifiedAt: modifiedAt,
         });
@@ -116,7 +116,7 @@ function Publish({
               <img
                 key={index}
                 className="publish-preview-list-image"
-                src={`${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
+                src={`${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
                 alt={`preview${index}`}
                 onClick={() =>
                   setPostContext({ ...postContext, preview: file })
@@ -140,7 +140,7 @@ function Publish({
                 <div className="publish-preview-img">
                   {postContext.preview ? (
                     <img
-                      src={`${process.env.REACT_APP_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`}
+                      src={`${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`}
                       alt="preview"
                       onError={onErrorImg}
                     />

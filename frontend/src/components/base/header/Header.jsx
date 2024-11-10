@@ -1,11 +1,11 @@
 import React from "react";
-import Responsive from "components/common/Responsive";
+import Responsive from "@/components/common/Responsive";
 import { Link, useNavigate } from "react-router-dom";
 
-import { BLOG_NAME } from "constants/base/main";
+import { BLOG_NAME } from "@/constants/base/main";
 import "./Header.scss";
 import { useRecoilState } from "recoil";
-import { categoryAtom } from "recoil/categoryAtom";
+import { categoryAtom } from "@/recoil/categoryAtom";
 
 function Header({ right, menu }) {
   const navigate = useNavigate();

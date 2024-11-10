@@ -1,11 +1,11 @@
 import React from "react";
 
 import "./UserMenu.scss";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
-import { signOut } from "utils/authenticate";
+import { signOut } from "@/utils/authenticate";
 
 const onProfileHandler = (navigate) => {
   navigate("/profile");

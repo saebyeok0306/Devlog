@@ -1,4 +1,4 @@
-import { upgrade_sentence_api } from "api/AI";
+import { upgrade_sentence_api } from "@/api/AI";
 import { ButtonView, Plugin, TextProxy } from "ckeditor5";
 
 export default class UpgradeSentence extends Plugin {

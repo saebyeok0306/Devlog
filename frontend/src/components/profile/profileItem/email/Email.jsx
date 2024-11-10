@@ -5,7 +5,7 @@ import "./Email.scss";
 import { HiOutlineMail } from "react-icons/hi";
 import { Button } from "flowbite-react";
 import VerifyModal from "./VerifyModal";
-import { request_verify_email_api } from "api/User";
+import { request_verify_email_api } from "@/api/User";
 
 export function ProfileEmail({ userProfile, setUserProfile }) {
   const [verifyTimer, setVerifyTimer] = useState(300);
