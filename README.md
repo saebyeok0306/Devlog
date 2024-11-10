@@ -5,7 +5,7 @@
 
 ## Stack
 
-- Frontend: React.js (CRA)
+- Frontend: React.js (Vite)
 - Backend: Spring Boot, FastAPI
 - Database: MySQL (Local), Oracle DB (Product), Redis
 - DevOps: Github Actions, Nginx, Oracle Cloud
@@ -73,11 +73,12 @@ Frontend는 React, Backend는 Spring을 사용하여 웹서비스를 만들고 �
 
 Redis를 활용하여 Pub/Sub를 구현하였습니다. 메일서버와의 비동기 연결을 위해 사용했고, 메시지 전달 여부가 크게 중요하지 않았기 때문에 Kafka나 RabbitMQ보다는 Redis를 선택하게 되었습니다.
 
-## TODO-List
+### Frontend Build
 
-- 프로필 페이지 만들기
-- 알림 기능
-- 게시글 태그 기능
-- LLM AI를 활용한 게시글 작성 서포트 기능
-- OpenGraph 적용하기 (react-helmet)
-- SEO 최적화 (sitemap 생성, robots.txt)
+프로젝트가 점점 커짐에 따라, 개발서버를 로드하는 것도 느리고, 빌드타임도 빠르게 느려졌습니다. (현재는 약 2분) 아는 건 많이 없지만, 유튜브를 보면서 많이 들었던 건 `Svelte`, `Vite`, `Next.js` 정도 였습니다. 그래서 현재 저의 상황에서 무엇이 가장 좋을지 고민해봤습니다.
+
+우선, 조사를 조금 해본 결과 `Svelte`, `Next.js`는 `React.js`와 같이 애플리케이션을 개발하기 위한 `프레임워크`입니다. 그래서 React로 작성한 프로젝트를 Svelte나 Next.js로 마이그레이션하기에는 어려움이 많고, 저는 빌드타임만 개선하기를 원했기에 선택지에서 지웠습니다.
+
+결국, 마지막으로 남은 `Vite`가 저의 최종 선택지였는데요. 결과적으로도 현재 가장 빠른 빌드타임을 보여주는 `esbuild`를 기반으로 하고 있어서 속도 개선 측면에서도 매우 좋았습니다. 최종적으로 Vite를 도입해서 가지고 있던 문제들을 개선하게 되었고, 배포 파이프라인에서의 빌드타임이 2분 18초에서 1분 13초로 단축되었습니다.
+
+![Vite로 마이그레이션 후 빌드타임 개선](https://github.com/westreed/Devlog/blob/main/readme_src/vite.png)
