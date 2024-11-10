@@ -105,7 +105,7 @@ services:
     networks:
       - ms-network
     volumes:
-      - /home/app/frontend/build:/app/sitemap
+      - /home/app/frontend/sitemap:/app/sitemap
       - /home/app/backend/sub-sitemap:/app/sub-sitemap
     restart: on-failure
 
