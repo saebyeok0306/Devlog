@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import Responsive from "components/common/Responsive";
+import Responsive from "@/components/common/Responsive";
 
 import "./Signup.scss";
 import { Link, useNavigate } from "react-router-dom";
-import EmailIcon from "assets/icons/Email";
-import PasswordIcon from "assets/icons/Password";
-import UsernameIcon from "assets/icons/Username";
-import { user_join_api } from "api/User";
+import EmailIcon from "@/assets/icons/Email";
+import PasswordIcon from "@/assets/icons/Password";
+import UsernameIcon from "@/assets/icons/Username";
+import { user_join_api } from "@/api/User";
 import { toast } from "react-toastify";
-import { BLOG_NAME } from "constants/base/main";
+import { BLOG_NAME } from "@/constants/base/main";
 
 function Signup() {
   const navigate = useNavigate();

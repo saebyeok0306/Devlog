@@ -1,9 +1,9 @@
-import { Auth, authAtom } from "recoil/authAtom";
+import { Auth, authAtom } from "@/recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
-import { clearAllCacheStore } from "api/Cache";
+import { clearAllCacheStore } from "@/api/Cache";
 import { useEffect } from "react";
-import { jwt_refresh_api, user_logout_api, user_profile_api } from "api/User";
+import { jwt_refresh_api, user_logout_api, user_profile_api } from "@/api/User";
 
 export const signIn = async (setAuthDto, message = "로그인 성공!") => {
   try {

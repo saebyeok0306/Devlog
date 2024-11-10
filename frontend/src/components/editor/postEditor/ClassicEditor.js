@@ -1,4 +1,4 @@
-import { upload_file_api } from "api/File";
+import { upload_file_api } from "@/api/File";
 
 import {
   AccessibilityHelp,
@@ -289,7 +289,7 @@ const editorConfig = {
   },
   // simpleUpload: {
   //   // The URL that the images are uploaded to.
-  //   uploadUrl: `${process.env.REACT_APP_API_ENDPOINT}/files`,
+  //   uploadUrl: `${import.meta.env.VITE_API_ENDPOINT}/files`,
 
   //   // Enable the XMLHttpRequest.withCredentials property.
   //   withCredentials: true,
@@ -314,7 +314,7 @@ class CustomUploadAdapter {
               files: [...prev.files, payload],
             }));
             resolve({
-              default: `${process.env.REACT_APP_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
+              default: `${import.meta.env.VITE_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
             });
           } catch (error) {
             reject(error);

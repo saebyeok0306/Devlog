@@ -1,18 +1,18 @@
 import React, { useRef, useState } from "react";
-import Responsive from "components/common/Responsive";
+import Responsive from "@/components/common/Responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./Login.scss";
-import EmailIcon from "assets/icons/Email";
-import PasswordIcon from "assets/icons/Password";
-import { user_login_api, user_logout_api, verify_captcha_api } from "api/User";
-import { authAtom } from "recoil/authAtom";
+import EmailIcon from "@/assets/icons/Email";
+import PasswordIcon from "@/assets/icons/Password";
+import { user_login_api, user_logout_api, verify_captcha_api } from "@/api/User";
+import { authAtom } from "@/recoil/authAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { OAUTH2_URI } from "constants/api/oauth";
-import { signIn } from "utils/authenticate";
+import { OAUTH2_URI } from "@/constants/api/oauth";
+import { signIn } from "@/utils/authenticate";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 
 function Login() {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ function Login() {
   const oauthLoginAction = (e) => {
     e.preventDefault();
     const provider = "google";
-    const link = `${process.env.REACT_APP_API_ENDPOINT}/main/${OAUTH2_URI}/${provider}`;
+    const link = `${import.meta.env.VITE_API_ENDPOINT}/main/${OAUTH2_URI}/${provider}`;
     window.location.href = link;
   };
 
@@ -119,7 +119,7 @@ function Login() {
             <div className={`captcha-box m-auto`}>
               <ReCAPTCHA
                 ref={captchaRef}
-                sitekey={`${process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY}`}
+                sitekey={`${import.meta.env.VITE_RECAPTCHA_PUBLIC_KEY}`}
                 onChange={onCaptchaHandler}
                 theme={isDark ? "dark" : "light"}
               />

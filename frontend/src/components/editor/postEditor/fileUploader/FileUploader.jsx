@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, FileInput, Label, List, Modal } from "flowbite-react";
-import { upload_file_api } from "api/File";
+import { upload_file_api } from "@/api/File";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
 
@@ -8,7 +8,7 @@ import { HiOutlineX } from "react-icons/hi";
 
 import "./FileUploader.scss";
 import { useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 
 function FileUploader({
   openLoader,

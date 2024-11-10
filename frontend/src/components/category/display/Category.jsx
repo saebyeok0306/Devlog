@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import "./Category.scss";
-import FolderIcon from "assets/icons/Folder";
+import FolderIcon from "@/assets/icons/Folder";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
-import { get_categories_api } from "api/Category";
-import EditIcon from "assets/icons/Edit";
+import { themeAtom } from "@/recoil/themeAtom";
+import { get_categories_api } from "@/api/Category";
+import EditIcon from "@/assets/icons/Edit";
 import { Tooltip } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { categoryAtom, categoryUpdaterAtom } from "recoil/categoryAtom";
-import { authAtom } from "recoil/authAtom";
+import { categoryAtom, categoryUpdaterAtom } from "@/recoil/categoryAtom";
+import { authAtom } from "@/recoil/authAtom";
 
 function Category() {
   const location = useLocation();

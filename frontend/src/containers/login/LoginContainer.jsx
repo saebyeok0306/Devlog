@@ -1,5 +1,5 @@
 import React from "react";
-import Login from "components/base/userLogin/login";
+import Login from "@/components/base/userLogin/login";
 
 function LoginContainer() {
   return (

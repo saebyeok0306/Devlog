@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -9,9 +9,9 @@ import { ClassicEditor } from "ckeditor5";
 
 import "./PostEditor.scss";
 import { Button } from "flowbite-react";
-import { PostContext, postContextAtom } from "recoil/editorAtom";
+import { PostContext, postContextAtom } from "@/recoil/editorAtom";
 import { toast } from "react-toastify";
-import { get_categories_readwrite_api } from "api/Category";
+import { get_categories_readwrite_api } from "@/api/Category";
 import Publish from "./publish";
 import hljs from "highlight.js";
 import FileUploader from "./fileUploader";
@@ -116,7 +116,7 @@ function PostEditor() {
       // files 중 content에 없는 이미지가 preview인 경우 다시 files에서 첫번째 항목으로 선택.
       if (
         postContext.content.indexOf(
-          `(${process.env.REACT_APP_API_FILE_URL}/${postContext.preview.filePath}/${postContext.preview.fileUrl})`
+          `(${import.meta.env.VITE_API_FILE_URL}/${postContext.preview.filePath}/${postContext.preview.fileUrl})`
         ) === -1
       ) {
         setPostContext((prev) => ({ ...prev, preview: prev.files[0] }));
@@ -146,7 +146,7 @@ function PostEditor() {
     const fileFilter = (file) => {
       return (
         postContext.content.indexOf(
-          `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
+          `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
         ) !== -1 || file.fileType !== "IMAGE"
       );
     };

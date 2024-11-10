@@ -50,7 +50,7 @@ public class User extends BaseTime {
     @NotNull
     @ColumnDefault("0") // false
     private Boolean certificate = false;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = false)
     private List<PostLike> likes;
 
     @Builder

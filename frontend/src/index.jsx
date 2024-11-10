@@ -3,11 +3,11 @@ import ReactDOM from "react-dom/client";
 
 import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
-import App from "App";
+import App from "@/App.jsx";
 
-import "styles/main.scss";
-import "styles/base/font.css";
-import "styles/base/tailwind.css";
+import "@/styles/main.scss";
+import "@/styles/base/font.css";
+import "@/styles/base/tailwind.css";
 import "react-toastify/dist/ReactToastify.css";
 import "ckeditor5/ckeditor5.css";
 import "tocbot/dist/tocbot.css";

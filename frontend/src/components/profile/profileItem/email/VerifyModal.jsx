@@ -3,7 +3,7 @@ import { Alert, Button, Modal, TextInput, Tooltip } from "flowbite-react";
 
 import "./VerifyModal.scss";
 import { HiCheck } from "react-icons/hi";
-import { send_verify_email_api } from "api/User";
+import { send_verify_email_api } from "@/api/User";
 import { toast } from "react-toastify";
 
 function VerfiyTimerObj({ verifyTimer, setVerifyTimer }) {

@@ -1,4 +1,4 @@
-import { upload_file_api } from "api/File";
+import { upload_file_api } from "@/api/File";
 
 import {
   AccessibilityHelp,
@@ -225,7 +225,7 @@ class CustomCommentUploadAdapter {
             const payload = res.data;
             await this.setFiles((prev) => [...prev, payload]);
             resolve({
-              default: `${process.env.REACT_APP_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
+              default: `${import.meta.env.VITE_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
             });
           } catch (error) {
             reject(error);

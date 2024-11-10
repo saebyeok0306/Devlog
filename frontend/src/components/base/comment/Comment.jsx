@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 
 import "./Comment.scss";
 import { Timeline } from "flowbite-react";
-import { timelineCustomTheme } from "styles/theme/timeline";
-import CommentEditor from "components/editor/commentEditor";
+import { timelineCustomTheme } from "@/styles/theme/timeline";
+import CommentEditor from "@/components/editor/commentEditor";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
-import { authAtom } from "recoil/authAtom";
-import { postAtom } from "recoil/postAtom";
-import { commentAtom, commentsAtom, CommentsData } from "recoil/commentAtom";
+import { themeAtom } from "@/recoil/themeAtom";
+import { authAtom } from "@/recoil/authAtom";
+import { postAtom } from "@/recoil/postAtom";
+import { commentAtom, commentsAtom, CommentsData } from "@/recoil/commentAtom";
 import Comments from "./comments/Comments";
 import {
   isWriteComment,
   uploadCommentHandler,
 } from "./comments/CommentsHandler";
-import { get_comments_by_post_api } from "api/Comment";
-import { sortComments } from "utils/sortComments";
+import { get_comments_by_post_api } from "@/api/Comment";
+import { sortComments } from "@/utils/sortComments";
 import { toast } from "react-toastify";
 
 function Comment({ ...props }) {

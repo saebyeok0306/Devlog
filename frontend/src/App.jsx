@@ -1,29 +1,29 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import PrivateRoute from "routes/PrivateRoute";
-import PublicRoute from "routes/PublicRoute";
-import AnyRoute from "routes/AnyRoute";
+import PrivateRoute from "@/routes/PrivateRoute";
+import PublicRoute from "@/routes/PublicRoute";
+import AnyRoute from "@/routes/AnyRoute";
 
-import FooterContainer from "containers/base/FooterContainer";
-import Home from "pages/Home";
-import { AxiosProvider } from "api/Axios";
-import Editor from "pages/Editor";
-import Login from "pages/Login";
-import Signup from "pages/Signup";
-import Callback from "pages/Callback";
-import Post from "pages/Post";
+import FooterContainer from "./containers/base/FooterContainer";
+import Home from "@/pages/Home";
+import { AxiosProvider } from "@/api/Axios";
+import Editor from "@/pages/Editor";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import Callback from "@/pages/Callback";
+import Post from "@/pages/Post";
 import { useRecoilValue } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
-import DarkModeProvider from "utils/DarkModeProvider";
-import CategoryManager from "pages/CategoryManager";
-import { ROLE_TYPE } from "utils/RoleType";
-import ToastContainerComponent from "utils/ToastContainer";
+import { themeAtom } from "@/recoil/themeAtom";
+import DarkModeProvider from "@/utils/DarkModeProvider";
+import CategoryManager from "@/pages/CategoryManager";
+import { ROLE_TYPE } from "@/utils/RoleType";
+import ToastContainerComponent from "@/utils/ToastContainer";
 import { useEffect, useState } from "react";
-import { GetPayload } from "utils/authenticate";
-import Profile from "pages/Profile";
+import { GetPayload } from "@/utils/authenticate";
+import Profile from "@/pages/Profile";
 import { ClockLoader, HashLoader } from "react-spinners";
-import PostStatistics from "pages/PostStatistics";
-import UserRoute from "routes/UserRoute";
-import { Initizalize } from "utils/reactGA4";
+import PostStatistics from "@/pages/PostStatistics";
+import UserRoute from "@/routes/UserRoute";
+import { Initizalize } from "@/utils/reactGA4";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +84,7 @@ function App() {
     <DarkModeProvider>
       <ToastContainerComponent />
       <div className={`wrapper`}>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <BrowserRouter basename={import.meta.env.PUBLIC_URL}>
           <AxiosProvider>
             {!isLoading ? (
               <>

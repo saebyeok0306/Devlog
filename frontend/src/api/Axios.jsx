@@ -3,7 +3,7 @@ import { authAtom } from "../recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { jwt_refresh_api } from "./User";
 import { useNavigate } from "react-router-dom";
-import { warnSignOut } from "utils/authenticate";
+import { warnSignOut } from "@/utils/authenticate";
 import { useEffect } from "react";
 import mem from "mem";
 import { ETC_STORE } from "./Cache";
@@ -11,12 +11,12 @@ import { ETC_STORE } from "./Cache";
 const REFRESH_URL = "/reissue";
 
 export const API = axios.create({
-  baseURL: `${process.env.REACT_APP_API_ENDPOINT}/main`,
+  baseURL: `${import.meta.env.VITE_API_ENDPOINT}/main`,
   withCredentials: true,
 });
 
 export const LLM_API = axios.create({
-  baseURL: `${process.env.REACT_APP_API_ENDPOINT}/llm`,
+  baseURL: `${import.meta.env.VITE_API_ENDPOINT}/llm`,
   withCredentials: true,
 });
 

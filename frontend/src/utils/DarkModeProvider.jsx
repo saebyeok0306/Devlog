@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 
 function DarkModeProvider({ children }) {
   const [, setThemeMode] = useRecoilState(themeAtom);

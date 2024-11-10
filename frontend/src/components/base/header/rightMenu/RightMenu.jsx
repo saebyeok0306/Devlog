@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
 import "./RightMenu.scss";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Dropdown } from "flowbite-react";
-import DarkIcon from "assets/icons/Dark";
-import { setTheme, getThemeValue, themeAtom } from "recoil/themeAtom";
-import LightIcon from "assets/icons/Light";
-import ComputerIcon from "assets/icons/Computer";
-import DotIcon from "assets/icons/Dot";
+import DarkIcon from "@/assets/icons/Dark";
+import { setTheme, getThemeValue, themeAtom } from "@/recoil/themeAtom";
+import LightIcon from "@/assets/icons/Light";
+import ComputerIcon from "@/assets/icons/Computer";
+import DotIcon from "@/assets/icons/Dot";
 import { Link } from "react-router-dom";
 
 function RightMenu() {

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { postAtom } from "recoil/postAtom";
+import { postAtom } from "@/recoil/postAtom";
 
 import "./TOC.scss";
 import { Button, Dropdown } from "flowbite-react";
@@ -11,10 +11,10 @@ import {
   HiDotsVertical,
 } from "react-icons/hi";
 import { toast } from "react-toastify";
-import { PostContext, postContextAtom } from "recoil/editorAtom";
-import { delete_post_api } from "api/Posts";
+import { PostContext, postContextAtom } from "@/recoil/editorAtom";
+import { delete_post_api } from "@/api/Posts";
 import { useNavigate } from "react-router-dom";
-import { POST_STORE } from "api/Cache";
+import { POST_STORE } from "@/api/Cache";
 import tocbot from "tocbot";
 
 const scrollToTopHandler = () => {
@@ -41,7 +41,7 @@ const exportUrlHandler = (postContent) => {
 const postEditHandler = async (navigate, postContent, setPostContext) => {
   const preview = postContent.files.find(
     (file) =>
-      `${process.env.REACT_APP_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===
+      `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===
       postContent.previewUrl
   );
 

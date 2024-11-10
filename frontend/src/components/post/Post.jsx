@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import "./Post.scss";
-import { getDatetime } from "utils/getDatetime";
+import { getDatetime } from "@/utils/getDatetime";
 
 import {
   HiCalendar,
@@ -9,15 +9,15 @@ import {
   HiOutlineHeart,
   HiOutlineChatAlt2,
 } from "react-icons/hi";
-import { themeAtom } from "recoil/themeAtom";
+import { themeAtom } from "@/recoil/themeAtom";
 import { useRecoilValue } from "recoil";
-import { postAtom } from "recoil/postAtom";
+import { postAtom } from "@/recoil/postAtom";
 import { Navigate } from "react-router-dom";
 import { List, Tooltip } from "flowbite-react";
-import { authAtom } from "recoil/authAtom";
-import { post_like_api, post_unlike_api } from "api/Like";
+import { authAtom } from "@/recoil/authAtom";
+import { post_like_api, post_unlike_api } from "@/api/Like";
 import { toast } from "react-toastify";
-import { commentsAtom } from "recoil/commentAtom";
+import { commentsAtom } from "@/recoil/commentAtom";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -117,7 +117,7 @@ function Post({ ...props }) {
                   onClick={null}
                 >
                   <a
-                    href={`${process.env.REACT_APP_API_ENDPOINT}/download/${file.fileUrl}`}
+                    href={`${import.meta.env.VITE_API_ENDPOINT}/download/${file.fileUrl}`}
                     download={file.fileName}
                   >
                     <p className="file-upload-file-name">

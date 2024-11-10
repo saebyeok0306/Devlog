@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 
 import "./Profile.scss";
 import { useRecoilState } from "recoil";
-import { authAtom } from "recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { Button } from "flowbite-react";
-import { onErrorImg } from "utils/defaultImg";
+import { onErrorImg } from "@/utils/defaultImg";
 
 import ImageCrop from "./imageCrop";
 import {
@@ -12,9 +12,9 @@ import {
   ProfilePassword,
   ProfileUnregister,
 } from "./profileItem";
-import { signOutProcess } from "utils/authenticate";
+import { signOutProcess } from "@/utils/authenticate";
 import { toast } from "react-toastify";
-import { delete_profile_url_api, user_profile_api } from "api/User";
+import { delete_profile_url_api, user_profile_api } from "@/api/User";
 
 function Profile() {
   const fileInputRef = useRef(null);

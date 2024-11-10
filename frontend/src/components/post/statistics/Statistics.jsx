@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./Statistics.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { get_post_daily_statistics_api } from "api/Posts";
+import { get_post_daily_statistics_api } from "@/api/Posts";
 import { Line } from "react-chartjs-2";
 import {
   Chart,
@@ -17,7 +17,7 @@ import { useRecoilState } from "recoil";
 import moment from "moment-timezone";
 import { Breadcrumb, List } from "flowbite-react";
 import { HiFire, HiFlag, HiCalendar, HiHome } from "react-icons/hi";
-import { categoryAtom } from "recoil/categoryAtom";
+import { categoryAtom } from "@/recoil/categoryAtom";
 
 Chart.register(
   CategoryScale,

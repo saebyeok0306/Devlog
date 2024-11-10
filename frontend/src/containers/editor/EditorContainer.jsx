@@ -1,5 +1,5 @@
 import React from "react";
-import PostEditor from "components/editor/postEditor";
+import PostEditor from "@/components/editor/postEditor";
 
 function EditorContainer() {
   return (

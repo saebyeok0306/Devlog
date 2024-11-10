@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^9.3.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -25,7 +26,6 @@
     "react-image-crop": "^11.0.7",
     "react-image-file-resizer": "^0.4.8",
     "react-router-dom": "^6.22.3",
-    "react-scripts": "5.0.1",
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
     "recoil": "^0.7.7",
@@ -35,10 +35,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -59,8 +58,11 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
     "prettier": "^3.2.5",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10"
   }
 }

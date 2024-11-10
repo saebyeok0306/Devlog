@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { authAtom } from "recoil/authAtom";
-import { signIn } from "utils/authenticate";
+import { authAtom } from "@/recoil/authAtom";
+import { signIn } from "@/utils/authenticate";
 
 function Callback() {
   const navigate = useNavigate();

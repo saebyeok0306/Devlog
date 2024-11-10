@@ -1,4 +1,4 @@
-import { title_suggestion_api } from "api/AI";
+import { title_suggestion_api } from "@/api/AI";
 import { ButtonView, Plugin, TextProxy } from "ckeditor5";
 
 export default class TitleSuggestion extends Plugin {
