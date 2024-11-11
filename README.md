@@ -45,7 +45,7 @@
 
 ### 시스템 아키텍처
 
-![시스템 아키텍처](https://github.com/westreed/Devlog/blob/main/readme_src/system_architecture.png)
+![시스템 아키텍처](https://github.com/westreed/Devlog/blob/main/readme_src/system_architecture2.png)
 
 ### WAS 아키텍처
 
