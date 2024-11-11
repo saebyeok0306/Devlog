@@ -27,7 +27,7 @@ class SitemapServiceImpl(
         sb.append("<url><loc>${siteUrl}</loc></url>\n")
 
         val location = this.getFolder(sitemapResourcePath)
-        for (subSitemap in location.toFile().listFiles()) {
+        for (subSitemap in location.toFile().listFiles()!!) {
             for (line in subSitemap.readLines()) {
                 sb.append("<url><loc>$line</loc></url>\n")
             }
@@ -36,29 +36,26 @@ class SitemapServiceImpl(
         return sb.toString()
     }
 
-    override fun generateSitemapXml(sitemap: String) : File {
-        val file = File(sitemapPath)
+    override fun generateSitemapXml(sitemap: String) {
+        val location: Path = this.getFolder(sitemapPath)
+        val sitemapFile: Path = this.getSitemap(location, "sitemap.xml")
 
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
-
-        file.writeText(sitemap)
-        return file
+        Files.write(sitemapFile, sitemap.toByteArray(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)
     }
 
     override fun addPostToSubSitemap(postUrlDto: PostUrlDto) {
         val location = this.getFolder(sitemapResourcePath)
-        val subSitemapFile = this.getSubSitemap(location, postUrlDto.categoryId)
+        val subSitemapFile = this.getSitemap(location, "sub_sitemap_${postUrlDto.categoryId}.xml")
 
         val url = this.getSitemapUrl(postUrlDto.url)
-
+        var flag = true
         for (line in Files.readAllLines(subSitemapFile)) {
             if (line.equals(url)) {
-                return
+                flag = false
+                break
             }
         }
-        Files.write(subSitemapFile, "$url\n".toByteArray(), StandardOpenOption.APPEND)
+        if (flag) Files.write(subSitemapFile, "$url\n".toByteArray(), StandardOpenOption.APPEND)
 
         val generateSitemap = this.generateSitemap()
         this.generateSitemapXml(generateSitemap)
@@ -66,7 +63,7 @@ class SitemapServiceImpl(
 
     override fun deletePostFromSubSitemap(postUrlDto: PostUrlDto) {
         val location = this.getFolder(sitemapResourcePath)
-        val subSitemapFile = this.getSubSitemap(location, postUrlDto.categoryId)
+        val subSitemapFile = this.getSitemap(location, "sub_sitemap_${postUrlDto.categoryId}.xml")
 
         val url = this.getSitemapUrl(postUrlDto.url)
 
@@ -105,8 +102,8 @@ class SitemapServiceImpl(
         return path
     }
 
-    fun getSubSitemap(directoryPath : Path, categoryId: Long) : Path {
-        val subSitemapFile = directoryPath.resolve("sub_sitemap_$categoryId.xml")
+    fun getSitemap(directoryPath : Path, filename: String) : Path {
+        val subSitemapFile = directoryPath.resolve(filename)
 
         if (!Files.exists(subSitemapFile)) {
             Files.createFile(subSitemapFile)

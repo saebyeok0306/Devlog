@@ -5,7 +5,7 @@ import java.io.File
 
 interface SitemapService {
     fun generateSitemap() : String
-    fun generateSitemapXml(sitemap: String) : File
+    fun generateSitemapXml(sitemap: String)
     fun addPostToSubSitemap(postUrlDto: PostUrlDto)
     fun deletePostFromSubSitemap(postUrlDto: PostUrlDto)
     fun createAllPostToSubSitemap()
