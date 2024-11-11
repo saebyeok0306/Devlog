@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dropdown, Pagination } from "flowbite-react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -12,6 +12,16 @@ import { Link } from "react-router-dom";
 import { authAtom } from "@/recoil/authAtom";
 
 import nopostImg from "@/assets/nopost.png";
+import { MasonryGrid } from "@egjs/react-grid";
+import classNames from "classnames";
+import { windowAtom } from "@/recoil/windowAtom";
+
+const scrollToTopHandler = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
 function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
@@ -19,16 +29,14 @@ function PostCard(idx, post, setSelectCategory) {
     <div className="post" key={idx}>
       <Link to={`/post/${post.url}`}>
         <div className="post-item-top">
-          {post.previewUrl !== null ? (
+          {post.previewUrl ? (
             <img
               className="post-item-img"
               src={post.previewUrl}
               alt="post"
               onError={onErrorImg}
             />
-          ) : (
-            <div className="post-item-img"></div>
-          )}
+          ) : null}
         </div>
         <div className="post-item-bottom">
           <div className="post-item-content">
@@ -57,7 +65,9 @@ function PostCard(idx, post, setSelectCategory) {
 }
 
 function Posts() {
+  const gridRef = useRef(null);
   const authDto = useRecoilValue(authAtom);
+  const windows = useRecoilValue(windowAtom);
   const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState({
@@ -66,6 +76,8 @@ function Posts() {
     totalElements: 0,
   });
   const [viewSize, setViewSize] = useState(10);
+  const [rendering, setRendering] = useState(true);
+  const [renderer, setRenderer] = useState(0);
 
   useEffect(() => {
     PostEnvetHandler(selectCategory, page.currentPage, viewSize);
@@ -81,6 +93,7 @@ function Posts() {
           currentPage: response.data.currentPage,
           totalElements: response.data.totalElements,
         });
+        setRenderer((prev) => prev + 1);
       })
       .catch((error) => {
         console.log(error);
@@ -89,6 +102,7 @@ function Posts() {
 
   const onDropdownHandler = (e, value) => {
     // viewSize 변경시 무조건 첫번째 페이지로 이동
+    setRendering(false);
     setViewSize(value);
     setPage({
       ...page,
@@ -98,6 +112,8 @@ function Posts() {
   };
 
   const onPaginationHandler = (next_page) => {
+    scrollToTopHandler();
+    setRendering(false);
     setPage({
       ...page,
       currentPage: next_page - 1,
@@ -138,9 +154,21 @@ function Posts() {
         </div>
       </div>
 
-      <div className="posts">
+      <MasonryGrid
+        key={renderer}
+        ref={gridRef}
+        className={classNames("posts", { render: rendering })}
+        align="center"
+        column={windows.width > 768 ? "2" : "1"}
+        gap={10}
+        onRenderComplete={(e) => setRendering(true)}
+        // onRequestAppend={(e) => {
+        //   const nextGroupKey = (e.groupKey || 0) + 1;
+        //   console.log(e);
+        // }}
+      >
         {posts.map((val, idx) => PostCard(idx, val, setSelectCategory))}
-      </div>
+      </MasonryGrid>
       <div className="flex overflow-x-auto sm:justify-center post-pageination">
         <Pagination
           theme={paginationCustomTheme}

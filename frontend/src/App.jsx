@@ -24,6 +24,7 @@ import { ClockLoader, HashLoader } from "react-spinners";
 import PostStatistics from "@/pages/PostStatistics";
 import UserRoute from "@/routes/UserRoute";
 import { Initizalize } from "@/utils/reactGA4";
+import { useWindow } from "./utils/hooks/useWindow";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,7 @@ function App() {
   const isDark = useRecoilValue(themeAtom);
   GetPayload(setIsLoading, setMaintenance);
   Initizalize();
+  useWindow();
 
   useEffect(() => {
     if (isDark) {

@@ -74,6 +74,21 @@ export const get_posts_api = mem(
   }
 );
 
+export const get_inf_posts_api = mem(
+  async (lastId = 0, size = 10) => {
+    return await API.get(`/posts/inf?lastId=${lastId}&size=${size}`, {})
+      .then((response) => response)
+      .catch((error) => {
+        throw error;
+      });
+  },
+  {
+    maxAge: 60 * 1000,
+    cacheKey: (args) => JSON.stringify(args),
+    cache: POST_STORE,
+  }
+);
+
 export const get_post_url_api = async (postUrl) => {
   return await API.get(`/posts/${postUrl}`, {})
     .then((response) => response)

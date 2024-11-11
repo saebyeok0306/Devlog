@@ -61,7 +61,7 @@ function Publish({
           postUrl: postUrl,
           previewUrl: postContext.preview
             ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-            : `previewUrl`,
+            : null,
         });
         toast.info("게시글을 업로드했습니다!");
         POST_STORE.clear();
@@ -77,7 +77,7 @@ function Publish({
           postUrl: postUrl,
           previewUrl: postContext.preview
             ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-            : `previewUrl`,
+            : null,
           modifiedAt: modifiedAt,
         });
         toast.info("게시글을 수정했습니다!");
