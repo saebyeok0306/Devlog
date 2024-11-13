@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -131,5 +133,34 @@ public class PostRepositoryTest {
 
         // then
         assertThat(postRepository.findById(1L).get().getViews()).isEqualTo(1);
+    }
+
+    @Test
+    void findAllSlicePagePublicPosts() {
+        // given
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by("id").descending());
+
+        // when
+        Slice<Post> getPosts = postRepository.findAllSlicePagePublicPosts(pageRequest, 0L, Role.GUEST);
+        Long getLastId = getPosts.getContent().get(getPosts.getContent().size()-1).getId();
+        Slice<Post> getPosts2 = postRepository.findAllSlicePagePublicPosts(pageRequest, getLastId, Role.GUEST);
+
+        // then
+        assertThat(getLastId).isEqualTo(3);
+        assertThat(getPosts2.getContent().size()).isEqualTo(1);
+    }
+
+    @Test
+    void findAllSlicePageUserPosts() {
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by("id").descending());
+
+        // when
+        Slice<Post> getPosts = postRepository.findAllSlicePageUserPosts(pageRequest, 0L, 1L, true, Role.ADMIN);
+        Long getLastId = getPosts.getContent().get(getPosts.getContent().size()-1).getId();
+        Slice<Post> getPosts2 = postRepository.findAllSlicePageUserPosts(pageRequest, getLastId, 1L, true, Role.ADMIN);
+
+        // then
+        assertThat(getLastId).isEqualTo(5);
+        assertThat(getPosts2.getContent().size()).isEqualTo(3);
     }
 }

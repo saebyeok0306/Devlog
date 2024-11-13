@@ -19,13 +19,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +45,7 @@ public class PostController {
     private final PostViewsService postViewsService;
     private final PostViewCountService postViewCountService;
 
+    @Transactional
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
         log.info("Post uploaded : " + requestPostDto.getTitle());
@@ -53,6 +53,7 @@ public class PostController {
         sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
     }
 
+    @Transactional
     @PostMapping("/edit")
     public void editPost(@RequestBody RequestEditPostDto requestEditPostDto) throws BadRequestException {
         log.info("Post edited : " + requestEditPostDto.getTitle());
@@ -84,6 +85,24 @@ public class PostController {
                 .totalElements(posts.getTotalElements())
                 .build();
         return ResponseEntity.ok(responsePageablePostDto);
+    }
+
+    @GetMapping("/inf")
+    public ResponseEntity<ResponseSlicePostDto> getInfinitePosts(@RequestParam(defaultValue = "0") Long lastId,
+                                                                    @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
+        Slice<Post> posts = postService.getInfinitePosts(pageable, lastId);
+        List<Post> getPosts = posts.getContent();
+        List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
+        for (Post post : getPosts) {
+            responsePostDtos.add(ResponsePostNonContentDto.of(post));
+        }
+        ResponseSlicePostDto responseSlicePostDto = ResponseSlicePostDto.builder()
+                .posts(responsePostDtos)
+                .lastId(getPosts.get(getPosts.size()-1).getId())
+                .hasNext(posts.hasNext())
+                .build();
+        return ResponseEntity.ok(responseSlicePostDto);
     }
 
     @GetMapping("/{url}")
@@ -145,6 +164,7 @@ public class PostController {
         return ResponseEntity.ok(responsePageablePostDto);
     }
 
+    @Transactional
     @DeleteMapping("/{url}")
     public void deletePost(@PathVariable String url) throws BadRequestException {
         String email = getUserEmail();

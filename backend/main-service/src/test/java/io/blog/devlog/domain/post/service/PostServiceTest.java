@@ -16,9 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -203,5 +201,24 @@ public class PostServiceTest {
         // then
         verify(fileService).deleteFileFromPost(post);
         verify(postRepository).delete(post);
+    }
+
+    @Test
+    void getInfinitePosts() throws BadRequestException {
+        // given
+        testConfig.updateAuthentication(testConfig.adminUser);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Post post = Post.builder().build();
+        Slice<Post> posts = new SliceImpl<>(List.of(post));
+
+        given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
+        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
+        given(postRepository.findAllSlicePageUserPosts(pageRequest,  0L, null, true, Role.ADMIN)).willReturn(posts);
+
+        // when
+        Slice<Post> getPosts = postService.getInfinitePosts(pageRequest, 0L);
+
+        // when
+        assertThat(getPosts).isEqualTo(posts);
     }
 }
