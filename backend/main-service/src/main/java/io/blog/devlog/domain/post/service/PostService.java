@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,5 +98,15 @@ public class PostService {
     public void deletePost(Post post) throws BadRequestException {
         fileService.deleteFileFromPost(post);
         postRepository.delete(post);
+    }
+
+    public Slice<Post> getInfinitePosts(Pageable pageable, Long lastId) throws BadRequestException {
+        String email = getUserEmail();
+        log.info("getInfinitePosts (email: " + email + ")");
+        if (email == null) {
+            return postRepository.findAllSlicePagePublicPosts(pageable, lastId, Role.GUEST);
+        }
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
+        return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), userService.isAdmin(user), user.getRole());
     }
 }

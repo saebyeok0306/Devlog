@@ -4,6 +4,7 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.user.model.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     public Optional<Post> findByUrl(String url);
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
-            "WHERE p.url = :url and p.category.readCategoryAuth <= :role and (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
+            "WHERE p.url = :url AND p.category.readCategoryAuth <= :role AND (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     public Optional<Post> findPostByUrl(
             @Param("url") String url,
             @Param("userId") Long userId,
@@ -28,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
-            "WHERE p.category.readCategoryAuth <= :role and (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
+            "WHERE p.category.readCategoryAuth <= :role AND (p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllPageUserPosts(
             Pageable pageable,
             @Param("userId") Long userId,
@@ -37,12 +39,28 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
-            "WHERE p.isPrivate = false and p.category.readCategoryAuth <= :role")
+            "WHERE (:lastId = 0 OR p.id < :lastId) AND p.isPrivate = false AND p.category.readCategoryAuth <= :role")
+    Slice<Post> findAllSlicePagePublicPosts(Pageable pageable, @Param("lastId") Long lastId, @Param("role") Role role);
+
+    @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
+    @Query("SELECT p FROM Post p " +
+            "WHERE (:lastId = 0 OR p.id < :lastId) AND p.category.readCategoryAuth <= :role AND " +
+            "(p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
+    Slice<Post> findAllSlicePageUserPosts(
+            Pageable pageable,
+            @Param("lastId") Long lastId,
+            @Param("userId") Long userId,
+            @Param("isAdmin") boolean isAdmin,
+            @Param("role") Role role);
+
+    @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
+    @Query("SELECT p FROM Post p " +
+            "WHERE p.isPrivate = false AND p.category.readCategoryAuth <= :role")
     Page<Post> findAllPagePublicPosts(Pageable pageable, @Param("role") Role role);
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
-            "WHERE p.category.readCategoryAuth <= :role and p.category.name = :categoryName AND " +
+            "WHERE p.category.readCategoryAuth <= :role AND p.category.name = :categoryName AND " +
             "(p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllPageByCategory(
             Pageable pageable,
@@ -53,7 +71,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @EntityGraph(attributePaths = {"user", "category"}, type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT p FROM Post p " +
-            "WHERE p.category.readCategoryAuth <= :role and p.category.id = :categoryId AND " +
+            "WHERE p.category.readCategoryAuth <= :role AND p.category.id = :categoryId AND " +
             "(p.isPrivate = false OR :isAdmin = true OR p.user.id = :userId)")
     Page<Post> findAllPageByCategoryId(
             Pageable pageable,
