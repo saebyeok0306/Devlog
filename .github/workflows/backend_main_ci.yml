@@ -1,4 +1,4 @@
-name: Backend Continuous Integration
+name: Backend Main Continuous Integration
 
 on:
   pull_request:
