@@ -9,7 +9,10 @@ import { useNavigate } from "react-router-dom";
 import { POST_STORE } from "@/api/Cache";
 
 const safeUrlValidator = (url) => {
-  return url.replace(" ", "-").replace(/[^a-zA-Z0-9ㄱ-ㅎ가-힣-_]/g, "");
+  return url
+    .replace(/\s+/g, "-") // 1개 이상의 공백을 "-"로 변경
+    .replace(/[^a-zA-Z0-9ㄱ-ㅎ가-힣-_]/g, "") // 영문자, 한글, 숫자를 제외한 문자는 공백으로 변경
+    .replace(/-$/, ""); // 마지막 문자가 "-"인 경우 공백으로 변경
 };
 
 function Publish({
