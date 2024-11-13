@@ -26,6 +26,11 @@ services:
         condition: service_healthy
     networks:
       - ms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8760/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       JWT_SECRET: ${JWT_SECRET}
 
@@ -37,6 +42,8 @@ services:
       redis:
         condition: service_healthy
       discovery-service:
+        condition: service_healthy
+      gateway-service:
         condition: service_healthy
     networks:
       - ms-network
@@ -63,6 +70,8 @@ services:
         condition: service_healthy
       discovery-service:
         condition: service_healthy
+      gateway-service:
+        condition: service_healthy
     networks:
       - ms-network
     environment:
@@ -75,6 +84,8 @@ services:
       - "8002:8002"
     depends_on:
       discovery-service:
+        condition: service_healthy
+      gateway-service:
         condition: service_healthy
       main-service:
         condition: service_healthy
@@ -90,6 +101,8 @@ services:
       - "8100:8100"
     depends_on:
       discovery-service:
+        condition: service_healthy
+      gateway-service:
         condition: service_healthy
     networks:
       - ms-network
