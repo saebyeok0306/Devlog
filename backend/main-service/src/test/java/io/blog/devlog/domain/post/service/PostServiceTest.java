@@ -213,7 +213,7 @@ public class PostServiceTest {
 
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
         given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
-        given(postRepository.findAllSlicePageUserPosts(pageRequest,  0L, 1L, true, Role.ADMIN)).willReturn(posts);
+        given(postRepository.findAllSlicePageUserPosts(pageRequest,  0L, null, true, Role.ADMIN)).willReturn(posts);
 
         // when
         Slice<Post> getPosts = postService.getInfinitePosts(pageRequest, 0L);
