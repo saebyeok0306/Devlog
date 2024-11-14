@@ -49,11 +49,67 @@
   font-weight: revert;
 }
 
+.ck-content > h1 {
+  font-size: 1.7rem;
+}
+
 .ck-content pre {
-  background-color: #212121 !important;
+  // code block
+  background-color: #171b20 !important;
+  border: 1px solid #374151 !important;
   color: rgb(210, 210, 210) !important;
+  // padding: 0px !important;
 }
 
 .ck-content .table table th {
   background: hsla(213, 67%, 32%, 0.12) !important;
+}
+
+.ck-content {
+  font-size: 1rem;
+  line-height: 1.7rem;
+
+  h1 {
+    padding-bottom: 0.5em;
+    margin-bottom: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: #212121;
+  }
+
+  a {
+    text-decoration-line: none !important;
+    strong {
+      font-weight: 100;
+      color: #04ccdd !important;
+    }
+  }
+
+  strong {
+    color: #212121;
+  }
+
+  code {
+    font-family: "NanumGothic", sans-serif;
+    background-color: hsla(44, 6%, 50%, 0.15) !important;
+    color: #eb5757;
+    padding: 2.4px 4px 2.4px 4px !important;
+    margin: 0 2px 0 2px;
+  }
+
+  pre code {
+    background-color: inherit !important;
+    color: inherit;
+    padding: 0 !important;
+  }
+
+  &:is(.dark *) {
+    color: #d1d5db;
+
+    h1 {
+      border-bottom-color: #e1e1e1;
+    }
+    strong {
+      color: #e1e1e1;
+    }
+  }
 }

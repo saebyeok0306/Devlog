@@ -27,6 +27,7 @@
   }
 
   .toc {
+    font-size: 0.9rem;
     .is-active-link::before {
       background-color: $point-color;
     }
