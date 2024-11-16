@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -93,6 +94,11 @@ public class PostController {
         Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
         Slice<Post> posts = postService.getInfinitePosts(pageable, lastId);
         List<Post> getPosts = posts.getContent();
+
+        if (getPosts.isEmpty()) {
+            return ResponseEntity.ok(ResponseSlicePostDto.builder().posts(Collections.emptyList()).lastId(0L).hasNext(false).build());
+        }
+
         List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
         for (Post post : getPosts) {
             responsePostDtos.add(ResponsePostNonContentDto.of(post));

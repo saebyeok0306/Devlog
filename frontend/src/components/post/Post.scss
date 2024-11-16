@@ -5,12 +5,12 @@
   &:is(.dark *) {
     background-color: #242424;
   }
-  padding: 2em;
+  padding: 2em 4em 2em 4em;
   border-radius: 15px;
   margin: 15px 0 15px 0;
 
   @include mediaquery(medium) {
-    padding: 5px;
+    padding: 7px;
   }
 
   hr {
