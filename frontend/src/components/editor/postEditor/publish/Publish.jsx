@@ -56,15 +56,15 @@ function Publish({
   };
 
   const publishHandler = async () => {
-    console.log("publish", postContext.files);
+    const previewUrl = postContext.preview
+      ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+      : null;
     if (postContext.id === null) {
       try {
         await upload_post_api({
           postContext: postContext,
           postUrl: postUrl,
-          previewUrl: postContext.preview
-            ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-            : null,
+          previewUrl: previewUrl,
         });
         toast.info("게시글을 업로드했습니다!");
         POST_STORE.clear();
@@ -78,9 +78,7 @@ function Publish({
         await edit_post_api({
           postContext: postContext,
           postUrl: postUrl,
-          previewUrl: postContext.preview
-            ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
-            : null,
+          previewUrl: previewUrl,
           modifiedAt: modifiedAt,
         });
         toast.info("게시글을 수정했습니다!");
