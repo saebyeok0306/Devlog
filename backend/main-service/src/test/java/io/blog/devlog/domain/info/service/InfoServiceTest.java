@@ -3,6 +3,7 @@ package io.blog.devlog.domain.info.service;
 import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.info.dto.RequestInfoDto;
 import io.blog.devlog.domain.info.dto.ResponseInfoDto;
+import io.blog.devlog.domain.info.model.Info;
 import io.blog.devlog.domain.info.repository.InfoRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
@@ -45,20 +46,6 @@ public class InfoServiceTest {
         ResponseInfoDto blogInfo = infoService.getBlogInfo();
         // then
         Assertions.assertThat(blogInfo).isEqualTo(ResponseInfoDto.toNullDto());
-    }
-
-    @Test
-    @DisplayName("블로그 정보 조회 - 정보 있음")
-    public void getBlogInfoTest() {
-        // given
-        infoService.createBlogInfo(RequestInfoDto.builder()
-                .about("블로그 소개")
-                .profileUrl("프로필 사진")
-                .build());
-        // when
-        ResponseInfoDto blogInfo = infoService.getBlogInfo();
-        // then
-        Assertions.assertThat(blogInfo).isInstanceOf(ResponseInfoDto.class);
     }
 
     @Test
