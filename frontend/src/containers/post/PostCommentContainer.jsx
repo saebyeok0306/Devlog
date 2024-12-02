@@ -1,25 +1,28 @@
-import {get_post_files_api, get_post_url_api} from "@/api/Posts";
+import { get_post_files_api, get_post_url_api } from "@/api/Posts";
 import Comment from "@/components/base/comment";
 import Post from "@/components/post";
-import React, {useEffect, useState} from "react";
-import {NavigationType, useLocation, useNavigate, useNavigationType, useParams} from "react-router-dom";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {authAtom} from "@/recoil/authAtom";
-import {commentAtom, commentsAtom, CommentsData, CommentState,} from "@/recoil/commentAtom";
-import {ga4Atom} from "@/recoil/ga4Atom";
-import {postAtom} from "@/recoil/postAtom";
-import {sendPageView} from "@/utils/reactGA4";
-import {sortComments} from "@/utils/sortComments";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { authAtom } from "@/recoil/authAtom";
+import {
+  commentAtom,
+  commentsAtom,
+  CommentsData,
+  CommentState,
+} from "@/recoil/commentAtom";
+import { ga4Atom } from "@/recoil/ga4Atom";
+import { postAtom } from "@/recoil/postAtom";
+import { sendPageView } from "@/utils/reactGA4";
+import { sortComments } from "@/utils/sortComments";
 
-
-const resetPostData = async(setPostContent, setComments) => {
+const resetPostData = async (setPostContent, setComments) => {
   await setPostContent("");
   await setComments(new CommentsData());
-}
+};
 
 function PostCommentContainer({ ...props }) {
   const navigate = useNavigate();
-  const navigateType = useNavigationType();
   const location = useLocation();
   const { postUrl } = useParams();
   const [authDto] = useRecoilState(authAtom);
@@ -32,7 +35,8 @@ function PostCommentContainer({ ...props }) {
   useEffect(() => {
     const getPost = async () => {
       await resetPostData(setPostContent, setComments);
-      await get_post_url_api(postUrl).then(async (res) => {
+      await get_post_url_api(postUrl)
+        .then(async (res) => {
           const postData = res.data?.post;
           sendPageView(location.pathname, postData.title, initialized);
           try {
@@ -50,9 +54,10 @@ function PostCommentContainer({ ...props }) {
           setComments(commentsObj);
           setCommentState(new CommentState(res.data?.commentFlag));
           setLikes(res.data?.likes);
-        }).catch((error) => {
+        })
+        .catch((error) => {
           console.error("Failed to get post:", error);
-          if (navigateType === NavigationType.Pop) {
+          if (history.length > 1) {
             navigate(-1);
           } else {
             navigate("/");
