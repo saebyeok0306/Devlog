@@ -84,7 +84,6 @@ public class PostServiceTest {
         Category category = Category.builder().writeCommentAuth(Role.ADMIN).build();
         Post post = Post.builder().category(category).build();
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
-        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
         given(postRepository.findPostByUrl("url", 0L, true, testConfig.adminUser.getRole())).willReturn(Optional.ofNullable(post));
 
         // when
@@ -121,7 +120,6 @@ public class PostServiceTest {
         Page<Post> posts = new PageImpl<>(List.of(post));
 
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
-        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
         given(postRepository.findAllPageUserPosts(pageRequest, null, true, Role.ADMIN)).willReturn(posts);
 
         // when
@@ -140,7 +138,6 @@ public class PostServiceTest {
         Page<Post> posts = new PageImpl<>(List.of(post));
 
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
-        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
         given(postRepository.findAllPageByCategory(pageRequest, "카테고리", null, true, Role.ADMIN)).willReturn(posts);
 
         // when
@@ -159,7 +156,6 @@ public class PostServiceTest {
         Page<Post> posts = new PageImpl<>(List.of(post));
 
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
-        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
         given(postRepository.findAllPageByCategoryId(pageRequest, 1L, null, true, Role.ADMIN)).willReturn(posts);
 
 
@@ -212,7 +208,6 @@ public class PostServiceTest {
         Slice<Post> posts = new SliceImpl<>(List.of(post));
 
         given(userService.getUserByEmail(testConfig.adminUser.getEmail())).willReturn(Optional.ofNullable(testConfig.adminUser));
-        given(userService.isAdmin(testConfig.adminUser)).willReturn(true);
         given(postRepository.findAllSlicePageUserPosts(pageRequest,  0L, null, true, Role.ADMIN)).willReturn(posts);
 
         // when

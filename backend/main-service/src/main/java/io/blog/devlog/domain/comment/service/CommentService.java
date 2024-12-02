@@ -9,7 +9,6 @@ import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.user.model.User;
-import io.blog.devlog.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -27,7 +26,6 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final UserService userService;
     private final FileService fileService;
 
     public ResponseCommentDto saveComment(User user, RequestCommentDto requestCommentDto, Post post) {
@@ -56,7 +54,7 @@ public class CommentService {
 
     public List<ResponseCommentDto> getCommentsFromPost(User user, Long postId) throws BadRequestException {
         Long userId = user.getId() == null ? 0L : user.getId();
-        boolean isAdmin = userService.isAdmin(user);
+        boolean isAdmin = user.isAdmin();
         List<Comment> comments = commentRepository.findAllByPostId(postId, userId, isAdmin);
         return comments.stream()
                 .map(comment -> ResponseCommentDto.of(user.getEmail(), comment))

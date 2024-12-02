@@ -51,7 +51,7 @@ public class PostService {
     }
 
     public PostDetail getPostByUrl(String url, User user) throws BadRequestException {
-        return this.getPostByUrl(url, user.getId() == null ? 0L : user.getId(), userService.isAdmin(user), user.getRole());
+        return this.getPostByUrl(url, user.getId() == null ? 0L : user.getId(), user.isAdmin(), user.getRole());
     }
 
     public PostDetail getPostByUrl(String url, Long userId, boolean isAdmin, Role role) throws BadRequestException {
@@ -69,7 +69,7 @@ public class PostService {
             return postRepository.findAllPagePublicPosts(pageable, Role.GUEST);
         }
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageUserPosts(pageable, user.getId(), userService.isAdmin(user), user.getRole());
+        return postRepository.findAllPageUserPosts(pageable, user.getId(), user.isAdmin(), user.getRole());
     }
 
     public Page<Post> getPostsByCategory(String categoryName, Pageable pageable) throws BadRequestException {
@@ -78,7 +78,7 @@ public class PostService {
             return postRepository.findAllPageByCategory(pageable, categoryName, 0L, false, Role.GUEST);
         }
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageByCategory(pageable, categoryName, user.getId(), userService.isAdmin(user), user.getRole());
+        return postRepository.findAllPageByCategory(pageable, categoryName, user.getId(), user.isAdmin(), user.getRole());
     }
 
     public Page<Post> getPostsByCategoryId(Long categoryId, Pageable pageable) throws BadRequestException {
@@ -87,7 +87,7 @@ public class PostService {
             return postRepository.findAllPageByCategoryId(pageable, categoryId, 0L, false, Role.GUEST);
         }
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageByCategoryId(pageable, categoryId, user.getId(), userService.isAdmin(user), user.getRole());
+        return postRepository.findAllPageByCategoryId(pageable, categoryId, user.getId(), user.isAdmin(), user.getRole());
     }
 
     public List<Post> getAllPostsByCategoryId(Long categoryId) {
@@ -107,6 +107,6 @@ public class PostService {
             return postRepository.findAllSlicePagePublicPosts(pageable, lastId, Role.GUEST);
         }
         User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), userService.isAdmin(user), user.getRole());
+        return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), user.isAdmin(), user.getRole());
     }
 }

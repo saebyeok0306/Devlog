@@ -33,10 +33,6 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-//    public Optional<User> getUserByRefreshToken(String token) {
-//        return userRepository.findByRefreshToken(token);
-//    }
-
     public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
         log.info("reissueRequest : " + request.toString());
         String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
@@ -64,10 +60,6 @@ public class UserService {
         List<User> users = userRepository.findAllByRole(Role.ADMIN);
         if (users.isEmpty()) return null;
         return users.get(0);
-    }
-
-    public boolean isAdmin(User user) {
-        return user.getRole() == Role.ADMIN;
     }
 
     public void updateProfileUrl(String email, String profileUrl) {
