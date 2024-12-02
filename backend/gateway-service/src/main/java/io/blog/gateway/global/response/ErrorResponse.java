@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ErrorResponse {
     private String timestamp;
-    private HttpStatus status;
+    private int status;
     private String error;
     private String path;
 
@@ -35,15 +34,14 @@ public class ErrorResponse {
 
     protected byte[] toJsonBytes() {
         try {
-            log.info("ErrorResponse toJsonBytes() 호출");
             return objectMapper.writeValueAsBytes(this);
         } catch (JsonProcessingException e) {
-            log.error("ErrorResponse toJsonBytes() 오류 발생!");
             return null;
         }
     }
 
-    public Mono<Void> setResponse(ServerWebExchange exchange, HttpStatus status, String error) {
+    public Mono<Void> setResponse(ServerWebExchange exchange, int status, String error) {
+        log.error("ERROR RESPONSE  status: {}  message: {}", status, error);
         ServerHttpResponse response = exchange.getResponse();
         this.timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date());
         this.status = status;
@@ -53,7 +51,7 @@ public class ErrorResponse {
         String[] paths = exchange.getRequest().getURI().getPath().split("/");
         path = "/" + Arrays.stream(paths, 2, paths.length).collect(Collectors.joining("/"));
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        response.setStatusCode(status);
+        response.setRawStatusCode(status);
         DataBuffer buffer = response.bufferFactory().wrap(this.toJsonBytes());
         return response.writeWith(Flux.just(buffer));
     }

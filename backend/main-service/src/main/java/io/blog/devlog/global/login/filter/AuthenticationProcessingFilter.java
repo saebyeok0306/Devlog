@@ -2,9 +2,11 @@ package io.blog.devlog.global.login.filter;
 
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.InvalidJwtException;
 import io.blog.devlog.global.jwt.service.JwtService;
 import io.blog.devlog.global.login.dto.PrincipalDetails;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,15 +37,17 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String token = jwtService.extractJWT(request).orElse(null);
-        if (token != null) {
-            Claims claims = jwtService.extractClaims(token);
-            createUserDetails(claims);
-        }
-        else {
-            // GUEST
-            createUserDetails();
+        try {
+            String token = jwtService.extractJWT(request).orElse(null);
+            if (token != null) {
+                Claims claims = jwtService.extractClaims(token);
+                createUserDetails(claims);
+            } else {
+                // GUEST
+                createUserDetails();
+            }
+        } catch (JwtException e) {
+            throw new InvalidJwtException(e.getMessage());
         }
 
         filterChain.doFilter(request, response);

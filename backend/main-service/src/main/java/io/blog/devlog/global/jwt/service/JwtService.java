@@ -146,14 +146,11 @@ public class JwtService {
 
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-//        response.setHeader(accessHeader, accessToken);
         response.addCookie(this.createAccessTokenCookie(accessToken));
     }
 
     public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
         response.setStatus(HttpServletResponse.SC_OK);
-//        response.setHeader(refreshHeader, refreshToken);
-
         response.addCookie(this.createRefreshTokenCookie(refreshToken));
     }
 
@@ -201,14 +198,6 @@ public class JwtService {
             log.error("액세스 토큰이 유효하지 않습니다.");
             return Optional.empty();
         }
-    }
-
-    public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader(accessHeader, accessToken);
-    }
-
-    public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-        response.setHeader(refreshHeader, refreshToken);
     }
 
     public Claims extractClaims(String token) {

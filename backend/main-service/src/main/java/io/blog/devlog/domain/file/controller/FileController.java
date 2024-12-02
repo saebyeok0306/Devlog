@@ -24,14 +24,13 @@ public class FileController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_PARTNER')")
-    public ResponseEntity<FileDto> uploadFiles(@RequestParam("file") MultipartFile file) throws FileUploadException {
+    public ResponseEntity<FileDto> uploadFiles(@RequestParam("file") MultipartFile file) {
         /* 여기서는 TempFile 테이블에만 올리고, 가공한 FileDto 데이터를 Response함. 업로드 단계에서 TempFile을 삭제하고 File로 Upload */
         if (file.isEmpty()) {
-            System.out.println("File is empty");
             return ResponseEntity.badRequest().build();
         }
-        System.out.println("File uploaded : " + file.getOriginalFilename());
-        System.out.println("File type : " + file.getContentType());
+        log.info("File uploaded : " + file.getOriginalFilename());
+        log.info("File type : " + file.getContentType());
         FileDto fileDto = fileHandler.uploadFile(file);
         return ResponseEntity.ok(fileDto);
     }

@@ -2,11 +2,11 @@ package io.blog.gateway.authentication.filter;
 
 import io.blog.gateway.authentication.service.JwtService;
 import io.blog.gateway.global.response.ErrorResponse;
+import io.blog.gateway.status.CustomStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -33,11 +33,11 @@ public class AuthenticationProcessingFilter {
             try {
                 jwtService.isTokenValid(extractAccessToken.get());
             }
-            catch (JwtException e) {
-                return errorResponse.setResponse(exchange, HttpStatus.UNAUTHORIZED, e.getMessage());
+            catch (ExpiredJwtException e) {
+                return errorResponse.setResponse(exchange, CustomStatus.EXPIRED_JWT.getValue(), e.getMessage());
             }
-            catch (Exception e) {
-                return errorResponse.setResponse(exchange, HttpStatus.UNAUTHORIZED, e.getMessage());
+            catch (JwtException e) {
+                return errorResponse.setResponse(exchange, CustomStatus.INVALID_JWT.getValue(), e.getMessage());
             }
         }
 

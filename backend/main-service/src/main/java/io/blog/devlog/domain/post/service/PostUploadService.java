@@ -9,6 +9,7 @@ import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -27,12 +28,12 @@ public class PostUploadService {
     private final CategoryService categoryService;
     private final FileService fileService;
 
-    public Post savePost(RequestPostDto requestPostDto) throws BadRequestException {
+    public Post savePost(RequestPostDto requestPostDto) {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+                .orElseThrow(() -> new NotFoundException("User not found : " + email));
         Category category = categoryService.getCategoryById(requestPostDto.getCategoryId())
-                .orElseThrow(() -> new BadRequestException("Category not found : " + requestPostDto.getCategoryId()));
+                .orElseThrow(() -> new NotFoundException("Category not found : " + requestPostDto.getCategoryId()));
 
         Post post = postRepository.save(requestPostDto.toEntity(user, category));
 
@@ -41,12 +42,12 @@ public class PostUploadService {
         return post;
     }
 
-    public Post editPost(RequestEditPostDto requestEditPostDto) throws BadRequestException {
+    public Post editPost(RequestEditPostDto requestEditPostDto) {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+                .orElseThrow(() -> new NotFoundException("User not found : " + email));
         Category category = categoryService.getCategoryById(requestEditPostDto.getCategoryId())
-                .orElseThrow(() -> new BadRequestException("Category not found : " + requestEditPostDto.getCategoryId()));
+                .orElseThrow(() -> new NotFoundException("Category not found : " + requestEditPostDto.getCategoryId()));
 
         Post post = postRepository.save(requestEditPostDto.toEntity(user, category));
         fileService.uploadFileAndDeleteTempFile(post, requestEditPostDto.getFiles());

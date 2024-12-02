@@ -33,7 +33,7 @@ public class FileHandler {
 
     private List<String> resourceRoots = List.of("resource", "upload");
 
-    public FileDto uploadFile(MultipartFile file) throws FileUploadException {
+    public FileDto uploadFile(MultipartFile file) {
         String uploadFolderPath = this.getFolder();
         File uploadFolder = new File(uploadPath, uploadFolderPath);
 
@@ -50,7 +50,7 @@ public class FileHandler {
             File saveFile = new File(uploadFolder, saveFileName);
             file.transferTo(saveFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("임시파일을 생성하는데 실패했습니다." + e.getMessage());
         }
 
         FileType fileType = null;

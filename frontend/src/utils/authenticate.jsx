@@ -3,7 +3,12 @@ import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 import { clearAllCacheStore } from "@/api/Cache";
 import { useEffect } from "react";
-import { jwt_refresh_api, user_logout_api, user_profile_api } from "@/api/User";
+import {
+  has_jwt_cookie_api,
+  jwt_refresh_api,
+  user_logout_api,
+  user_profile_api,
+} from "@/api/User";
 
 export const signIn = async (setAuthDto, message = "로그인 성공!") => {
   try {
@@ -62,6 +67,9 @@ export const GetPayload = (setIsLoading, setMaintenance) => {
     const checkUserdata = async () => {
       if (authDto?.isLogin) return;
       try {
+        const jwt = await has_jwt_cookie_api();
+        if (!jwt?.data) return;
+        console.log(jwt);
         await jwt_refresh_api();
         const result = await user_profile_api();
         const payload = result.data;

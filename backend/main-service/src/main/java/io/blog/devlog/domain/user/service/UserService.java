@@ -3,9 +3,11 @@ package io.blog.devlog.domain.user.service;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;
+import io.blog.devlog.global.exception.InvalidJwtException;
 import io.blog.devlog.global.exception.NullJwtException;
 import io.blog.devlog.global.jwt.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,23 +35,30 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) throws BadRequestException {
-        log.info("reissueRequest : " + request.toString());
-        String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
-        if (refreshToken == null) {
-            log.error("refreshToken is null");
-            throw new NullJwtException("refreshToken is null");
-        }
-        if (jwtService.isTokenValid(refreshToken) && !jwtService.isRefreshTokenValid(refreshToken)) {
-            // 만료된 경우에는 isTokenValid에서 따로 에러를 던짐.
-            throw new BadRequestException("Invalid refresh token");
-        }
+    public boolean hasJwtCookie(HttpServletRequest request) {
+        log.info("check Jwt");
+        String token = jwtService.extractJWT(request).orElse(null);
+        return token != null;
+    }
 
-        Claims claims = jwtService.extractClaims(refreshToken);
-        User user = userRepository.findByEmail(jwtService.get_claim_email(claims)).orElse(null);
-        if (user == null) throw new BadRequestException("Invalid refresh token");
-        String newAccessToken = jwtService.createAccessToken(user);
-        jwtService.sendAccessToken(response, newAccessToken);
+    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        log.info("reissueRequest : " + request.toString());
+        try {
+            String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
+            if (refreshToken == null) {
+                log.error("refreshToken is null");
+                throw new NullJwtException("refreshToken is null");
+            }
+            if (jwtService.isTokenValid(refreshToken) && jwtService.isRefreshTokenValid(refreshToken)) {
+                Claims claims = jwtService.extractClaims(refreshToken);
+                User user = userRepository.findByEmail(jwtService.get_claim_email(claims)).orElse(null);
+                if (user == null) throw new InvalidJwtException("Invalid refresh token");
+                String newAccessToken = jwtService.createAccessToken(user);
+                jwtService.sendAccessToken(response, newAccessToken);
+            }
+        } catch (JwtException e) {
+            throw new InvalidJwtException("Invalid refresh token");
+        }
     }
 
     public void logout(HttpServletResponse response) {

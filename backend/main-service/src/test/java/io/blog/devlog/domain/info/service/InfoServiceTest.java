@@ -78,11 +78,10 @@ public class InfoServiceTest {
                 .build();
 
         // when
-        boolean result = infoService.createBlogInfo(requestInfoDto);
+        infoService.createBlogInfo(requestInfoDto);
         ResponseInfoDto blogInfo = infoService.getBlogInfo();
 
         // then
-        Assertions.assertThat(result).isTrue();
         Assertions.assertThat(blogInfo.getAbout()).isEqualTo(requestInfoDto.getAbout());
         Assertions.assertThat(blogInfo.getProfileUrl()).isEqualTo(requestInfoDto.getProfileUrl());
         Assertions.assertThat(blogInfo.getUsername()).isEqualTo(adminUser.getUsername());

@@ -8,6 +8,7 @@ import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.dto.ResponseUserDto;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.UnauthorizedAccessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -27,17 +28,17 @@ public class PostLikeController {
     private final PostLikeService postLikeService;
 
     @PutMapping("/{postUrl}")
-    public void likePost(@PathVariable String postUrl) throws BadRequestException {
+    public void likePost(@PathVariable String postUrl) {
         String email = getUserEmail();
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("로그인 후 이용해주세요."));
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new UnauthorizedAccessException("로그인 후 이용해주세요."));
         Post post = postService.getSimplePostByUrl(postUrl);
         postLikeService.likePost(post, user);
     }
 
     @DeleteMapping("/{postUrl}")
-    public void unlikePost(@PathVariable String postUrl) throws BadRequestException {
+    public void unlikePost(@PathVariable String postUrl) {
         String email = getUserEmail();
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("로그인 후 이용해주세요."));
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new UnauthorizedAccessException("로그인 후 이용해주세요."));
         Post post = postService.getSimplePostByUrl(postUrl);
         postLikeService.unlikePost(post, user);
     }
