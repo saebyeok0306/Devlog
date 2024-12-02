@@ -29,15 +29,14 @@ public class ErrorResponse {
 
     protected String toJsonString() {
         try {
-            log.info("ErrorResponse toJsonString() 호출");
             return objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            log.error("ErrorResponse toJsonString() 오류 발생!");
             return null;
         }
     }
 
     public void setResponse(HttpServletResponse response, Integer status, String error, String path) throws IOException {
+        log.error("ERROR RESPONSE status: {}  message: {}  path: {}", status, error, path);
         this.timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date());
         this.status = status;
         this.error = error;

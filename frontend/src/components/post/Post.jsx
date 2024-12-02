@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import "./Post.scss";
 import { getDatetime } from "@/utils/getDatetime";
@@ -18,6 +18,7 @@ import { authAtom } from "@/recoil/authAtom";
 import { post_like_api, post_unlike_api } from "@/api/Like";
 import { toast } from "react-toastify";
 import { commentsAtom } from "@/recoil/commentAtom";
+import PostInitializer from "./PostInitializer";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -55,40 +56,7 @@ function Post({ ...props }) {
   const postContent = useRecoilValue(postAtom);
   const CommentsData = useRecoilValue(commentsAtom);
 
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "instant",
-    });
-
-    let toc_counter = 0;
-    document.querySelectorAll("h1, h2, h3, h4, h5").forEach((el) => {
-      el.setAttribute("id", el.tagName + "_" + toc_counter);
-      toc_counter += 1;
-    });
-
-    const images = document.querySelectorAll(".post-context img");
-    const modal = document.querySelector(".post-image-modal");
-    const modalImg = document.querySelector(".post-image-modal img");
-
-    images.forEach((img) => {
-      img.addEventListener("click", () => {
-        modalImg.src = img.src; // 클릭한 이미지의 src를 모달에 설정
-        modal.classList.add("active"); // 모달 보이기
-      });
-    });
-
-    modal.addEventListener("click", () => {
-      modal.classList.remove("active");
-    });
-
-    return () => {
-      images.forEach((img) => {
-        img.removeEventListener("click", () => {});
-      });
-      modal.removeEventListener("click", () => {});
-    };
-  }, [postContent]);
+  PostInitializer(postContent);
 
   if (postContent === null) {
     return <Navigate replace to="/" />;

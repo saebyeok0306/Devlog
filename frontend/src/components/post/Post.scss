@@ -45,20 +45,21 @@
     margin: 2em 0 2em 0;
     word-break: break-all;
 
-    .wmde-markdown {
-      background-color: inherit;
-      * {
-        background-color: inherit;
+    .post-context {
+      pre {
+        position: relative;
       }
 
-      iframe {
-        display: block;
-        margin: auto;
-      }
+      pre button {
+        font-size: 0.9em;
+        position: absolute;
+        line-height: 0.9em;
+        top: 16px;
+        right: 16px;
 
-      img {
-        display: block;
-        margin: auto;
+        background-color: #ffffff43;
+        border-radius: 10px;
+        padding: 5px;
       }
     }
 

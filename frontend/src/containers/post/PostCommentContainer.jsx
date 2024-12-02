@@ -16,6 +16,11 @@ import { postAtom } from "@/recoil/postAtom";
 import { sendPageView } from "@/utils/reactGA4";
 import { sortComments } from "@/utils/sortComments";
 
+const resetPostData = async (setPostContent, setComments) => {
+  await setPostContent("");
+  await setComments(new CommentsData());
+};
+
 function PostCommentContainer({ ...props }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,14 +30,11 @@ function PostCommentContainer({ ...props }) {
   const [, setPostContent] = useRecoilState(postAtom);
   const [, setCommentState] = useRecoilState(commentAtom);
   const [, setComments] = useRecoilState(commentsAtom);
-  // const [comments, setComments] = useState([]);
-  // const [commentCount, setCommentCount] = useState(0);
   const [likes, setLikes] = useState();
 
   useEffect(() => {
     const getPost = async () => {
-      await setPostContent("");
-      await setComments([]);
+      await resetPostData(setPostContent, setComments);
       await get_post_url_api(postUrl)
         .then(async (res) => {
           const postData = res.data?.post;
@@ -42,11 +44,11 @@ function PostCommentContainer({ ...props }) {
             postData["files"] = result.data || [];
           } catch (error) {
             console.error("Failed to get post files:", error);
+            throw error;
           }
           setPostContent(postData);
-          const sortedComments = sortComments(res.data?.comments);
           const commentsObj = new CommentsData(
-            sortedComments,
+            sortComments(res.data?.comments),
             res.data?.comments.length
           );
           setComments(commentsObj);
@@ -55,7 +57,11 @@ function PostCommentContainer({ ...props }) {
         })
         .catch((error) => {
           console.error("Failed to get post:", error);
-          navigate(-1);
+          if (history.length > 1) {
+            navigate(-1);
+          } else {
+            navigate("/");
+          }
         });
     };
     getPost();

@@ -68,7 +68,7 @@ public class CategoryService {
                 .toList();
     }
 
-    public List<Category> updateCategories(List<Category> categories) throws BadRequestException {
+    public List<Category> updateCategories(List<Category> categories) {
         List<Category> prevCategories = categoryRepository.findAll();
         // categories 없는 카테고리는 삭제
         List<Category> deleteCategories = prevCategories.stream()

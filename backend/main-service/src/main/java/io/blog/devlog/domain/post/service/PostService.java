@@ -7,6 +7,7 @@ import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -37,12 +38,12 @@ public class PostService {
         return postRepository.findByUrl(url).orElse(null);
     }
 
-    public PostDetail getPostByUrl(String url) throws BadRequestException {
+    public PostDetail getPostByUrl(String url) {
         String email = getUserEmail();
         return this.getPostByUrl(email, url);
     }
 
-    public PostDetail getPostByUrl(String email, String url) throws BadRequestException {
+    public PostDetail getPostByUrl(String email, String url) {
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null) {
             return this.getPostByUrl(url, 0L, false, Role.GUEST);
@@ -50,44 +51,44 @@ public class PostService {
         return this.getPostByUrl(url, user);
     }
 
-    public PostDetail getPostByUrl(String url, User user) throws BadRequestException {
-        return this.getPostByUrl(url, user.getId() == null ? 0L : user.getId(), userService.isAdmin(user), user.getRole());
+    public PostDetail getPostByUrl(String url, User user) {
+        return this.getPostByUrl(url, user.getId() == null ? 0L : user.getId(), user.isAdmin(), user.getRole());
     }
 
-    public PostDetail getPostByUrl(String url, Long userId, boolean isAdmin, Role role) throws BadRequestException {
-        Post post = postRepository.findPostByUrl(url, userId, isAdmin, role).orElseThrow(() -> new BadRequestException("Post not found : " + url));
+    public PostDetail getPostByUrl(String url, Long userId, boolean isAdmin, Role role) {
+        Post post = postRepository.findPostByUrl(url, userId, isAdmin, role).orElseThrow(() -> new NotFoundException("Post not found : " + url));
         return PostDetail.builder()
                 .post(post)
                 .commentFlag(post.getCategory().getWriteCommentAuth().getKey() <= role.getKey())
                 .build();
     }
 
-    public Page<Post> getPosts(Pageable pageable) throws BadRequestException {
+    public Page<Post> getPosts(Pageable pageable) {
         String email = getUserEmail();
         log.info("getPosts (email: " + email + ")");
         if (email == null) {
             return postRepository.findAllPagePublicPosts(pageable, Role.GUEST);
         }
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageUserPosts(pageable, user.getId(), userService.isAdmin(user), user.getRole());
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new NotFoundException("User not found : " + email));
+        return postRepository.findAllPageUserPosts(pageable, user.getId(), user.isAdmin(), user.getRole());
     }
 
-    public Page<Post> getPostsByCategory(String categoryName, Pageable pageable) throws BadRequestException {
+    public Page<Post> getPostsByCategory(String categoryName, Pageable pageable) {
         String email = getUserEmail();
         if (email == null) {
             return postRepository.findAllPageByCategory(pageable, categoryName, 0L, false, Role.GUEST);
         }
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageByCategory(pageable, categoryName, user.getId(), userService.isAdmin(user), user.getRole());
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new NotFoundException("User not found : " + email));
+        return postRepository.findAllPageByCategory(pageable, categoryName, user.getId(), user.isAdmin(), user.getRole());
     }
 
-    public Page<Post> getPostsByCategoryId(Long categoryId, Pageable pageable) throws BadRequestException {
+    public Page<Post> getPostsByCategoryId(Long categoryId, Pageable pageable) {
         String email = getUserEmail();
         if (email == null) {
             return postRepository.findAllPageByCategoryId(pageable, categoryId, 0L, false, Role.GUEST);
         }
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllPageByCategoryId(pageable, categoryId, user.getId(), userService.isAdmin(user), user.getRole());
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new NotFoundException("User not found : " + email));
+        return postRepository.findAllPageByCategoryId(pageable, categoryId, user.getId(), user.isAdmin(), user.getRole());
     }
 
     public List<Post> getAllPostsByCategoryId(Long categoryId) {
@@ -95,18 +96,18 @@ public class PostService {
 
     }
 
-    public void deletePost(Post post) throws BadRequestException {
+    public void deletePost(Post post) {
         fileService.deleteFileFromPost(post);
         postRepository.delete(post);
     }
 
-    public Slice<Post> getInfinitePosts(Pageable pageable, Long lastId) throws BadRequestException {
+    public Slice<Post> getInfinitePosts(Pageable pageable, Long lastId) {
         String email = getUserEmail();
         log.info("getInfinitePosts (email: " + email + ")");
         if (email == null) {
             return postRepository.findAllSlicePagePublicPosts(pageable, lastId, Role.GUEST);
         }
-        User user = userService.getUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found : " + email));
-        return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), userService.isAdmin(user), user.getRole());
+        User user = userService.getUserByEmail(email).orElseThrow(() -> new NotFoundException("User not found : " + email));
+        return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), user.isAdmin(), user.getRole());
     }
 }

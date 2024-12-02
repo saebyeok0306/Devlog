@@ -72,7 +72,7 @@ public class CommentServiceTest {
         fileService = new FileService(fileRepository, tempFileService, fileHandler);
         postService = new PostService(postRepository, userService, fileService);
         categoryService = new CategoryService(categoryRepository, postService);
-        commentService = new CommentService(commentRepository, userService, fileService);
+        commentService = new CommentService(commentRepository, fileService);
     }
 
     public List<Category> createCategory() {

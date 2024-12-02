@@ -46,14 +46,14 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
   );
 
   if (config.url === REFRESH_URL) {
-    if (data?.error !== "refreshToken is null")
+    if (900 <= status && status <= 999)
       await signOutToast("다시 로그인을 해주세요.", "/login", navigate);
     return Promise.reject(err);
   }
 
-  if (status === 401) {
-    if (data.error.startsWith("유효하지 않은 토큰입니다")) {
-      await signOutToast(data.error, "/");
+  if (900 <= status && status <= 999) {
+    if (status !== 900) {
+      await signOutToast("다시 로그인을 해주세요.", "/");
       return Promise.reject(err);
     }
     try {

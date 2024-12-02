@@ -15,6 +15,8 @@ import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.domain.views.service.PostViewCountService;
 import io.blog.devlog.global.client.SitemapClient;
+import io.blog.devlog.global.exception.NoPermissionException;
+import io.blog.devlog.global.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +49,7 @@ public class PostController {
 
     @Transactional
     @PostMapping
-    public void uploadPost(@RequestBody RequestPostDto requestPostDto) throws BadRequestException {
+    public void uploadPost(@RequestBody RequestPostDto requestPostDto) {
         log.info("Post uploaded : " + requestPostDto.getTitle());
         postUploadService.savePost(requestPostDto);
         sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
@@ -56,12 +57,12 @@ public class PostController {
 
     @Transactional
     @PostMapping("/edit")
-    public void editPost(@RequestBody RequestEditPostDto requestEditPostDto) throws BadRequestException {
+    public void editPost(@RequestBody RequestEditPostDto requestEditPostDto) {
         log.info("Post edited : " + requestEditPostDto.getTitle());
         Post post = postService.getPostById(requestEditPostDto.getId());
         if (post == null) {
             log.info("Post not found : " + requestEditPostDto.getId());
-            throw new BadRequestException("Post not found : " + requestEditPostDto.getId());
+            throw new NotFoundException("Post not found : " + requestEditPostDto.getId());
         }
         Post renewPost = postUploadService.editPost(requestEditPostDto);
         if (!Objects.equals(post.getUrl(), renewPost.getUrl()) || !Objects.equals(post.getCategory().getId(), renewPost.getCategory().getId())) {
@@ -72,7 +73,7 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<ResponsePageablePostDto> getPosts(@RequestParam(defaultValue = "0") int page,
-                                                            @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+                                                            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPosts(pageable);
         List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
@@ -90,7 +91,7 @@ public class PostController {
 
     @GetMapping("/inf")
     public ResponseEntity<ResponseSlicePostDto> getInfinitePosts(@RequestParam(defaultValue = "0") Long lastId,
-                                                                    @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+                                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
         Slice<Post> posts = postService.getInfinitePosts(pageable, lastId);
         List<Post> getPosts = posts.getContent();
@@ -112,7 +113,7 @@ public class PostController {
     }
 
     @GetMapping("/{url}")
-    public ResponseEntity<ResponsePostCommentDto> getPost(HttpServletRequest request, @PathVariable String url) throws BadRequestException {
+    public ResponseEntity<ResponsePostCommentDto> getPost(HttpServletRequest request, @PathVariable String url) {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email).orElse(null);
         if (user == null) {
@@ -135,7 +136,7 @@ public class PostController {
     @GetMapping("/category/v1/{categoryName}")
     public ResponseEntity<ResponsePageablePostDto> getPostsByCategory(@PathVariable String categoryName,
                                                                     @RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+                                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPostsByCategory(categoryName, pageable);
         List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
@@ -154,7 +155,7 @@ public class PostController {
     @GetMapping("/category/v2/{categoryId}")
     public ResponseEntity<ResponsePageablePostDto> getPostsByCategoryId(@PathVariable Long categoryId,
                                                                     @RequestParam(defaultValue = "0") int page,
-                                                                    @RequestParam(defaultValue = "10") int size) throws BadRequestException {
+                                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Post> posts = postService.getPostsByCategoryId(categoryId, pageable);
         List<ResponsePostNonContentDto> responsePostDtos = new ArrayList<>();
@@ -172,11 +173,11 @@ public class PostController {
 
     @Transactional
     @DeleteMapping("/{url}")
-    public void deletePost(@PathVariable String url) throws BadRequestException {
+    public void deletePost(@PathVariable String url) {
         String email = getUserEmail();
         PostDetail postDetail = postService.getPostByUrl(email, url);
         if(!postDetail.getPost().getUser().getEmail().equals(email)) {
-            throw new BadRequestException("You don't have permission to delete this post.");
+            throw new NoPermissionException("해당 게시글을 삭제할 권한이 없습니다.");
         }
         commentService.deleteCommentsByPostId(postDetail.getPost().getId());
         postService.deletePost(postDetail.getPost());

@@ -4,13 +4,14 @@ import io.blog.devlog.domain.user.dto.UserDto;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
-import io.blog.devlog.global.response.ErrorResponse;
 import io.blog.devlog.global.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,6 @@ import java.util.Optional;
 @RestController
 public class AuthController {
     private final UserService userService;
-    private final ErrorResponse errorResponse;
     private final SuccessResponse successResponse;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -35,19 +35,11 @@ public class AuthController {
 
         Optional<User> userEntity = userService.getUserByEmail(userDto.getEmail());
         if (userEntity.isPresent()) {
-            Integer status = HttpServletResponse.SC_BAD_REQUEST;
-            String error = "이미 가입된 유저입니다.";
-            String path = request.getRequestURI();
-            errorResponse.setResponse(response, status, error, path);
-            return;
+            throw new BadRequestException("이미 가입된 이메일 계정입니다.");
         }
 
         if(userDto.getUsername().isEmpty() || userDto.getEmail().isEmpty() || userDto.getPassword().isEmpty()) {
-            Integer status = HttpServletResponse.SC_BAD_REQUEST;
-            String error = "잘못된 입력 정보입니다.";
-            String path = request.getRequestURI();
-            errorResponse.setResponse(response, status, error, path);
-            return;
+            throw new BadRequestException("잘못된 입력 정보입니다.");
         }
 
         User user = User.builder()
@@ -71,8 +63,14 @@ public class AuthController {
         log.info("GET /check");
     }
 
+    @GetMapping("/jwt")
+    public ResponseEntity<Boolean> hasJwtCookie(HttpServletRequest request) {
+        boolean check = userService.hasJwtCookie(request);
+        return ResponseEntity.ok(check);
+    }
+
     @GetMapping("/reissue")
-    public void reissue(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void reissue(HttpServletRequest request, HttpServletResponse response) {
         userService.reissueAccessToken(request, response);
     }
 

@@ -9,7 +9,8 @@ import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.user.model.User;
-import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.NoPermissionException;
+import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -27,7 +28,6 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final UserService userService;
     private final FileService fileService;
 
     public ResponseCommentDto saveComment(User user, RequestCommentDto requestCommentDto, Post post) {
@@ -37,11 +37,11 @@ public class CommentService {
         return ResponseCommentDto.of(user.getEmail(), comment);
     }
 
-    public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) throws BadRequestException {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
+    public Comment updateComment(RequestEditCommentDto requestEditCommentDto, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comment not found : " + commentId));
         String email = getUserEmail();
         if (!comment.getUser().getEmail().equals(email)) {
-            throw new BadRequestException("You don't have permission to edit this comment.");
+            throw new NoPermissionException("댓글을 수정할 권한이 없습니다.");
         }
         comment = commentRepository.save(comment.toEdit(requestEditCommentDto));
         fileService.uploadFileAndDeleteTempFile(comment, requestEditCommentDto.getFiles());
@@ -50,24 +50,24 @@ public class CommentService {
         return comment;
     }
 
-    public List<ResponseCommentDto> getCommentsFromPost(User user, PostDetail postDetail) throws BadRequestException {
+    public List<ResponseCommentDto> getCommentsFromPost(User user, PostDetail postDetail) {
         return this.getCommentsFromPost(user, postDetail.getPost().getId());
     }
 
-    public List<ResponseCommentDto> getCommentsFromPost(User user, Long postId) throws BadRequestException {
+    public List<ResponseCommentDto> getCommentsFromPost(User user, Long postId) {
         Long userId = user.getId() == null ? 0L : user.getId();
-        boolean isAdmin = userService.isAdmin(user);
+        boolean isAdmin = user.isAdmin();
         List<Comment> comments = commentRepository.findAllByPostId(postId, userId, isAdmin);
         return comments.stream()
                 .map(comment -> ResponseCommentDto.of(user.getEmail(), comment))
                 .toList();
     }
 
-    public void deleteComment(Long commentId) throws IOException {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new BadRequestException("Comment not found : " + commentId));
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comment not found : " + commentId));
         String email = getUserEmail();
         if (!comment.getUser().getEmail().equals(email)) {
-            throw new BadRequestException("You don't have permission to delete this comment.");
+            throw new NoPermissionException("댓글을 삭제할 권한이 없습니다.");
         }
         comment.setDeleted(true);
         fileService.deleteFileFromComment(comment);

@@ -122,3 +122,11 @@ export const verify_captcha_api = async (token) => {
       throw error;
     });
 };
+
+export const has_jwt_cookie_api = async () => {
+  return await API.get("/jwt")
+    .then((response) => response)
+    .catch((error) => {
+      throw error;
+    });
+};

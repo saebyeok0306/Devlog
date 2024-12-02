@@ -90,4 +90,8 @@ public class User extends BaseTime {
         this.certificate = true;
         this.role = Role.USER;
     }
+
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
 }

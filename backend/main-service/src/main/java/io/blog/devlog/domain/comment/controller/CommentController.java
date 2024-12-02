@@ -9,6 +9,8 @@ import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.exception.NoPermissionException;
+import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -29,20 +31,20 @@ public class CommentController {
     private final PostService postService;
     private final CommentService commentService;
     @PostMapping
-    public ResponseCommentDto uploadComment(@RequestBody RequestCommentDto requestCommentDto) throws BadRequestException {
+    public ResponseCommentDto uploadComment(@RequestBody RequestCommentDto requestCommentDto) {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+                .orElseThrow(() -> new NotFoundException("User not found : " + email));
 
         PostDetail postDetail = postService.getPostByUrl(requestCommentDto.getPostUrl(), user);
         if (!postDetail.isCommentFlag()) {
-            throw new BadRequestException("You don't have permission to write a comment.");
+            throw new NoPermissionException("댓글을 작성할 권한이 없습니다.");
         }
         return commentService.saveComment(user, requestCommentDto, postDetail.getPost());
     }
 
     @PostMapping("/{commentId}")
-    public void updateComment(@RequestBody RequestEditCommentDto requestEditCommentDto, @PathVariable Long commentId) throws BadRequestException {
+    public void updateComment(@RequestBody RequestEditCommentDto requestEditCommentDto, @PathVariable Long commentId) {
         Comment comment = commentService.updateComment(requestEditCommentDto, commentId);
         log.info("Update comment : " + comment);
     }
@@ -53,10 +55,10 @@ public class CommentController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<List<ResponseCommentDto>> getCommentsByPost(@PathVariable Long postId) throws BadRequestException {
+    public ResponseEntity<List<ResponseCommentDto>> getCommentsByPost(@PathVariable Long postId) {
         String email = getUserEmail();
         User user = userService.getUserByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found : " + email));
+                .orElseThrow(() -> new NotFoundException("User not found : " + email));
         return ResponseEntity.ok(commentService.getCommentsFromPost(user, postId));
     }
 }
