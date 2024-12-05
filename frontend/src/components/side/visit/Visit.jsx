@@ -34,7 +34,7 @@ function Visit() {
             ...visit,
             today: visitCounts[visitCounts.length - 1] | 0,
             yesterday: visitCounts[visitCounts.length - 2] | 0,
-            today: res.data.totalCount | 0,
+            total: res.data.totalCount | 0,
           });
         })
         .catch((err) => {
