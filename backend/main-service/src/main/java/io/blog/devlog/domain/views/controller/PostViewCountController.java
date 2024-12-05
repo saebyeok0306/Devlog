@@ -21,21 +21,21 @@ public class PostViewCountController {
     @GetMapping("/{postUrl}/daily")
     public ResponsePostViewCountDto getDailyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) throws BadRequestException {
         Post post = postService.getSimplePostByUrl(postUrl);
-        List<PostViewCountDto> postViewCountList = postViewCountService.getDailyPostViewCount(post, start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getDailyPostViewCount(post.getId(), start, end);
         return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 
     @GetMapping("/{postUrl}/monthly")
     public ResponsePostViewCountDto getMonthlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
         Post post = postService.getSimplePostByUrl(postUrl);
-        List<PostViewCountDto> postViewCountList = postViewCountService.getMonthlyPostViewCount(post, start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getMonthlyPostViewCount(post.getId(), start, end);
         return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 
     @GetMapping("/{postUrl}/yearly")
     public ResponsePostViewCountDto getYearlyPostViewCount(@PathVariable String postUrl, @RequestParam String start, @RequestParam String end) {
         Post post = postService.getSimplePostByUrl(postUrl);
-        List<PostViewCountDto> postViewCountList = postViewCountService.getYearlyPostViewCount(post, start, end);
+        List<PostViewCountDto> postViewCountList = postViewCountService.getYearlyPostViewCount(post.getId(), start, end);
         return ResponsePostViewCountDto.of(post, postViewCountList);
     }
 }

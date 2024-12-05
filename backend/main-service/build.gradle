@@ -89,6 +89,7 @@ dependencies {
 	testImplementation 'com.h2database:h2'
 
 	implementation 'org.apache.commons:commons-lang3'
+	implementation 'commons-codec:commons-codec'
 }
 
 dependencyManagement {

@@ -1,24 +1,27 @@
-package io.blog.devlog.domain.info.model;
+package io.blog.devlog.domain.blog.model;
 
 import io.blog.devlog.domain.user.model.User;
-import io.blog.devlog.global.time.CreateTime;
+import io.blog.devlog.global.time.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Getter
 @Builder
 @ToString
-public class Info extends CreateTime {
+public class Blog extends BaseTime {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Setter
+    private Long visit; // Blog Visit Count
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+    @Setter
     private String about; // 블로그 소개글
+    @Setter
     @Column(name = "profile_url")
     private String profileUrl; // 블로그 프로필 사진
 }

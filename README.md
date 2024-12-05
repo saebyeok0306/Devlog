@@ -3,41 +3,46 @@
 개인 기술 블로그 개발.<br>
 서버는 Oracle Cloud Free Tier의 VM (VM.Standard.A1.Flex)을 활용하여 구축하였습니다.
 
-## Stack
+## Tech Stack
 
-- Frontend: React.js (Vite)
-- Backend: Spring Boot, FastAPI
-- Database: MySQL (Local), Oracle DB (Product), Redis
-- DevOps: Github Actions, Nginx, Oracle Cloud
-
-## Libraries
-
-### Frontend
-
-- react-router-dom
-- react-toastify
-- recoil
-- ckeditor5
-- tocbot
-- react-chartjs-2
-- flowbite-react
-- react-image-crop
-- react-image-file-resizer
-- highlight.js
-- mem
-- moment-timezone
-
-### Backend
-
-- spring-cloud-gateway
-- spring-cloud-netflix-eureka
-- spring-cloud-openfeign
-- spring-data-jpa
-- spring-security
-- spring-mail
-- oauth2-client
-- jjwt
-- jacocoTestCoverageVerification
+<div align=center>
+  <table>
+    <thead>
+    <tr>
+      <th>Frontend</th>
+      <th>Backend</th>
+      <th>Database</th>
+      <th>DevOps</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td valign="top">
+        React.js (vite)<br>
+        Recoil
+        </td>
+        <td valign="top">
+        SpringBoot<br>
+        SpringCloud (MSA)<br>
+        SpringJPA<br>
+        SpringSecurity<br>
+        FastAPI
+        </td>
+        <td valign="top">
+        MySQL (Local)<br>
+        Oracle (Product)<br>
+        Redis
+        </td>
+        <td valign="top">
+        GitHub Actions<br>
+        Nginx<br>
+        Docker (docker-compose)<br>
+        Oracle Cloud
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ## Project
 
@@ -45,7 +50,7 @@
 
 ### 시스템 아키텍처
 
-![시스템 아키텍처](https://github.com/westreed/Devlog/blob/main/readme_src/system_architecture2.png)
+![시스템 아키텍처](./readme_src/system_architecture2.png)
 
 ### WAS 아키텍처
 
@@ -57,6 +62,8 @@ LLM 서비스는 Langchain이나 여러 AI 모델을 활용하기 좋은 Python 
 
 ### E-R 다이어그램
 
+![E-R 다이어그램](./readme_src/er_diagram.png)
+
 ### OAuth 2.0 로그인 구현
 
 Frontend는 React, Backend는 Spring을 사용하여 웹서비스를 만들고 있다보니, OAuth 2.0 로그인 구현에 어려움이 있었습니다.
@@ -67,7 +74,7 @@ Frontend는 React, Backend는 Spring을 사용하여 웹서비스를 만들고 �
 
 결론적으로, 백엔드 서버에서 로그인이 완료되었을 때 작동하는 `SuccessHandler`에서 set-cookie로 JWT를 함께 실어서 Redirect하는 방식으로 구현할 수 있었습니다. 이때, Redirect하는 주소는 프론트에서 로그인에 성공했음을 명확히 알 수 있도록 별도의 `callback` Url로 설정하였습니다.
 
-![OAuth 2.0 로그인 구현](https://github.com/westreed/Devlog/blob/main/readme_src/OAuth2_Sequencediagram.png)
+![OAuth 2.0 로그인 구현](./readme_src/OAuth2_Sequencediagram.png)
 
 ### Redis Pub/Sub
 
@@ -81,4 +88,4 @@ Redis를 활용하여 Pub/Sub를 구현하였습니다. 메일서버와의 비�
 
 결국, 마지막으로 남은 `Vite`가 저의 최종 선택지였는데요. 결과적으로도 현재 가장 빠른 빌드타임을 보여주는 `esbuild`를 기반으로 하고 있어서 속도 개선 측면에서도 매우 좋았습니다. 최종적으로 Vite를 도입해서 가지고 있던 문제들을 개선하게 되었고, 배포 파이프라인에서의 빌드타임이 2분 18초에서 1분 13초로 단축되었습니다.
 
-![Vite로 마이그레이션 후 빌드타임 개선](https://github.com/westreed/Devlog/blob/main/readme_src/vite.png)
+![Vite로 마이그레이션 후 빌드타임 개선](./readme_src/vite.png)

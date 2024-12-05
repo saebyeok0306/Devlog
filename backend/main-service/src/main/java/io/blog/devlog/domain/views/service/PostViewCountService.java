@@ -14,7 +14,7 @@ public interface PostViewCountService {
     LocalDate parseStartYear(String year);
     LocalDate parseEndYear(String year);
 
-    List<PostViewCountDto> getDailyPostViewCount(Post post, String start, String end);
-    List<PostViewCountDto> getMonthlyPostViewCount(Post post, String start, String end);
-    List<PostViewCountDto> getYearlyPostViewCount(Post post, String start, String end);
+    List<PostViewCountDto> getDailyPostViewCount(Long postId, String start, String end);
+    List<PostViewCountDto> getMonthlyPostViewCount(Long postId, String start, String end);
+    List<PostViewCountDto> getYearlyPostViewCount(Long postId, String start, String end);
 }
