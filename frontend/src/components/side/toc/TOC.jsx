@@ -59,7 +59,6 @@ const postEditHandler = async (navigate, postContent, setPostContext) => {
     postContent.url,
     postContent.views
   );
-  console.log(newContext);
 
   await setPostContext(newContext);
   navigate("/editor");

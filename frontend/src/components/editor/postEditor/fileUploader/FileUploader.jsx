@@ -69,7 +69,6 @@ function FileUploader({
   const removeFileHandler = (file, idx) => {
     for (let i = 0; i < postContext.files.length; i++) {
       const target = postContext.files[i];
-      console.log(target);
       if (target.fileUrl === file.fileUrl) {
         setPostContext({
           ...postContext,
@@ -83,7 +82,6 @@ function FileUploader({
     for (let i = 0; i < files.length; i++) {
       const target = files[i];
       if (target.fileUrl === file.fileUrl) {
-        console.log("removeFileHandler tempfiles", target, file);
         setFiles(files.filter((_, index) => index !== i));
         setUploaderFiles(uploaderFiles.filter((_, index) => index !== idx));
         return;

@@ -24,7 +24,7 @@ function Profile() {
         setProfile(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }, []);
 
@@ -51,10 +51,9 @@ function Profile() {
           setProfile(editProfile);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
     }
-    console.log(editMode);
   };
 
   const ProfileEditIcon = () => {
