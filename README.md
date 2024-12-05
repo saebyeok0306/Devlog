@@ -17,23 +17,23 @@
     </thead>
     <tbody>
       <tr>
-        <td>
+        <td valign="top">
         React.js (vite)<br>
         Recoil
         </td>
-        <td>
+        <td valign="top">
         SpringBoot<br>
         SpringCloud (MSA)<br>
         SpringJPA<br>
         SpringSecurity<br>
         FastAPI
         </td>
-        <td>
+        <td valign="top">
         MySQL (Local)<br>
         Oracle (Product)<br>
         Redis
         </td>
-        <td>
+        <td valign="top">
         GitHub Actions<br>
         Nginx<br>
         Docker (docker-compose)<br>
