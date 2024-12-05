@@ -4,20 +4,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 2rem;
-  // flex: 1;
   user-select: none;
-  border-right: 1px solid $border-soft-blue-color;
   font-family: "SokchoBadaBatang";
   padding: 1px;
-
-  &:is(.dark *) {
-    border-right: 1px solid $border-dark-blue-color;
-  }
-
-  @include mediaquery(large) {
-    border-right: none !important;
-  }
 
   .title {
     font-size: 1.1em;

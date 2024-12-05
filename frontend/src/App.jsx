@@ -25,6 +25,7 @@ import PostStatistics from "@/pages/PostStatistics";
 import UserRoute from "@/routes/UserRoute";
 import { Initizalize } from "@/utils/reactGA4";
 import { useWindow } from "./utils/hooks/useWindow";
+import { put_blog_visit_api } from "./api/Info";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +34,11 @@ function App() {
   GetPayload(setIsLoading, setMaintenance);
   Initizalize();
   useWindow();
+
+  useEffect(() => {
+    // 조회수 증가
+    put_blog_visit_api();
+  }, []);
 
   useEffect(() => {
     if (isDark) {

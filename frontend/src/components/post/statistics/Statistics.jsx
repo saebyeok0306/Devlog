@@ -18,6 +18,7 @@ import moment from "moment-timezone";
 import { Breadcrumb, List } from "flowbite-react";
 import { HiFire, HiFlag, HiCalendar, HiHome } from "react-icons/hi";
 import { categoryAtom } from "@/recoil/categoryAtom";
+import { generateDateRange } from "@/utils/generateDateRange";
 
 Chart.register(
   CategoryScale,
@@ -28,17 +29,17 @@ Chart.register(
   Legend
 );
 
-const generateDateRange = (startDate, endDate) => {
-  const dateArray = [];
-  const currentDate = new Date(startDate);
+// const generateDateRange = (startDate, endDate) => {
+//   const dateArray = [];
+//   const currentDate = new Date(startDate);
 
-  while (currentDate <= new Date(endDate)) {
-    dateArray.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD 형식
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
+//   while (currentDate <= new Date(endDate)) {
+//     dateArray.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD 형식
+//     currentDate.setDate(currentDate.getDate() + 1);
+//   }
 
-  return dateArray;
-};
+//   return dateArray;
+// };
 
 function Statistics() {
   const navigate = useNavigate();
@@ -60,13 +61,12 @@ function Statistics() {
       const start_date = moment.tz("Asia/Seoul");
       const end_date = moment.tz("Asia/Seoul");
 
-      start_date.subtract(14, "days");
+      start_date.subtract(13, "days");
       const start = start_date.format("YYYY-MM-DD");
       const end = end_date.format("YYYY-MM-DD");
 
       await get_post_daily_statistics_api(postUrl, start, end)
         .then((res) => {
-          console.log(res.data.post);
           setPost({ ...post, ...res.data.post });
 
           const labels = generateDateRange(start, end);

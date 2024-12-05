@@ -1,6 +1,6 @@
 package io.blog.devlog.domain.blog.dto;
 
-import io.blog.devlog.domain.blog.model.Info;
+import io.blog.devlog.domain.blog.model.Blog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,19 +15,11 @@ public class ResponseInfoDto {
     private String about; // 블로그 소개글
     private String profileUrl; // 블로그 프로필 사진
 
-    public static ResponseInfoDto toDto(Info info) {
+    public static ResponseInfoDto toDto(Blog blog) {
         return ResponseInfoDto.builder()
-                .username(info.getUser().getUsername())
-                .about(info.getAbout())
-                .profileUrl(info.getProfileUrl())
-                .build();
-    }
-
-    public static ResponseInfoDto toNullDto() {
-        return ResponseInfoDto.builder()
-                .username("devLog")
-                .about("오류로 인해 블로그 정보를 불러올 수 없습니다.")
-                .profileUrl("")
+                .username(blog.getUser().getUsername())
+                .about(blog.getAbout())
+                .profileUrl(blog.getProfileUrl())
                 .build();
     }
 }
