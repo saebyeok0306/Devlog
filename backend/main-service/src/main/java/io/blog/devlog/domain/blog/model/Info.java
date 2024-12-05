@@ -1,4 +1,4 @@
-package io.blog.devlog.domain.info.model;
+package io.blog.devlog.domain.blog.model;
 
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.global.time.CreateTime;

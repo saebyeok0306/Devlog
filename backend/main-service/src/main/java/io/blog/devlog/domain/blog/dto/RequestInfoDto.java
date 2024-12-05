@@ -1,6 +1,6 @@
-package io.blog.devlog.domain.info.dto;
+package io.blog.devlog.domain.blog.dto;
 
-import io.blog.devlog.domain.info.model.Info;
+import io.blog.devlog.domain.blog.model.Info;
 import io.blog.devlog.domain.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

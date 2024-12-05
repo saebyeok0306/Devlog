@@ -1,10 +1,9 @@
-package io.blog.devlog.domain.info.service;
+package io.blog.devlog.domain.blog.service;
 
 import io.blog.devlog.config.TestConfig;
-import io.blog.devlog.domain.info.dto.RequestInfoDto;
-import io.blog.devlog.domain.info.dto.ResponseInfoDto;
-import io.blog.devlog.domain.info.model.Info;
-import io.blog.devlog.domain.info.repository.InfoRepository;
+import io.blog.devlog.domain.blog.dto.RequestInfoDto;
+import io.blog.devlog.domain.blog.dto.ResponseInfoDto;
+import io.blog.devlog.domain.blog.repository.InfoRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.repository.UserRepository;

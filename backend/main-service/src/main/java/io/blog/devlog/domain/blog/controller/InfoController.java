@@ -1,8 +1,8 @@
-package io.blog.devlog.domain.info.controller;
+package io.blog.devlog.domain.blog.controller;
 
-import io.blog.devlog.domain.info.dto.RequestInfoDto;
-import io.blog.devlog.domain.info.dto.ResponseInfoDto;
-import io.blog.devlog.domain.info.service.InfoService;
+import io.blog.devlog.domain.blog.dto.RequestInfoDto;
+import io.blog.devlog.domain.blog.dto.ResponseInfoDto;
+import io.blog.devlog.domain.blog.service.InfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
