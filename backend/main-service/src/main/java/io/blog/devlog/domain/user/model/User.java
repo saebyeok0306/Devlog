@@ -18,9 +18,11 @@ import java.util.List;
         @Index(name = "idx_email", columnList = "email"),
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Getter
 @ToString
+@Builder
 public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,38 +38,19 @@ public class User extends BaseTime {
     @Column(name = "profile_url")
     private String profileUrl;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.GUEST;
     @Nullable
     private String provider;
     @Nullable
     @Column(name = "provider_id")
     private String providerId;
-//    @Nullable
-//    @Column(name = "refresh_token", length = 500)
-//    private String refreshToken;
     @NotNull
     @ColumnDefault("0") // false
+    @Builder.Default
     private Boolean certificate = false;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = false)
     private List<PostLike> likes;
-
-    @Builder
-    public User(String username, String password, String email, Role role, String provider, String providerId, Boolean certificate) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.certificate = certificate != null && certificate;
-    }
-
-    public User(String username, String email) {
-        this.username = username;
-        this.email = email;
-        this.role = Role.GUEST;
-        this.certificate = false;
-    }
 
     public void passwordEncode(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.password = bCryptPasswordEncoder.encode(this.password);
