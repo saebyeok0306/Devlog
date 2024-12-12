@@ -8,7 +8,6 @@ import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.service.UserService;
-import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,7 +77,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("게시글 URL 기반 유저 조회 테스트")
-    void getPostByUrl() throws BadRequestException {
+    void getPostByUrl() {
         // given
         testConfig.updateAuthentication(testConfig.adminUser);
         Category category = Category.builder().writeCommentAuth(Role.ADMIN).build();
@@ -95,7 +94,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("GUEST 모든 게시글 조회 테스트")
-    void getPosts() throws BadRequestException {
+    void getPosts() {
         // given
         PageRequest pageRequest = PageRequest.of(0, 10);
         Post post = Post.builder().build();
@@ -112,7 +111,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("GUEST가 아닌 유저의 모든 게시글 조회 테스트")
-    void getPosts2() throws BadRequestException {
+    void getPosts2() {
         // given
         testConfig.updateAuthentication(testConfig.adminUser);
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -130,7 +129,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostsByCategory() throws BadRequestException {
+    void getPostsByCategory() {
         // given
         testConfig.updateAuthentication(testConfig.adminUser);
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -148,7 +147,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getPostsByCategoryId() throws BadRequestException {
+    void getPostsByCategoryId() {
         // given
         testConfig.updateAuthentication(testConfig.adminUser);
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -184,7 +183,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void deletePost() throws BadRequestException {
+    void deletePost() {
         // given
         Post post = Post.builder().build();
 
@@ -200,7 +199,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void getInfinitePosts() throws BadRequestException {
+    void getInfinitePosts() {
         // given
         testConfig.updateAuthentication(testConfig.adminUser);
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -213,7 +212,49 @@ public class PostServiceTest {
         // when
         Slice<Post> getPosts = postService.getInfinitePosts(pageRequest, 0L);
 
-        // when
+        // then
         assertThat(getPosts).isEqualTo(posts);
     }
+
+//    @Test
+//    void isPubliclyVisible1() {
+//        // given
+//        Category category = Category.builder()
+//                .layer(1)
+//                .name("카테고리")
+//                .build();
+//        Post post = Post.builder()
+//                .category(category)
+//                .isPrivate(true)
+//                .build();
+//
+//        given(categoryService.hasCommentCategoryAuth(category, Role.GUEST)).willReturn(true);
+//
+//        // when
+//        boolean isFalse = postService.isPubliclyVisible(post);
+//
+//        // then
+//        assertThat(isFalse).isFalse();
+//    }
+//
+//    @Test
+//    void isPubliclyVisible2() {
+//        // given
+//        Category category = Category.builder()
+//                .layer(1)
+//                .name("카테고리")
+//                .build();
+//        Post post = Post.builder()
+//                .category(category)
+//                .isPrivate(false)
+//                .build();
+//
+//        given(categoryService.hasCommentCategoryAuth(category, Role.GUEST)).willReturn(true);
+//
+//        // when
+//        boolean isTrue = postService.isPubliclyVisible(post);
+//
+//        // then
+//        assertThat(isTrue).isTrue();
+//    }
 }

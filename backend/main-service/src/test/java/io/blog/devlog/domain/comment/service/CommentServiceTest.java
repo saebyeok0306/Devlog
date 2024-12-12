@@ -1,164 +1,132 @@
 package io.blog.devlog.domain.comment.service;
 
 import io.blog.devlog.config.TestConfig;
-import io.blog.devlog.domain.category.model.Category;
-import io.blog.devlog.domain.category.repository.CategoryRepository;
-import io.blog.devlog.domain.category.service.CategoryService;
+import io.blog.devlog.domain.comment.dto.RequestCommentDto;
+import io.blog.devlog.domain.comment.dto.RequestEditCommentDto;
 import io.blog.devlog.domain.comment.dto.ResponseCommentDto;
 import io.blog.devlog.domain.comment.model.Comment;
 import io.blog.devlog.domain.comment.repository.CommentRepository;
-import io.blog.devlog.domain.file.handler.FileHandler;
-import io.blog.devlog.domain.file.repository.FileRepository;
-import io.blog.devlog.domain.file.repository.TempFileRepository;
 import io.blog.devlog.domain.file.service.FileService;
-import io.blog.devlog.domain.file.service.TempFileService;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
-import io.blog.devlog.domain.post.repository.PostRepository;
-import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
-import io.blog.devlog.domain.user.repository.UserRepository;
-import io.blog.devlog.domain.user.service.UserService;
-import io.blog.devlog.global.jwt.service.JwtService;
-import org.apache.coyote.BadRequestException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import io.blog.devlog.utils.EntityFactory;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@DataJpaTest // Component Scan을 하지 않아 컨테이너에 @Component 빈들이 등록되지 않는다.
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ExtendWith(MockitoExtension.class)
 public class CommentServiceTest {
-    @Autowired
+    @Mock
     private CommentRepository commentRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private TempFileRepository tempFileRepository;
-    @Autowired
-    private FileRepository fileRepository;
-    private CommentService commentService;
-    private UserService userService;
-    private PostService postService;
-    private CategoryService categoryService;
-    private JwtService jwtService;
-    private TempFileService tempFileService;
+    @Mock
     private FileService fileService;
-    private FileHandler fileHandler;
+    @InjectMocks
+    private CommentService commentService;
     private static final TestConfig testConfig = new TestConfig();
 
-    private User guestUser;
-    private Post post;
-
-    @BeforeEach
-    public void beforeSetUp() {
-        jwtService = testConfig.createJwtService();
-        userService = new UserService(userRepository, jwtService);
-        tempFileService = new TempFileService(tempFileRepository);
-        fileHandler = new FileHandler(tempFileService);
-        fileService = new FileService(fileRepository, tempFileService, fileHandler);
-        postService = new PostService(postRepository, userService, fileService);
-        categoryService = new CategoryService(categoryRepository, postService);
-        commentService = new CommentService(commentRepository, fileService);
-    }
-
-    public List<Category> createCategory() {
-        List<Category> categories = new ArrayList<>();
-        for (var i=0; i<3; i++) {
-            Category category = Category.builder()
-                    .name(String.format("카테고리%d", i))
-                    .layer(i)
-                    .writePostAuth(Role.USER)
-                    .readCategoryAuth(Role.GUEST)
-                    .writeCommentAuth(Role.USER)
-                    .build();
-            categories.add(category);
-        }
-        return categories;
-    }
-
-    public void setupUserAndCategoryAndPost() throws BadRequestException {
-        userService.saveUser(testConfig.adminUser);
-        User guestUser = userService.saveUser(testConfig.guestUser);
-        List<Category> categories = categoryService.updateCategories(createCategory());
-        Post post = Post.builder()
-                        .url("url")
-                        .title("제목")
-                        .content("내용")
-                        .category(categories.get(0))
-                        .user(guestUser)
-                        .isPrivate(false)
-                        .build();
-        this.post = postRepository.save(post);
-        this.guestUser = guestUser;
-    }
 
     @Test
-    @DisplayName("댓글 작성 테스트")
-    public void saveCommentTest() throws BadRequestException {
+    void saveComment() {
         // given
-        this.setupUserAndCategoryAndPost();
-        // 사용자 정보를 SecurityContextHolder에 등록함.
-        testConfig.updateAuthentication(testConfig.adminUser);
-        Comment comment = Comment.builder()
-                        .content("댓글 내용1")
-                        .post(this.post)
-                        .user(this.guestUser)
-                        .isPrivate(false)
-                        .build();
-        commentRepository.save(comment);
-        System.out.println("-------------------------------------------------------------------------------------------------");
+        Post post = EntityFactory.createPost();
+        RequestCommentDto commentDto = RequestCommentDto.builder()
+                .parent(1L)
+                .build();
+        Comment comment = commentDto.toEntity(testConfig.adminUser, post);
+
+        given(commentRepository.save(any(Comment.class))).willReturn(comment);
+        doNothing().when(fileService).uploadFileAndDeleteTempFile(comment, commentDto.getFiles());
+        doNothing().when(fileService).deleteTempFiles();
 
         // when
+        ResponseCommentDto responseCommentDto = commentService.saveComment(testConfig.adminUser, commentDto, post);
 
         // then
-        PostDetail postDetail = postService.getPostByUrl("url");
-
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.adminUser, postDetail);
-        for (ResponseCommentDto c : comments) {
-            System.out.println(c.getContent());
-        }
+        assertThat(responseCommentDto.getUser().getUsername()).isEqualTo(testConfig.adminUser.getUsername());
+        assertThat(responseCommentDto.getParent()).isEqualTo(1L);
     }
 
     @Test
-    @DisplayName("게시글 댓글 복합 조회 테스트")
-    public void getPostCommentTest() throws BadRequestException {
+    void updateComment() {
         // given
-        this.setupUserAndCategoryAndPost();
-        // 사용자 정보를 SecurityContextHolder에 등록함.
-        testConfig.updateAuthentication(testConfig.guestUser);
-        Comment comment = Comment.builder()
-                .content("댓글 내용1")
-                .post(this.post)
-                .user(this.guestUser)
+        Long commentId = null;
+        User user = EntityFactory.createUser(null, null, Role.ADMIN);
+        Post post = EntityFactory.createPost();
+        Comment comment = EntityFactory.createComment("prev content", user, post);
+        RequestEditCommentDto editCommentDto = RequestEditCommentDto.builder()
+                .content("edit content")
                 .isPrivate(false)
                 .build();
-        commentRepository.save(comment);
-        System.out.println("-------------------------------------------------------------------------------------------------");
+        Comment editedComment = comment.toEdit(editCommentDto);
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(commentRepository.save(any(Comment.class))).willReturn(editedComment);
+        doNothing().when(fileService).uploadFileAndDeleteTempFile(editedComment, editCommentDto.getFiles());
+        doNothing().when(fileService).deleteTempFiles();
+        doNothing().when(fileService).deleteUnusedFilesByComment(editedComment, editCommentDto.getFiles());
+        testConfig.updateAuthentication(user);
 
         // when
+        Comment resultComment = commentService.updateComment(editCommentDto, commentId);
 
         // then
-        // 이전 query 결과를 재사용하진 않았음.
-        PostDetail postDetail = postService.getPostByUrl("url");
-        Post post = postDetail.getPost();
-        List<ResponseCommentDto> comments = commentService.getCommentsFromPost(testConfig.guestUser, postDetail);
-        System.out.println("게시글 제목 : " + post.getTitle());
-        for (ResponseCommentDto c : comments) {
-            System.out.println(c.getContent());
-        }
+        assertThat(resultComment.getContent()).isEqualTo("edit content");
+    }
+
+    @Test
+    void getCommentsFromPost() {
+        // given
+        User user = EntityFactory.createUser();
+        Post post = EntityFactory.createPost();
+        List<Comment> comments = List.of(EntityFactory.createComment("test", user, post));
+        PostDetail postDetail = PostDetail.builder()
+                .post(post)
+                .commentFlag(true)
+                .build();
+        given(commentRepository.findAllByPostId(null, 0L, false)).willReturn(comments);
+
+        // when
+        List<ResponseCommentDto> commentsFromPost = commentService.getCommentsFromPost(user, postDetail);
+
+        // then
+        assertThat(commentsFromPost.size()).isEqualTo(1);
+        assertThat(commentsFromPost.get(0).getUser().getEmail()).isEqualTo(user.getEmail());
+        assertThat(commentsFromPost.get(0).getContent()).isEqualTo("test");
+    }
+
+    @Test
+    void deleteComment() {
+        // given
+        Long commentId = null;
+        User user = EntityFactory.createUser(null, null, Role.ADMIN);
+        Post post = EntityFactory.createPost();
+        Comment comment = EntityFactory.createComment("test", user, post);
+        given(commentRepository.findById(commentId)).willReturn(Optional.ofNullable(comment));
+        given(commentRepository.save(comment)).willReturn(comment);
+        doNothing().when(fileService).deleteFileFromComment(comment);
+        testConfig.updateAuthentication(user);
+
+        // when
+        commentService.deleteComment(commentId);
+
+        // then
+        assertThat(comment.isDeleted()).isTrue();
+    }
+
+    @Test
+    void deleteCommentsByPostId() {
     }
 }

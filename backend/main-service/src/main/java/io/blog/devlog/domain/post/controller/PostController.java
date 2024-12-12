@@ -10,6 +10,7 @@ import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
 import io.blog.devlog.domain.post.service.PostViewsService;
+import io.blog.devlog.domain.post.service.PublicPostService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
@@ -46,13 +47,16 @@ public class PostController {
     private final PostUploadService postUploadService;
     private final PostViewsService postViewsService;
     private final PostViewCountService postViewCountService;
+    private final PublicPostService publicPostService;
 
     @Transactional
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) {
         log.info("Post uploaded : " + requestPostDto.getTitle());
-        postUploadService.savePost(requestPostDto);
-        sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
+        Post post = postUploadService.savePost(requestPostDto);
+        if (publicPostService.isPubliclyVisible(post)) {
+            sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
+        }
     }
 
     @Transactional
@@ -67,7 +71,9 @@ public class PostController {
         Post renewPost = postUploadService.editPost(requestEditPostDto);
         if (!Objects.equals(post.getUrl(), renewPost.getUrl()) || !Objects.equals(post.getCategory().getId(), renewPost.getCategory().getId())) {
             sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(post.getCategory().getId(), post.getUrl()));
-            sitemapClient.addPostSitemap(ResponsePostUrlDto.of(renewPost.getCategory().getId(), renewPost.getUrl()));
+            if (publicPostService.isPubliclyVisible(renewPost)) {
+                sitemapClient.addPostSitemap(ResponsePostUrlDto.of(renewPost.getCategory().getId(), renewPost.getUrl()));
+            }
         }
     }
 
