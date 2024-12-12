@@ -68,9 +68,14 @@ public class PostController {
             log.info("Post not found : " + requestEditPostDto.getId());
             throw new NotFoundException("Post not found : " + requestEditPostDto.getId());
         }
+
+        // INFO: Spring JPA에서 같은 id를 가진 Entity는 서로 다른 상황에서 가져온 객체여도 주소가 같음. (영속성 컨텍스트 Persistence Context)
+        String prevPostUrl = post.getUrl();
+        Long prevCategoryId = post.getCategory().getId();
         Post renewPost = postUploadService.editPost(requestEditPostDto);
-        if (!Objects.equals(post.getUrl(), renewPost.getUrl()) || !Objects.equals(post.getCategory().getId(), renewPost.getCategory().getId())) {
-            sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(post.getCategory().getId(), post.getUrl()));
+
+        if (!prevPostUrl.equals(renewPost.getUrl()) || !prevCategoryId.equals(renewPost.getCategory().getId())) {
+            sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(prevCategoryId, prevPostUrl));
             if (publicPostService.isPubliclyVisible(renewPost)) {
                 sitemapClient.addPostSitemap(ResponsePostUrlDto.of(renewPost.getCategory().getId(), renewPost.getUrl()));
             }
