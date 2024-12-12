@@ -80,9 +80,10 @@ function PostEditor() {
           toast.warning("글을 작성할 수 있는 카테고리가 없습니다!");
           return navigate(-1);
         }
-
         setCategories(res.data);
-        setPostContext((prev) => ({ ...prev, category: res.data[0] }));
+        if (postContext.category == null || postContext.category == undefined) {
+          setPostContext((prev) => ({ ...prev, category: res.data[0] }));
+        }
       })
       .catch((err) => {
         console.error(err);
