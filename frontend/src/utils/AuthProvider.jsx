@@ -40,7 +40,6 @@ function AuthProvider({ children }) {
     };
 
     if (verify_access_token() || verify_refresh_token()) {
-      console.log("사용자를 검증합니다.");
       user_check_api()
         .then()
         .catch((err) => {
@@ -69,7 +68,7 @@ function AuthProvider({ children }) {
           setRefresh(refresh + 1);
         })
         .catch((err) => {
-          console.log("err: ", err);
+          console.error("err: ", err);
           signOut(setAuthDto, "다시 로그인 해주세요.");
         });
     }

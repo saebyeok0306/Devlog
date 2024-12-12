@@ -10,7 +10,6 @@ import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -29,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final FileService fileService;
+
 
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);

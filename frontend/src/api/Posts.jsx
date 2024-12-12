@@ -3,7 +3,6 @@ import { API } from "./Axios";
 import { POST_STORE } from "./Cache";
 
 export const upload_post_api = async ({ postContext, postUrl, previewUrl }) => {
-  console.log("upload_post_api post");
   const requestBody = {
     url: postUrl,
     title: postContext.title,
@@ -39,7 +38,6 @@ export const edit_post_api = async ({
     createdAt: postContext.createdAt,
     modifiedAt: modifiedAt,
   };
-  console.log("edit_post_api post", requestBody, postContext);
 
   return await API.post("/posts/edit", requestBody, {})
     .then((response) => response)

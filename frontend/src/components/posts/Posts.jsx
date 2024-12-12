@@ -96,7 +96,7 @@ function Posts() {
         setRenderer((prev) => prev + 1);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 

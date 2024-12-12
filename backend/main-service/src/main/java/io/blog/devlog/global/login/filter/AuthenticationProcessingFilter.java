@@ -65,7 +65,8 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private void createUserDetails() {
         log.info("createUserDetails(GUEST) 호출");
-        PrincipalDetails principalDetails = new PrincipalDetails(new User("GUEST", "GUEST"));
+        User user = User.builder().username("GUEST").email("GUEST").build();
+        PrincipalDetails principalDetails = new PrincipalDetails(user);
         saveAuthentication(principalDetails);
     }
 

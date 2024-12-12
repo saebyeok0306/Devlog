@@ -24,8 +24,6 @@ function Signup() {
 
   const registerAction = (e) => {
     e.preventDefault();
-    console.log("Register");
-
     user_join_api(username, password, email)
       .then((res) => {
         toast.success(`${BLOG_NAME}에 가입하신 것을 환영합니다!`);
@@ -33,7 +31,7 @@ function Signup() {
       })
       .catch((err) => {
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
-        console.log(err);
+        console.error(err);
       });
   };
 

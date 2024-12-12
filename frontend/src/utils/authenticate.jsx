@@ -69,7 +69,6 @@ export const GetPayload = (setIsLoading, setMaintenance) => {
       try {
         const jwt = await has_jwt_cookie_api();
         if (!jwt?.data) return;
-        console.log(jwt);
         await jwt_refresh_api();
         const result = await user_profile_api();
         const payload = result.data;

@@ -16,7 +16,6 @@ export default class FileUploader extends Plugin {
       button.on("execute", () => {
         if (window.sessionStorage.getItem("fileUploader") !== "true") {
           window.sessionStorage.setItem("fileUploader", "true");
-          console.log("fileUploader button clicked");
         }
         window.dispatchEvent(new Event("fileUploader"));
       });

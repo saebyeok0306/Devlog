@@ -23,7 +23,6 @@ export default class TitleSuggestion extends Plugin {
 
       button.on("execute", async () => {
         const content = editor.getData();
-        console.log(content);
         const collected_message = await this._getLLM(content);
 
         const selection = editor.model.document.selection;

@@ -27,13 +27,13 @@ public class Category extends CreateTime {
     @NotNull
     @Convert(converter = RoleConverter.class)
     @Column(name = "write_post_auth")
-    private Role writePostAuth;
+    private Role writePostAuth = Role.GUEST;
     @NotNull
     @Convert(converter = RoleConverter.class)
     @Column(name = "write_comment_auth")
-    private Role writeCommentAuth;
+    private Role writeCommentAuth = Role.GUEST;
     @NotNull
     @Convert(converter = RoleConverter.class)
     @Column(name = "read_category_auth")
-    private Role readCategoryAuth;
+    private Role readCategoryAuth = Role.GUEST;
 }

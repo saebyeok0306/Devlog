@@ -32,9 +32,7 @@ function checkCategoryHandler(idx, setAllChecked, checkedList, setCheckedList) {
   const newList = [...checkedList];
   newList[idx] = !newList[idx]; // 해당 인덱스의 값을 토글
   setCheckedList(newList);
-  console.log(newList);
   if (newList.every((v) => v === true)) {
-    console.log("all checked");
     setAllChecked(true);
   } else if (newList.every((v) => v === false)) {
     setAllChecked(false);
@@ -145,7 +143,6 @@ function EditCategory() {
   useEffect(() => {
     get_categories_detail_api()
       .then((res) => {
-        console.log(res);
         setList(res.data);
         const newList = Array(res.data.length).fill(false);
         setCheckedList(newList);

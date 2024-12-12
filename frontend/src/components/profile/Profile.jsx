@@ -83,7 +83,6 @@ function Profile() {
       reader.readAsDataURL(file);
       // const upload_url = URL.createObjectURL(file);
       // setProfileUrl(upload_url);
-      console.log("파일 선택됨:", file);
       event.target.value = null;
     }
   };

@@ -15,7 +15,6 @@ function Callback() {
     // const refresh_token = searchParams.get("rt");
     // signIn(access_token, refresh_token, setAuthDto);
     const res = signIn(setAuthDto);
-    console.log("callback", res);
     navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

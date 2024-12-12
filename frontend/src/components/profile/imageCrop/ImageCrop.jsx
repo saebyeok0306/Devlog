@@ -126,7 +126,7 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile, setAuthDto }) {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
 
     // blobUrlRef.current = URL.createObjectURL(blob);

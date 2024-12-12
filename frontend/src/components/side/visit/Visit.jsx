@@ -38,7 +38,7 @@ function Visit() {
           });
         })
         .catch((err) => {
-          console.log("Failed to get blog visit:", err);
+          console.error("Failed to get blog visit:", err);
         });
     };
 
