@@ -4,7 +4,6 @@ import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.Role;
-import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,7 @@ public class CategoryServiceTest {
     final static int MAX_SIZE = 5;
     final static List<Role> CATEGORY_WRITE_ROLES = List.of(Role.GUEST, Role.GUEST, Role.USER, Role.PARTNER, Role.ADMIN);
     final static List<Role> CATEGORY_READ_ROLES = List.of(Role.GUEST, Role.GUEST, Role.GUEST, Role.USER, Role.ADMIN);
+    final static List<Role> UPDATED_CATEGORY_READ_ROLES = List.of(Role.USER, Role.GUEST, Role.GUEST, Role.USER, Role.GUEST);
     public List<Category> createCategories() {
         List<Category> categories = new ArrayList<>();
         for (var i=0; i<MAX_SIZE; i++) {
@@ -45,6 +45,22 @@ public class CategoryServiceTest {
                     .writePostAuth(CATEGORY_WRITE_ROLES.get(i))
                     .readCategoryAuth(CATEGORY_READ_ROLES.get(i))
                     .writeCommentAuth(CATEGORY_READ_ROLES.get(i))
+                    .build();
+            categories.add(category);
+        }
+        return categories;
+    }
+
+    public List<Category> createUpdatedCategories() {
+        List<Category> categories = new ArrayList<>();
+        for (var i=0; i<MAX_SIZE; i++) {
+            Category category = Category.builder()
+                    .id((long) i+1)
+                    .name(String.format("카테고리 테스트%d", i))
+                    .layer(i)
+                    .writePostAuth(CATEGORY_WRITE_ROLES.get(i))
+                    .readCategoryAuth(UPDATED_CATEGORY_READ_ROLES.get(i))
+                    .writeCommentAuth(UPDATED_CATEGORY_READ_ROLES.get(i))
                     .build();
             categories.add(category);
         }
@@ -134,7 +150,7 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("카테고리 업데이트")
-    public void updateCategories() throws BadRequestException {
+    public void updateCategories() {
         // given
         List<Category> find_categories = createCategories();
         List<Category> update_categories = find_categories.subList(0, 3);
@@ -148,6 +164,21 @@ public class CategoryServiceTest {
         // then
         verify(categoryRepository).deleteAll(delete_categories);
         assertThat(updatedCategories.size()).isEqualTo(update_categories.size());
+    }
+
+    @Test
+    @DisplayName("카테고리 업데이트 (읽기권한 변경)")
+    public void updateCategories2() {
+        // given
+        List<Category> find_categories = createCategories();
+        List<Category> update_categories = createUpdatedCategories();
+        given(categoryRepository.findAll()).willReturn(find_categories);
+        given(categoryRepository.saveAll(update_categories)).willReturn(update_categories);
+
+        // when
+        List<Category> updatedCategories = categoryService.updateCategories(update_categories);
+
+        // then
     }
 
     @Test

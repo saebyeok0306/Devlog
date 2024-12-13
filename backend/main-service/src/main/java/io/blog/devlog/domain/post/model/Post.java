@@ -12,6 +12,7 @@ import java.util.List;
 
 @Table(name="POST", indexes = {
         @Index(name = "idx_url", columnList = "url"),
+        @Index(name = "idx_category", columnList = "category_id"),
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

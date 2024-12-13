@@ -3,15 +3,19 @@ package io.blog.devlog.domain.post.service;
 import io.blog.devlog.config.TestConfig;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.file.service.FileService;
+import io.blog.devlog.domain.post.dto.ResponsePostUrlDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.client.SitemapClient;
+import io.blog.devlog.utils.EntityFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,14 +27,14 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class PostServiceTest {
-
+    @Mock
+    private SitemapClient sitemapClient;
     @Mock
     private PostRepository postRepository;
     @Mock
@@ -185,8 +189,8 @@ public class PostServiceTest {
     @Test
     void deletePost() {
         // given
-        Post post = Post.builder().build();
-
+        Post post = EntityFactory.createPost();
+        ResponsePostUrlDto responsePostUrlDto = ResponsePostUrlDto.of(post.getCategory().getId(), post.getUrl());
         doAnswer(invocation -> {System.out.println("deleteFileFromPost"); return null;}).when(fileService).deleteFileFromPost(post);
         doAnswer(invocation -> {System.out.println("delete"); return null;}).when(postRepository).delete(post);
 
@@ -196,6 +200,12 @@ public class PostServiceTest {
         // then
         verify(fileService).deleteFileFromPost(post);
         verify(postRepository).delete(post);
+        ArgumentCaptor<ResponsePostUrlDto> captor = ArgumentCaptor.forClass(ResponsePostUrlDto.class);
+        verify(sitemapClient).deletePostSitemap(captor.capture());
+
+        ResponsePostUrlDto capturedDto = captor.getValue();
+        assertThat(capturedDto).isNotNull();
+        assertThat(capturedDto.getUrl()).isEqualTo(responsePostUrlDto.getUrl());
     }
 
     @Test
@@ -215,46 +225,4 @@ public class PostServiceTest {
         // then
         assertThat(getPosts).isEqualTo(posts);
     }
-
-//    @Test
-//    void isPubliclyVisible1() {
-//        // given
-//        Category category = Category.builder()
-//                .layer(1)
-//                .name("카테고리")
-//                .build();
-//        Post post = Post.builder()
-//                .category(category)
-//                .isPrivate(true)
-//                .build();
-//
-//        given(categoryService.hasCommentCategoryAuth(category, Role.GUEST)).willReturn(true);
-//
-//        // when
-//        boolean isFalse = postService.isPubliclyVisible(post);
-//
-//        // then
-//        assertThat(isFalse).isFalse();
-//    }
-//
-//    @Test
-//    void isPubliclyVisible2() {
-//        // given
-//        Category category = Category.builder()
-//                .layer(1)
-//                .name("카테고리")
-//                .build();
-//        Post post = Post.builder()
-//                .category(category)
-//                .isPrivate(false)
-//                .build();
-//
-//        given(categoryService.hasCommentCategoryAuth(category, Role.GUEST)).willReturn(true);
-//
-//        // when
-//        boolean isTrue = postService.isPubliclyVisible(post);
-//
-//        // then
-//        assertThat(isTrue).isTrue();
-//    }
 }

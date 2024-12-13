@@ -10,18 +10,15 @@ import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.post.service.PostUploadService;
 import io.blog.devlog.domain.post.service.PostViewsService;
-import io.blog.devlog.domain.post.service.PublicPostService;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.domain.views.service.PostViewCountService;
-import io.blog.devlog.global.client.SitemapClient;
 import io.blog.devlog.global.exception.NoPermissionException;
 import io.blog.devlog.global.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 
@@ -39,7 +35,6 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @RequestMapping("/posts")
 @Slf4j
 public class PostController {
-    private final SitemapClient sitemapClient;
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
@@ -47,16 +42,13 @@ public class PostController {
     private final PostUploadService postUploadService;
     private final PostViewsService postViewsService;
     private final PostViewCountService postViewCountService;
-    private final PublicPostService publicPostService;
+
 
     @Transactional
     @PostMapping
     public void uploadPost(@RequestBody RequestPostDto requestPostDto) {
         log.info("Post uploaded : " + requestPostDto.getTitle());
-        Post post = postUploadService.savePost(requestPostDto);
-        if (publicPostService.isPubliclyVisible(post)) {
-            sitemapClient.addPostSitemap(ResponsePostUrlDto.of(requestPostDto.getCategoryId(), requestPostDto.getUrl()));
-        }
+        postUploadService.savePost(requestPostDto);
     }
 
     @Transactional
@@ -68,18 +60,7 @@ public class PostController {
             log.info("Post not found : " + requestEditPostDto.getId());
             throw new NotFoundException("Post not found : " + requestEditPostDto.getId());
         }
-
-        // INFO: Spring JPA에서 같은 id를 가진 Entity는 서로 다른 상황에서 가져온 객체여도 주소가 같음. (영속성 컨텍스트 Persistence Context)
-        String prevPostUrl = post.getUrl();
-        Long prevCategoryId = post.getCategory().getId();
-        Post renewPost = postUploadService.editPost(requestEditPostDto);
-
-        if (!prevPostUrl.equals(renewPost.getUrl()) || !prevCategoryId.equals(renewPost.getCategory().getId())) {
-            sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(prevCategoryId, prevPostUrl));
-            if (publicPostService.isPubliclyVisible(renewPost)) {
-                sitemapClient.addPostSitemap(ResponsePostUrlDto.of(renewPost.getCategory().getId(), renewPost.getUrl()));
-            }
-        }
+        postUploadService.editPost(post, requestEditPostDto);
     }
 
     @GetMapping
@@ -192,6 +173,5 @@ public class PostController {
         }
         commentService.deleteCommentsByPostId(postDetail.getPost().getId());
         postService.deletePost(postDetail.getPost());
-        sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(postDetail.getPost().getCategory().getId(), postDetail.getPost().getUrl()));
     }
 }

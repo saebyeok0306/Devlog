@@ -1,6 +1,5 @@
 package io.blog.devlog.domain.post.model;
 
-import io.blog.devlog.domain.like.model.PostLikeId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

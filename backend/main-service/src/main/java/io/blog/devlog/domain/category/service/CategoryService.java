@@ -1,17 +1,16 @@
 package io.blog.devlog.domain.category.service;
 
-import io.blog.devlog.domain.category.dto.CategoryDto;
 import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.category.repository.CategoryRepository;
+import io.blog.devlog.domain.post.dto.ResponsePostUrlDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.service.PostService;
 import io.blog.devlog.domain.user.model.Role;
+import io.blog.devlog.global.client.SitemapClient;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import static io.blog.devlog.global.utils.SecurityUtils.getPrincipalRole;
 @RequiredArgsConstructor
 @Transactional
 public class CategoryService {
+    private final SitemapClient sitemapClient;
     private final CategoryRepository categoryRepository;
     private final PostService postService;
 
@@ -70,6 +70,23 @@ public class CategoryService {
 
     public List<Category> updateCategories(List<Category> categories) {
         List<Category> prevCategories = categoryRepository.findAll();
+        // 기존에 있던 카테고리에서 읽기 권한이 바뀐 경우
+        List<Category> updatedCategoriesRead = categories.stream()
+                .filter(category -> prevCategories.stream().anyMatch(c -> c.getId().equals(category.getId()) && !c.getReadCategoryAuth().equals(category.getReadCategoryAuth())))
+                .toList();
+        for (Category updatedCategory : updatedCategoriesRead) {
+            List<Post> posts = postService.getAllPostsByCategoryId(updatedCategory.getId());
+            if (this.hasReadCategoryAuth(updatedCategory, Role.GUEST)) {
+                for (Post post : posts) {
+                    sitemapClient.addPostSitemap(ResponsePostUrlDto.of(updatedCategory.getId(), post.getUrl()));
+                }
+            } else {
+                for (Post post : posts) {
+                    sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(updatedCategory.getId(), post.getUrl()));
+                }
+            }
+        }
+
         // categories 없는 카테고리는 삭제
         List<Category> deleteCategories = prevCategories.stream()
                 .filter(category -> categories.stream().noneMatch(c -> c.getId().equals(category.getId())))
