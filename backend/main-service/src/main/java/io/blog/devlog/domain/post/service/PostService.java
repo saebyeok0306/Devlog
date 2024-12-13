@@ -1,12 +1,14 @@
 package io.blog.devlog.domain.post.service;
 
 import io.blog.devlog.domain.file.service.FileService;
+import io.blog.devlog.domain.post.dto.ResponsePostUrlDto;
 import io.blog.devlog.domain.post.model.Post;
 import io.blog.devlog.domain.post.model.PostDetail;
 import io.blog.devlog.domain.post.repository.PostRepository;
 import io.blog.devlog.domain.user.model.Role;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
+import io.blog.devlog.global.client.SitemapClient;
 import io.blog.devlog.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @Transactional
 @Slf4j
 public class PostService {
+    private final SitemapClient sitemapClient;
     private final PostRepository postRepository;
     private final UserService userService;
     private final FileService fileService;
@@ -99,6 +102,7 @@ public class PostService {
     public void deletePost(Post post) {
         fileService.deleteFileFromPost(post);
         postRepository.delete(post);
+        sitemapClient.deletePostSitemap(ResponsePostUrlDto.of(post.getCategory().getId(), post.getUrl()));
     }
 
     public Slice<Post> getInfinitePosts(Pageable pageable, Long lastId) {

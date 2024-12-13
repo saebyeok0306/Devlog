@@ -1,7 +1,9 @@
 package io.blog.devlog.domain.post.model;
 
-import io.blog.devlog.global.time.CreateTime;
-import jakarta.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.data.domain.Persistable;
 
