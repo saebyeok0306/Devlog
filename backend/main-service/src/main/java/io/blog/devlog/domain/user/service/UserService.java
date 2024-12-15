@@ -37,7 +37,7 @@ public class UserService {
 
     public boolean hasJwtCookie(HttpServletRequest request) {
         log.info("check Jwt");
-        String token = jwtService.extractJWT(request).orElse(null);
+        String token = jwtService.extractRefreshJWT(request).orElse(null);
         return token != null;
     }
 
