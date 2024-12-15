@@ -51,7 +51,7 @@ public class UserService2Test {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // when
-        userService.reissueAccessToken(request, response);
+        userService.reissueToken(request, response);
 
         // then
         Cookie accessTokenCookie = response.getCookie("access_token");
