@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +36,11 @@ public class UserService {
 
     public boolean hasJwtCookie(HttpServletRequest request) {
         log.info("check Jwt");
-        String token = jwtService.extractJWT(request).orElse(null);
+        String token = jwtService.extractRefreshJWT(request).orElse(null);
         return token != null;
     }
 
-    public void reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public void reissueToken(HttpServletRequest request, HttpServletResponse response) {
         log.info("reissueRequest : " + request.toString());
         try {
             String refreshToken = jwtService.extractRefreshJWT(request).orElse(null);
@@ -54,6 +53,7 @@ public class UserService {
                 User user = userRepository.findByEmail(jwtService.get_claim_email(claims)).orElse(null);
                 if (user == null) throw new InvalidJwtException("Invalid refresh token");
                 String newAccessToken = jwtService.createAccessToken(user);
+                // TODO: 여기서 refreshToken도 같이 재발급 받아서 넘겨주면, autoLogin 구현?
                 jwtService.sendAccessToken(response, newAccessToken);
             }
         } catch (JwtException e) {

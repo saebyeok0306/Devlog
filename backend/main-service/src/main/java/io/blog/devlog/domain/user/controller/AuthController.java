@@ -71,7 +71,7 @@ public class AuthController {
 
     @GetMapping("/reissue")
     public void reissue(HttpServletRequest request, HttpServletResponse response) {
-        userService.reissueAccessToken(request, response);
+        userService.reissueToken(request, response);
     }
 
     @GetMapping("/signout")
