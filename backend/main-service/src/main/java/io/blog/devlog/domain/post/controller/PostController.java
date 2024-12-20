@@ -174,4 +174,11 @@ public class PostController {
         commentService.deleteCommentsByPostId(postDetail.getPost().getId());
         postService.deletePost(postDetail.getPost());
     }
+
+    @GetMapping("/{url}/permissions")
+    public boolean checkPostPermission(@PathVariable String url) {
+        String email = getUserEmail();
+        Post post = postService.getSimplePostByUrl(url);
+        return post.getUser().getEmail().equals(email);
+    }
 }
