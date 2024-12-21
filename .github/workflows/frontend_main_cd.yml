@@ -24,13 +24,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 16
-        uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
         with:
-          node-version: 16
+          install: true # Buildx를 설치
 
-      - name: Build Docker image
-        run: docker build -f Dockerfile.prod -t devlog-frontend:latest .
+      - name: Set up Docker Buildx for ARM64
+        run: |
+          docker buildx create --use --platform linux/arm64
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build ARM64 Docker image
+        run: docker buildx build --platform linux/arm64 -f Dockerfile.prod -t devlog-frontend:latest .
 
       - name: Save Docker image as tar file
         run: docker save -o frontend.tar devlog-frontend:latest
