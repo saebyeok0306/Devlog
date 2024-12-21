@@ -6,7 +6,9 @@ networks:
 
 services:
   frontend-service:
-    image: devlog-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     ports:
       - "3000:3000"
     networks:
