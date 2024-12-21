@@ -5,6 +5,14 @@ networks:
     driver: bridge
 
 services:
+  frontend-service:
+    images: devlog-frontend:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - ms-network
+    restart: on-failure
+
   discovery-service:
     build:
       context: ./backend/discovery-service
