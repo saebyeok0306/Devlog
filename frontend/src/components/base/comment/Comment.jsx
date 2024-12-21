@@ -1,11 +1,11 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 import "./Comment.scss";
 import { Timeline } from "flowbite-react";
 import { timelineCustomTheme } from "@/styles/theme/timeline";
-import CommentEditor from "@/components/editor/commentEditor";
+// import CommentEditor from "@/components/editor/commentEditor";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "@/recoil/themeAtom";
 import { authAtom } from "@/recoil/authAtom";
 import { postAtom } from "@/recoil/postAtom";
 import { commentAtom, commentsAtom, CommentsData } from "@/recoil/commentAtom";
@@ -14,14 +14,24 @@ import {
   isWriteComment,
   uploadCommentHandler,
 } from "./comments/CommentsHandler";
-import { get_comments_by_post_api } from "@/api/Comment";
+import { get_comments_by_post_api } from "@/api/comment";
 import { sortComments } from "@/utils/sortComments";
 import { toast } from "react-toastify";
+import { useTheme } from "next-themes";
+import dynamic from "next/dynamic";
+
+const CommentEditor = dynamic(
+  () => import("@/components/editor/commentEditor"),
+  {
+    ssr: false, // 서버사이드 렌더링 비활성화
+  }
+);
 
 function Comment({ ...props }) {
   const { commentRef } = props;
   const authDto = useRecoilValue(authAtom);
-  const isDark = useRecoilValue(themeAtom);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme == "dark";
   const [updater, setUpdater] = useState(0);
   const [reply, setReply] = useState({
     flag: false, // true: 답글 작성 false: 편집
@@ -43,8 +53,8 @@ function Comment({ ...props }) {
     if (updater < 1) return;
     get_comments_by_post_api(postContent.id)
       .then((res) => {
-        const sortedComments = sortComments(res.data);
-        const commentsObj = new CommentsData(sortedComments, res.data?.length);
+        const sortedComments = sortComments(res);
+        const commentsObj = new CommentsData(sortedComments, res?.length);
         setCommentsData(commentsObj);
       })
       .catch((error) => {

@@ -1,10 +1,11 @@
+"use client";
 import React, { useState } from "react";
 
 import "./Password.scss";
 
 import { Button } from "flowbite-react";
 import { toast } from "react-toastify";
-import { renew_password_api } from "@/api/User";
+import { renew_password_api } from "@/api/user";
 
 const passwordInit = {
   currentPassword: "",

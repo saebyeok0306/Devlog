@@ -1,3 +1,4 @@
+"use client";
 import { ButtonView, Plugin } from "ckeditor5";
 
 export default class TableAutoFit extends Plugin {

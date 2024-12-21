@@ -1,9 +1,9 @@
+"use client";
 import { ToastContainer } from "react-toastify";
-import { useRecoilValue } from "recoil";
-import { themeAtom } from "@/recoil/themeAtom";
+import { useTheme } from "next-themes";
 
-function ToastContainerComponent() {
-  const isDark = useRecoilValue(themeAtom);
+function ClientToastContainer() {
+  const { resolvedTheme } = useTheme();
   return (
     <ToastContainer
       position="top-center"
@@ -14,9 +14,9 @@ function ToastContainerComponent() {
       rtl={false}
       pauseOnFocusLoss={false}
       draggable
-      theme={`${isDark ? "dark" : "light"}`}
+      theme={`${resolvedTheme == "dark" ? "dark" : "light"}`}
     />
   );
 }
 
-export default ToastContainerComponent;
+export default ClientToastContainer;

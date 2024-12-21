@@ -1,3 +1,4 @@
+"use client";
 import { windowAtom } from "@/recoil/windowAtom";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
@@ -10,6 +11,7 @@ export function useWindow() {
       setWindows({ ...windows, width: window.innerWidth });
     };
 
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {

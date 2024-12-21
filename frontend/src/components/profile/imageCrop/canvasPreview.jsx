@@ -1,3 +1,4 @@
+"use client";
 const TO_RADIANS = Math.PI / 180;
 
 export async function canvasPreview(

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { postAtom } from "@/recoil/postAtom";
@@ -12,10 +13,10 @@ import {
 } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { PostContext, postContextAtom } from "@/recoil/editorAtom";
-import { delete_post_api } from "@/api/Posts";
-import { useNavigate } from "react-router-dom";
-import { POST_STORE } from "@/api/Cache";
+import { delete_post_api } from "@/api/posts";
+import { POST_STORE } from "@/api/cache";
 import tocbot from "tocbot";
+import { useParams, useRouter } from "next/navigation";
 
 const scrollToTopHandler = () => {
   window.scrollTo({
@@ -38,37 +39,15 @@ const exportUrlHandler = (postContent) => {
 };
 
 // TODO: 게시글 수정은 /editor/{url} 형태로 새로고침해도 유지되도록 변경
-const postEditHandler = async (navigate, postContent, setPostContext) => {
-  const preview = postContent.files.find(
-    (file) =>
-      `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}` ===
-      postContent.previewUrl
-  );
-
-  const newContext = new PostContext(
-    postContent.id,
-    postContent.title,
-    "", // body
-    postContent.content,
-    postContent.category,
-    postContent.files,
-    preview,
-    postContent.private,
-    postContent.createdAt,
-    postContent.modifiedAt,
-    postContent.url,
-    postContent.views
-  );
-
-  await setPostContext(newContext);
-  navigate("/editor");
+const postEditHandler = async (navigate, postUrl) => {
+  navigate.push("/editor/" + postUrl);
 };
 
 const postDeleteHandler = async (navigate, postContent) => {
   try {
     await delete_post_api(postContent.url);
     POST_STORE.clear();
-    navigate("-1");
+    navigate.back();
     toast.info("게시글이 삭제되었습니다.");
   } catch (error) {
     toast.error("게시글 삭제 중 오류가 발생했습니다.");
@@ -77,14 +56,14 @@ const postDeleteHandler = async (navigate, postContent) => {
 };
 
 const postStatisticsHandler = async (navigate, postContent) => {
-  navigate(`/post/${postContent.url}/statistics`);
+  navigate.push(`/post/${postContent.url}/statistics`);
 };
 
 function TOC({ ...props }) {
   const { commentRef } = props;
-  const navigate = useNavigate();
+  const { postUrl } = useParams();
+  const navigate = useRouter();
   const [postContent] = useRecoilState(postAtom);
-  const [, setPostContext] = useRecoilState(postContextAtom);
 
   useEffect(() => {
     tocbot.init({
@@ -160,11 +139,7 @@ function TOC({ ...props }) {
               >
                 통계
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() =>
-                  postEditHandler(navigate, postContent, setPostContext)
-                }
-              >
+              <Dropdown.Item onClick={() => postEditHandler(navigate, postUrl)}>
                 수정
               </Dropdown.Item>
               <Dropdown.Item

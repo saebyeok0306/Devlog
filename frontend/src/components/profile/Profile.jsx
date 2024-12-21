@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 
 import "./Profile.scss";
@@ -14,9 +15,11 @@ import {
 } from "./profileItem";
 import { signOutProcess } from "@/utils/authenticate";
 import { toast } from "react-toastify";
-import { delete_profile_url_api, user_profile_api } from "@/api/User";
+import { delete_profile_url_api, user_profile_api } from "@/api/user";
+import { useRouter } from "next/navigation";
 
 function Profile() {
+  const navigate = useRouter();
   const fileInputRef = useRef(null);
   const profileImageRef = useRef(null);
   const [authDto, setAuthDto] = useRecoilState(authAtom);
@@ -46,6 +49,7 @@ function Profile() {
       } catch (error) {
         toast.error("프로필 정보를 불러오는데 실패했습니다.");
         signOutProcess(setAuthDto);
+        navigate.push("/");
       }
     };
 
@@ -57,9 +61,9 @@ function Profile() {
     fileInputRef.current.click();
   };
 
-  const removeImageHandler = () => {
+  const removeImageHandler = async () => {
     try {
-      delete_profile_url_api();
+      await delete_profile_url_api();
       setAuthDto({ ...authDto, profileUrl: null });
       setUserProfile({ ...userProfile, profileUrl: null });
     } catch (error) {
@@ -106,7 +110,9 @@ function Profile() {
             <img
               ref={profileImageRef}
               src={
-                userProfile.profileUrl === null ? "" : userProfile.profileUrl
+                userProfile.profileUrl === null
+                  ? "profile"
+                  : userProfile.profileUrl
               }
               alt="user-profile"
               onError={onErrorImg}

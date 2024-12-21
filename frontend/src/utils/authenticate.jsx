@@ -1,19 +1,20 @@
+"use client";
 import { Auth, authAtom } from "@/recoil/authAtom";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
-import { clearAllCacheStore } from "@/api/Cache";
+import { clearAllCacheStore } from "@/api/cache";
 import { useEffect } from "react";
 import {
   has_jwt_cookie_api,
   jwt_refresh_api,
   user_logout_api,
   user_profile_api,
-} from "@/api/User";
+} from "@/api/user";
 
 export const signIn = async (setAuthDto, message = "로그인 성공!") => {
   try {
-    let payload = await user_profile_api();
-    payload = payload.data;
+    let res = await user_profile_api();
+    const payload = res.data;
     setAuthDto(
       new Auth(
         payload.username,
@@ -60,7 +61,7 @@ export const warnSignOut = async (
   }
 };
 
-export const GetPayload = (setIsLoading, setMaintenance) => {
+export const GetPayload = (setIsLoading = null, setMaintenance = null) => {
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export const GetPayload = (setIsLoading, setMaintenance) => {
       if (authDto?.isLogin) return;
       try {
         const jwt = await has_jwt_cookie_api();
-        if (!jwt?.data) return;
+        if (!jwt) return;
         await jwt_refresh_api();
         const result = await user_profile_api();
         const payload = result.data;
@@ -91,14 +92,14 @@ export const GetPayload = (setIsLoading, setMaintenance) => {
       } catch (error) {
         if (error?.message === "Network Error") {
           console.error("server maintenance:", error);
-          setMaintenance(true);
+          // setMaintenance(true);
           return;
         }
         await signOutProcess(setAuthDto);
         // await warnSignOut(setAuthDto, "로그인이 만료되었습니다.");
         return;
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 

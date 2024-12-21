@@ -1,4 +1,5 @@
-import { upload_file_api } from "@/api/File";
+"use client";
+import { upload_file_api } from "@/api/file";
 
 import {
   AccessibilityHelp,
@@ -289,7 +290,7 @@ const editorConfig = {
   },
   // simpleUpload: {
   //   // The URL that the images are uploaded to.
-  //   uploadUrl: `${import.meta.env.VITE_API_ENDPOINT}/files`,
+  //   uploadUrl: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/files`,
 
   //   // Enable the XMLHttpRequest.withCredentials property.
   //   withCredentials: true,
@@ -307,14 +308,13 @@ class CustomUploadAdapter {
       (file) =>
         new Promise(async (resolve, reject) => {
           try {
-            const res = await upload_file_api(file);
-            const payload = res.data;
+            const payload = await upload_file_api(file);
             await this.setFiles((prev) => ({
               ...prev,
               files: [...prev.files, payload],
             }));
             resolve({
-              default: `${import.meta.env.VITE_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
+              default: `${process.env.NEXT_PUBLIC_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
             });
           } catch (error) {
             reject(error);

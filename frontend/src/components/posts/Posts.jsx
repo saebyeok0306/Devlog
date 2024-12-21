@@ -1,20 +1,20 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Dropdown, Pagination } from "flowbite-react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 import "./Posts.scss";
 import { onErrorImg } from "@/utils/defaultImg";
-import { get_posts_api } from "@/api/Posts";
+import { get_posts_api } from "@/api/posts";
 import { categoryAtom } from "@/recoil/categoryAtom";
 import { paginationCustomTheme } from "@/styles/theme/pagination";
 import { getDatetime } from "@/utils/getDatetime";
-import { Link } from "react-router-dom";
 import { authAtom } from "@/recoil/authAtom";
 
-import nopostImg from "@/assets/nopost.png";
 import { MasonryGrid } from "@egjs/react-grid";
 import classNames from "classnames";
 import { windowAtom } from "@/recoil/windowAtom";
+import Link from "next/link";
 
 const scrollToTopHandler = () => {
   window.scrollTo({
@@ -27,7 +27,7 @@ function PostCard(idx, post, setSelectCategory) {
   const createdAtFormat = getDatetime(post.createdAt);
   return (
     <div className="post" key={idx}>
-      <Link to={`/post/${post.url}`}>
+      <Link href={`/post/${post.url}`}>
         <div className="post-item-top">
           {post.previewUrl ? (
             <img
@@ -84,16 +84,20 @@ function Posts() {
     // eslint-disable-next-line
   }, [selectCategory, authDto]);
 
+  const PostListHandler = (res_posts) => {
+    setPosts(res_posts.posts);
+    setPage({
+      totalPages: res_posts.totalPages,
+      currentPage: res_posts.currentPage,
+      totalElements: res_posts.totalElements,
+    });
+    setRenderer((prev) => prev + 1);
+  };
+
   const PostEnvetHandler = async (category, curpage, view) => {
     await get_posts_api(category, curpage, view)
       .then((response) => {
-        setPosts(response.data.posts);
-        setPage({
-          totalPages: response.data.totalPages,
-          currentPage: response.data.currentPage,
-          totalElements: response.data.totalElements,
-        });
-        setRenderer((prev) => prev + 1);
+        PostListHandler(response);
       })
       .catch((error) => {
         console.error(error);
@@ -125,7 +129,7 @@ function Posts() {
     return (
       <div className="posts-container">
         <div className="posts-empty">
-          <img src={nopostImg} alt="profile" onError={onErrorImg} />
+          <img src="/images/nopost.png" alt="profile" onError={onErrorImg} />
           <p>글이 없네요.</p>
         </div>
       </div>

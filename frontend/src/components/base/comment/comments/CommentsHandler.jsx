@@ -1,9 +1,10 @@
+"use client";
 import {
   delete_comment_api,
   edit_comment_api,
   get_comment_files_api,
   upload_comment_api,
-} from "@/api/Comment";
+} from "@/api/comment";
 import { toast } from "react-toastify";
 
 const isWriteComment = ({ commentState, authDto }) => {

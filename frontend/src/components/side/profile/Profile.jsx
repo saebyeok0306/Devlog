@@ -1,19 +1,20 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 
 import "./Profile.scss";
-import { get_info_api, set_info_api } from "@/api/Info";
+import { get_info_api, set_info_api } from "@/api/info";
 import EditIcon from "@/assets/icons/Edit";
 import { useRecoilValue } from "recoil";
-import { themeAtom } from "@/recoil/themeAtom";
 import { Tooltip } from "flowbite-react";
 import { onErrorImg } from "@/utils/defaultImg";
 import { authAtom } from "@/recoil/authAtom";
+import { useTheme } from "next-themes";
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {
   const authDto = useRecoilValue(authAtom);
   const textarea = useRef();
-  const isDark = useRecoilValue(themeAtom);
+  const { resolvedTheme } = useTheme();
   const [profile, setProfile] = useState();
   const [editMode, setEditMode] = useState(false);
   const [editProfile, setEditProfile] = useState();
@@ -21,7 +22,7 @@ function Profile() {
   useEffect(() => {
     get_info_api()
       .then((res) => {
-        setProfile(res.data);
+        setProfile(res);
       })
       .catch((err) => {
         console.error(err);
@@ -62,7 +63,7 @@ function Profile() {
         <EditIcon
           width="100%"
           height="100%"
-          stroke={isDark ? "#fff" : "#000"}
+          stroke={resolvedTheme == "dark" ? "#fff" : "#000"}
         />
       </div>
     );
@@ -72,7 +73,7 @@ function Profile() {
     <div className="profile">
       <div className="profile-image">
         <img
-          src={"/assets/ryan-riggins-216051.jpg"}
+          src={"/images/ryan-riggins-216051.jpg"}
           alt="profile"
           onError={onErrorImg}
         />
@@ -90,7 +91,10 @@ function Profile() {
               onChange={(e) => handleResizeHeight(e, setEditProfile)}
             />
             <button onClick={(e) => handleEdit(e)}>
-              <Tooltip content="Save" style={isDark ? "dark" : "light"}>
+              <Tooltip
+                content="Save"
+                style={resolvedTheme == "dark" ? "dark" : "light"}
+              >
                 <ProfileEditIcon />
               </Tooltip>
             </button>
@@ -100,7 +104,10 @@ function Profile() {
             <p>{profile?.about}</p>
             {authDto?.role === "ADMIN" ? (
               <button onClick={(e) => handleEdit(e)}>
-                <Tooltip content="Edit" style={isDark ? "dark" : "light"}>
+                <Tooltip
+                  content="Edit"
+                  style={resolvedTheme == "dark" ? "dark" : "light"}
+                >
                   <ProfileEditIcon />
                 </Tooltip>
               </button>

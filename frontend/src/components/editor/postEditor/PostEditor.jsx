@@ -1,8 +1,8 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 
 import { authAtom } from "@/recoil/authAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useNavigate } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { CustomUploadAdapter, editorConfig } from "./ClassicEditor";
 import { ClassicEditor } from "ckeditor5";
@@ -11,10 +11,11 @@ import "./PostEditor.scss";
 import { Button } from "flowbite-react";
 import { PostContext, postContextAtom } from "@/recoil/editorAtom";
 import { toast } from "react-toastify";
-import { get_categories_readwrite_api } from "@/api/Category";
+import { get_categories_readwrite_api } from "@/api/category";
 import Publish from "./publish";
 import hljs from "highlight.js";
 import FileUploader from "./fileUploader";
+import { useRouter } from "next/navigation";
 
 const divideTitleAndBody = (content) => {
   const parser = new DOMParser();
@@ -35,7 +36,7 @@ const divideTitleAndBody = (content) => {
 
 function PostEditor() {
   const editorRef = useRef(null);
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const authDto = useRecoilValue(authAtom);
 
   const [editorInstance, setEditorInstance] = useState(null);
@@ -75,14 +76,14 @@ function PostEditor() {
 
     get_categories_readwrite_api()
       .then((res) => {
-        const response_categories = res.data;
-        if (response_categories.length === 0) {
+        const res_categories = res;
+        if (res_categories.length === 0) {
           toast.warning("글을 작성할 수 있는 카테고리가 없습니다!");
-          return navigate(-1);
+          return navigate.back();
         }
-        setCategories(res.data);
+        setCategories(res_categories);
         if (postContext.category == null || postContext.category == undefined) {
-          setPostContext((prev) => ({ ...prev, category: res.data[0] }));
+          setPostContext((prev) => ({ ...prev, category: res_categories[0] }));
         }
       })
       .catch((err) => {
@@ -117,7 +118,7 @@ function PostEditor() {
       // files 중 content에 없는 이미지가 preview인 경우 다시 files에서 첫번째 항목으로 선택.
       if (
         postContext.content.indexOf(
-          `(${import.meta.env.VITE_API_FILE_URL}/${postContext.preview.filePath}/${postContext.preview.fileUrl})`
+          `(${process.env.NEXT_PUBLIC_API_FILE_URL}/${postContext.preview.filePath}/${postContext.preview.fileUrl})`
         ) === -1
       ) {
         setPostContext((prev) => ({ ...prev, preview: prev.files[0] }));
@@ -147,7 +148,7 @@ function PostEditor() {
     const fileFilter = (file) => {
       return (
         postContext.content.indexOf(
-          `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
+          `${process.env.NEXT_PUBLIC_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
         ) !== -1 || file.fileType !== "IMAGE"
       );
     };

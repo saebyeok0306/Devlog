@@ -1,14 +1,16 @@
+"use client";
 import React from "react";
 
 import "./UserMenu.scss";
 import { authAtom } from "@/recoil/authAtom";
-import { useRecoilState } from "recoil";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "flowbite-react";
 import { signOut } from "@/utils/authenticate";
+import Link from "next/link";
+import { useRecoilState } from "recoil";
+import { useRouter } from "next/navigation";
 
 const onProfileHandler = (navigate) => {
-  navigate("/profile");
+  navigate.push("/profile");
 };
 
 const onLogoutHandler = (setAuthDto) => {
@@ -16,14 +18,16 @@ const onLogoutHandler = (setAuthDto) => {
 };
 
 function UserMenu() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useRouter();
+  // const location = useLocation();
   const [authDto, setAuthDto] = useRecoilState(authAtom);
 
   if (authDto?.isLogin === false) {
     return (
       <nav className="usermenu button">
-        <Link to="/login" state={{ backpath: location.pathname }}>
+        <Link href="/login">
+          {" "}
+          {/*state={{ backpath: location.pathname }} */}
           로그인
         </Link>
       </nav>

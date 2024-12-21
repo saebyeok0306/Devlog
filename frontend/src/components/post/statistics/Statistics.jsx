@@ -1,8 +1,8 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 import "./Statistics.scss";
-import { useNavigate, useParams } from "react-router-dom";
-import { get_post_daily_statistics_api } from "@/api/Posts";
+import { get_post_daily_statistics_api } from "@/api/posts";
 import { Line } from "react-chartjs-2";
 import {
   Chart,
@@ -19,6 +19,7 @@ import { Breadcrumb, List } from "flowbite-react";
 import { HiFire, HiFlag, HiCalendar, HiHome } from "react-icons/hi";
 import { categoryAtom } from "@/recoil/categoryAtom";
 import { generateDateRange } from "@/utils/generateDateRange";
+import { useParams, useRouter } from "next/navigation";
 
 Chart.register(
   CategoryScale,
@@ -29,20 +30,8 @@ Chart.register(
   Legend
 );
 
-// const generateDateRange = (startDate, endDate) => {
-//   const dateArray = [];
-//   const currentDate = new Date(startDate);
-
-//   while (currentDate <= new Date(endDate)) {
-//     dateArray.push(currentDate.toISOString().split("T")[0]); // YYYY-MM-DD 형식
-//     currentDate.setDate(currentDate.getDate() + 1);
-//   }
-
-//   return dateArray;
-// };
-
 function Statistics() {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const { postUrl } = useParams();
   const [post, setPost] = useState({
     url: "",
@@ -67,13 +56,11 @@ function Statistics() {
 
       await get_post_daily_statistics_api(postUrl, start, end)
         .then((res) => {
-          setPost({ ...post, ...res.data.post });
+          setPost({ ...post, ...res.post });
 
           const labels = generateDateRange(start, end);
           const viewCounts = labels.map((date) => {
-            const entry = res.data.viewCounts.find(
-              (item) => item.viewDate === date
-            );
+            const entry = res.viewCounts.find((item) => item.viewDate === date);
             return entry ? entry.viewCount : 0;
           });
 

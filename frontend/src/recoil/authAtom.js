@@ -1,10 +1,4 @@
 import { atom } from "recoil";
-// import { recoilPersist } from "recoil-persist";
-
-// const { persistAtom } = recoilPersist({
-//   key: "auth",
-//   storage: sessionStorage,
-// });
 
 export class Auth {
   constructor(
