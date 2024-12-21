@@ -16,31 +16,7 @@ env:
   APP_FOLDER_PATH: "/home/app/frontend"
 
 jobs:
-  # 사전 작업
-  setup:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: frontend
-    outputs:
-      build-cache-key: ${{ steps.build-cache.outputs.key }}
-      current-datetime: ${{ steps.datetime.outputs.datetime }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: check
-        run: ls -al
-
-      - name: Get current date and time
-        id: datetime
-        run: echo "datetime=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
-
-      - name: Generate build cache key
-        id: build-cache
-        run: echo "key=$(echo ${{ runner.os }}-npm-${{ hashFiles('**//package-lock.json') }})" >> $GITHUB_OUTPUT
-
   build:
-    needs: setup
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -48,34 +24,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
         with:
-          node-version: 18
+          install: true # Buildx를 설치
 
-      - name: Cache Npm packages
-        id: cache-npm
+      - name: Set up Docker Buildx for ARM64
+        run: |
+          docker buildx create --use --platform linux/arm64
+
+      - name: Cache Docker layers
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
-          key: ${{ needs.setup.outputs.build-cache-key }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-npm-
+            ${{ runner.os }}-buildx-
 
-      - name: Cache Check
-        if: steps.cache-npm.outputs.cache-hit == 'true'
-        run: echo 'Npm cache hit!'
+      - name: Build ARM64 Docker image
+        run: docker buildx build --platform linux/arm64 -f Dockerfile.prod -t devlog-frontend:latest . --load
 
-      - name: Install package
-        run: npm ci
-
-      - name: Build with Node.js
-        run: npm run build
-
-      - name: Make zip build file
-        run: zip -qq -r ./${{ env.ZIP_NAME }} ./.next
-        shell: bash
+      - name: Save Docker image as tar file
+        run: docker save -o frontend.tar devlog-frontend:latest
 
       # (Actions에서 생성한 파일은 권한을 수정해야 scp로 보낼 때 오류가 안생김)
       - name: Modify permissions
@@ -99,5 +69,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.APP_FOLDER_PATH }}
-            rm -rf .next
-            unzip -o ${{ env.ZIP_NAME }}
+            docker load -i frontend.tar
+            cd /home/app
+            docker-compose -f docker-compose.prod.yml up -d frontend-service
