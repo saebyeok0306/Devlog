@@ -6,7 +6,7 @@ networks:
 
 services:
   frontend-service:
-    images: devlog-frontend:latest
+    image: devlog-frontend:latest
     ports:
       - "3000:3000"
     networks:
