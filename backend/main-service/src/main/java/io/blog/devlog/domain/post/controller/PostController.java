@@ -181,4 +181,14 @@ public class PostController {
         Post post = postService.getSimplePostByUrl(url);
         return post.getUser().getEmail().equals(email);
     }
+
+    @GetMapping("/{url}/metadata")
+    public ResponsePostMetadataDto getPostMetadata(@PathVariable String url) {
+        log.info("GET /posts/" + url + "/metadata");
+        Post post = postService.getSimplePostByUrl(url);
+        if (post == null) {
+            throw new NotFoundException("Post not found : " + url);
+        }
+        return ResponsePostMetadataDto.of(post);
+    }
 }
