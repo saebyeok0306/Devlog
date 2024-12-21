@@ -48,10 +48,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 16
+      - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Cache Npm packages
         id: cache-npm
