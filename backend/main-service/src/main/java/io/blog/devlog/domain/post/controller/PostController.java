@@ -174,4 +174,21 @@ public class PostController {
         commentService.deleteCommentsByPostId(postDetail.getPost().getId());
         postService.deletePost(postDetail.getPost());
     }
+
+    @GetMapping("/{url}/permissions")
+    public boolean checkPostPermission(@PathVariable String url) {
+        String email = getUserEmail();
+        Post post = postService.getSimplePostByUrl(url);
+        return post.getUser().getEmail().equals(email);
+    }
+
+    @GetMapping("/{url}/metadata")
+    public ResponsePostMetadataDto getPostMetadata(@PathVariable String url) {
+        log.info("GET /posts/" + url + "/metadata");
+        Post post = postService.getSimplePostByUrl(url);
+        if (post == null) {
+            throw new NotFoundException("Post not found : " + url);
+        }
+        return ResponsePostMetadataDto.of(post);
+    }
 }

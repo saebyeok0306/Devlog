@@ -1,4 +1,5 @@
-import { upgrade_sentence_api } from "@/api/AI";
+"use client";
+import { upgrade_sentence_api } from "@/api/ai";
 import { ButtonView, Plugin, TextProxy } from "ckeditor5";
 
 export default class UpgradeSentence extends Plugin {
@@ -47,8 +48,7 @@ export default class UpgradeSentence extends Plugin {
 
   async _getLLM(editor, selectedText) {
     try {
-      const response = await upgrade_sentence_api(selectedText);
-      const stream = response.data;
+      const stream = await upgrade_sentence_api(selectedText);
 
       // consume response
       const reader = stream.pipeThrough(new TextDecoderStream()).getReader();

@@ -1,3 +1,4 @@
+"use client";
 import FileResizer from "react-image-file-resizer";
 
 export const resizeBlob = (blob, width = 256, height = 256) =>

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": "./", // 프로젝트 루트 디렉토리
     "paths": {
-      "@/*": ["src/*"] // @을 src 폴더로 매핑
+      "@/*": ["./src/*"]
     }
-  },
-  "include": [
-    "src/**/*" // src 폴더 내 모든 파일 포함
-  ]
+  }
 }

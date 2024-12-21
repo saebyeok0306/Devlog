@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import "./Post.scss";
@@ -9,16 +10,15 @@ import {
   HiOutlineHeart,
   HiOutlineChatAlt2,
 } from "react-icons/hi";
-import { themeAtom } from "@/recoil/themeAtom";
 import { useRecoilValue } from "recoil";
 import { postAtom } from "@/recoil/postAtom";
-import { Navigate } from "react-router-dom";
 import { List, Tooltip } from "flowbite-react";
 import { authAtom } from "@/recoil/authAtom";
-import { post_like_api, post_unlike_api } from "@/api/Like";
+import { post_like_api, post_unlike_api } from "@/api/like";
 import { toast } from "react-toastify";
 import { commentsAtom } from "@/recoil/commentAtom";
 import PostInitializer from "./PostInitializer";
+import { useTheme } from "next-themes";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -51,7 +51,8 @@ const onLikeCancelHandler = async (postUrl, likes, setLikes, authDto) => {
 
 function Post({ ...props }) {
   const { likes, setLikes } = props;
-  const isDark = useRecoilValue(themeAtom);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme == "dark";
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
   const CommentsData = useRecoilValue(commentsAtom);
@@ -59,7 +60,8 @@ function Post({ ...props }) {
   PostInitializer(postContent);
 
   if (postContent === null) {
-    return <Navigate replace to="/" />;
+    // return <Navigate replace to="/" />;
+    return <></>;
   }
 
   const UploadedFiles = () => {
@@ -128,7 +130,7 @@ function Post({ ...props }) {
           </button>
         )}
         <Tooltip content={likers}>
-          <span>{`좋아요 ${likes?.likeCount}개`}</span>
+          <span>{`좋아요 ${likes?.likeCount || 0}개`}</span>
         </Tooltip>
       </div>
     );
@@ -138,9 +140,13 @@ function Post({ ...props }) {
   return (
     <div className="post-container" data-color-mode={isDark ? "dark" : "light"}>
       <header>
-        <h1 className="post-title">{postContent?.title}</h1>
-        <div className="post-author">By.{postContent?.user?.username}</div>
-        <div className="post-category">{postContent?.category?.name}</div>
+        <h1 className="post-title">{postContent?.title || "Title"}</h1>
+        <div className="post-author">
+          By.{postContent?.user?.username || "Author"}
+        </div>
+        <div className="post-category">
+          {postContent?.category?.name || "Category"}
+        </div>
         <div className="post-datetime text-gray-700 dark:text-gray-400">
           <HiCalendar />
           <span>{createdAtFormat}</span>
@@ -148,21 +154,14 @@ function Post({ ...props }) {
       </header>
       <hr />
       <article>
-        <div className="post-image-modal">
-          <img src={null} alt="fullscreen" />
-          <p>클릭하면 이미지가 축소됩니다.</p>
-        </div>
-        {/* <MDEditor.Markdown
-          className="post-content"
-          source={postContent?.content}
-          rehypePlugins={[[RehypeVideo]]}
-          remarkPlugins={[[remarkYoutubePlugin, {}]]}
-          style={{ flex: "1", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-        /> */}
         <div
           className="post-context ck-content"
           dangerouslySetInnerHTML={{ __html: postContent.content }}
         ></div>
+        <div className="post-image-modal">
+          <img src={null} alt="fullscreen" />
+          <p>클릭하면 이미지가 축소됩니다.</p>
+        </div>
       </article>
       <UploadedFiles />
       <hr />
@@ -170,7 +169,7 @@ function Post({ ...props }) {
         <Like />
         <div className="post-comment-count post-footer-item">
           <HiOutlineChatAlt2 />
-          <span>{`댓글 ${CommentsData.commentCount}개`}</span>
+          <span>{`댓글 ${CommentsData.commentCount || 0}개`}</span>
         </div>
       </footer>
     </div>

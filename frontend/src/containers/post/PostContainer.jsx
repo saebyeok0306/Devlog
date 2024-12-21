@@ -1,3 +1,4 @@
+"use client";
 import Main from "@/components/common/main";
 import React, { useRef } from "react";
 import PostCommentContainer from "./PostCommentContainer";

@@ -1,4 +1,5 @@
-import { get_blog_visit_daily_api } from "@/api/Info";
+"use client";
+import { get_blog_visit_daily_api } from "@/api/info";
 import { generateDateRange } from "@/utils/generateDateRange";
 import moment from "moment-timezone";
 import React, { useEffect, useState } from "react";
@@ -25,7 +26,7 @@ function Visit() {
         .then((res) => {
           const labels = generateDateRange(start, end);
           const visitCounts = labels.map((date) => {
-            const entry = res.data.visitCounts.find(
+            const entry = res.visitCounts.find(
               (item) => item.viewDate === date
             );
             return entry ? entry.viewCount : 0;
@@ -34,7 +35,7 @@ function Visit() {
             ...visit,
             today: visitCounts[visitCounts.length - 1] | 0,
             yesterday: visitCounts[visitCounts.length - 2] | 0,
-            total: res.data.totalCount | 0,
+            total: res.totalCount | 0,
           });
         })
         .catch((err) => {

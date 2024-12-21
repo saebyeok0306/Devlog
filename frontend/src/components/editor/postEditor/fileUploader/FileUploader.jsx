@@ -1,14 +1,14 @@
+"use client";
 import { useState } from "react";
 import { Button, FileInput, Label, List, Modal } from "flowbite-react";
-import { upload_file_api } from "@/api/File";
+import { upload_file_api } from "@/api/file";
 import { toast } from "react-toastify";
 import { HashLoader } from "react-spinners";
 
 import { HiOutlineX } from "react-icons/hi";
 
 import "./FileUploader.scss";
-import { useRecoilValue } from "recoil";
-import { themeAtom } from "@/recoil/themeAtom";
+import { useTheme } from "next-themes";
 
 function FileUploader({
   openLoader,
@@ -18,7 +18,8 @@ function FileUploader({
   uploaderFiles,
   setUploaderFiles,
 }) {
-  const isDark = useRecoilValue(themeAtom);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme == "dark";
   const [files, setFiles] = useState([]); // 임시파일
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,8 +46,7 @@ function FileUploader({
       }
       try {
         const upload_result = await upload_file_api(file);
-        const data = upload_result.data;
-        uploaded_files.push(data);
+        uploaded_files.push(upload_result);
       } catch (error) {
         toast.error(`파일 업로드에 실패했습니다.\n${error}`);
       }

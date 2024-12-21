@@ -1,4 +1,5 @@
-import { title_suggestion_api } from "@/api/AI";
+"use client";
+import { title_suggestion_api } from "@/api/ai";
 import { ButtonView, Plugin, TextProxy } from "ckeditor5";
 
 export default class TitleSuggestion extends Plugin {
@@ -47,8 +48,7 @@ export default class TitleSuggestion extends Plugin {
   async _getLLM(selectedText) {
     let collected_message = "";
     try {
-      const response = await title_suggestion_api(selectedText);
-      const stream = response.data;
+      const stream = await title_suggestion_api(selectedText);
 
       // consume response
       const reader = stream.pipeThrough(new TextDecoderStream()).getReader();

@@ -1,12 +1,13 @@
+"use client";
 import { Button, Carousel, Dropdown, Modal, TextInput } from "flowbite-react";
 
 import "./Publish.scss";
 import { useEffect, useState } from "react";
 import { onErrorImg } from "@/utils/defaultImg";
-import { edit_post_api, upload_post_api } from "@/api/Posts";
+import { edit_post_api, upload_post_api } from "@/api/posts";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { POST_STORE } from "@/api/Cache";
+import { POST_STORE } from "@/api/cache";
+import { useRouter } from "next/navigation";
 
 const safeUrlValidator = (url) => {
   return url
@@ -23,7 +24,7 @@ function Publish({
   postContext,
   setPostContext,
 }) {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [postUrl, setPostUrl] = useState();
   const [notEditUrl, setNotEditUrl] = useState(false);
 
@@ -57,7 +58,7 @@ function Publish({
 
   const publishHandler = async () => {
     const previewUrl = postContext.preview
-      ? `${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
+      ? `${process.env.NEXT_PUBLIC_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`
       : null;
     if (postContext.id === null) {
       try {
@@ -89,7 +90,7 @@ function Publish({
       }
     }
     closeHandler();
-    navigate(`/post/${postUrl}`);
+    navigate.push(`/post/${postUrl}`);
   };
 
   const changePostUrlHandler = async (e) => {
@@ -117,7 +118,7 @@ function Publish({
               <img
                 key={index}
                 className="publish-preview-list-image"
-                src={`${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
+                src={`${process.env.NEXT_PUBLIC_API_FILE_URL}/${file.filePath}/${file.fileUrl}`}
                 alt={`preview${index}`}
                 onClick={() =>
                   setPostContext({ ...postContext, preview: file })
@@ -141,7 +142,7 @@ function Publish({
                 <div className="publish-preview-img">
                   {postContext.preview ? (
                     <img
-                      src={`${import.meta.env.VITE_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`}
+                      src={`${process.env.NEXT_PUBLIC_API_FILE_URL}/${postContext.preview?.filePath}/${postContext.preview?.fileUrl}`}
                       alt="preview"
                       onError={onErrorImg}
                     />

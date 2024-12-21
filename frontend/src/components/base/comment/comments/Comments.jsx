@@ -1,4 +1,5 @@
-import CommentEditor from "@/components/editor/commentEditor";
+"use client";
+// import CommentEditor from "@/components/editor/commentEditor";
 import { Dropdown, Timeline } from "flowbite-react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { replyTimelineTheme } from "./replyTimelineTheme";
@@ -17,6 +18,14 @@ import {
 import { authAtom } from "@/recoil/authAtom";
 import { commentAtom, commentFilesAtom } from "@/recoil/commentAtom";
 import { postAtom } from "@/recoil/postAtom";
+import dynamic from "next/dynamic";
+
+const CommentEditor = dynamic(
+  () => import("@/components/editor/commentEditor"),
+  {
+    ssr: false, // 서버사이드 렌더링 비활성화
+  }
+);
 
 const CommentReply = ({
   rootComment,

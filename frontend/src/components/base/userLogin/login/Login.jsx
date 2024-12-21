@@ -1,25 +1,29 @@
+"use client";
 import React, { useRef, useState } from "react";
 import Responsive from "@/components/common/Responsive";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./Login.scss";
 import EmailIcon from "@/assets/icons/Email";
 import PasswordIcon from "@/assets/icons/Password";
-import { user_login_api, user_logout_api, verify_captcha_api } from "@/api/User";
+import {
+  user_login_api,
+  user_logout_api,
+  verify_captcha_api,
+} from "@/api/user";
 import { authAtom } from "@/recoil/authAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { OAUTH2_URI } from "@/constants/api/oauth";
 import { signIn } from "@/utils/authenticate";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
-import { themeAtom } from "@/recoil/themeAtom";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import Link from "next/link";
 
 function Login() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isDark = useRecoilValue(themeAtom);
-  const { backpath } = location.state || {};
+  const navigate = useRouter();
   const [, setAuthDto] = useRecoilState(authAtom);
+  const { resolvedTheme } = useTheme();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +56,7 @@ function Login() {
         }, 1000);
       })
       .catch((err) => {
+        console.log(err);
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
       });
   };
@@ -59,14 +64,13 @@ function Login() {
   const oauthLoginAction = (e) => {
     e.preventDefault();
     const provider = "google";
-    const link = `${import.meta.env.VITE_API_ENDPOINT}/main/${OAUTH2_URI}/${provider}`;
+    const link = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/main/${OAUTH2_URI}/${provider}`;
     window.location.href = link;
   };
 
   const onCaptchaHandler = async (value) => {
     try {
-      const res = await verify_captcha_api(value);
-      const payload = res.data;
+      const payload = await verify_captcha_api(value);
       if (payload.success) {
         toast.info("인증되었습니다.");
         setVerify({ ...verify, value: value });
@@ -89,11 +93,7 @@ function Login() {
     user_login_api(email, password)
       .then(async (res) => {
         await signIn(setAuthDto);
-        if (backpath) {
-          navigate(backpath);
-        } else {
-          navigate("/");
-        }
+        navigate.push("/");
       })
       .catch((err) => {
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
@@ -119,9 +119,9 @@ function Login() {
             <div className={`captcha-box m-auto`}>
               <ReCAPTCHA
                 ref={captchaRef}
-                sitekey={`${import.meta.env.VITE_RECAPTCHA_PUBLIC_KEY}`}
+                sitekey={`${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`}
                 onChange={onCaptchaHandler}
-                theme={isDark ? "dark" : "light"}
+                theme={resolvedTheme == "dark" ? "dark" : "light"}
               />
             </div>
             <div className="buttons col w-1/2 m-auto mt-3">
@@ -171,7 +171,9 @@ function Login() {
             </div>
             <div className="etc">
               <div className="find">비밀번호를 잊어버리셨나요?</div>
-              <Link tabIndex={3}>비밀번호 찾기</Link>
+              <Link tabIndex={3} href="/">
+                비밀번호 찾기
+              </Link>
             </div>
           </div>
           <div className="login-right">
@@ -186,7 +188,7 @@ function Login() {
               >
                 구글 로그인
               </div>
-              <Link className="button pick" to="/signup" tabIndex={6}>
+              <Link className="button pick" href="/signup" tabIndex={6}>
                 계정 만들기
               </Link>
             </div>

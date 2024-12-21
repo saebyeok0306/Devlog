@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 
 import "./CommentEditor.scss";
@@ -9,8 +10,9 @@ import {
   CustomCommentUploadAdapter,
 } from "./ClassicEditor";
 import hljs from "highlight.js";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { commentFilesAtom } from "@/recoil/commentAtom";
+import { renderAtom } from "@/recoil/renderAtom";
 
 function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
   const MAX_LENGTH = 5000;
@@ -18,6 +20,7 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
 
   const [editorInstance, setEditorInstance] = useState(null);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
+  const isRender = useRecoilValue(renderAtom);
   const [throttle, setThrottle] = useState(false);
   const [commentFiles, setCommentFiles] = useRecoilState(commentFilesAtom);
 
@@ -73,7 +76,7 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     const fileFilter = (file) => {
       return (
         comment.content.indexOf(
-          `${import.meta.env.VITE_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
+          `${process.env.NEXT_PUBLIC_API_FILE_URL}/${file.filePath}/${file.fileUrl}`
         ) !== -1 || file.fileType === "VIDEO"
       );
     };
@@ -91,6 +94,10 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     await setCommentFiles([]);
     await onCancel();
   };
+
+  if (!isRender) {
+    return <></>;
+  }
 
   return (
     <div className="editor-container comment-editor">

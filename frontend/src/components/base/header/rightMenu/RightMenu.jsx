@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+"use client";
+import React from "react";
 
 import "./RightMenu.scss";
 import { authAtom } from "@/recoil/authAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { Dropdown } from "flowbite-react";
 import DarkIcon from "@/assets/icons/Dark";
-import { setTheme, getThemeValue, themeAtom } from "@/recoil/themeAtom";
 import LightIcon from "@/assets/icons/Light";
 import ComputerIcon from "@/assets/icons/Computer";
 import DotIcon from "@/assets/icons/Dot";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import { useTheme } from "next-themes";
 
 function RightMenu() {
-  const [select, SetSelect] = useState(getThemeValue());
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const authDto = useRecoilValue(authAtom);
-  const [isDark, setThemeMode] = useRecoilState(themeAtom);
+  const isDark = resolvedTheme == "dark";
 
   const fill = () => (isDark ? "#fff" : "#000");
 
@@ -41,8 +42,7 @@ function RightMenu() {
   };
 
   const SetThemeSetting = (flag) => {
-    setThemeMode(setTheme(flag));
-    SetSelect(getThemeValue());
+    setTheme(flag);
   };
 
   const CommonMenu = () => {
@@ -60,26 +60,26 @@ function RightMenu() {
               </button>
             )}
           >
-            <Dropdown.Item onClick={() => SetThemeSetting(0)}>
+            <Dropdown.Item onClick={() => SetThemeSetting("light")}>
               <div>
                 <Light style={{ marginRight: "0.5em" }} />
                 Light
               </div>
-              {select === 0 ? <Dot /> : null}
+              {theme === "light" ? <Dot /> : null}
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => SetThemeSetting(1)}>
+            <Dropdown.Item onClick={() => SetThemeSetting("dark")}>
               <div>
                 <Dark style={{ marginRight: "0.5em" }} />
                 Dark
               </div>
-              {select === 1 ? <Dot /> : null}
+              {theme === "dark" ? <Dot /> : null}
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => SetThemeSetting(2)}>
+            <Dropdown.Item onClick={() => SetThemeSetting("system")}>
               <div>
                 <System style={{ marginRight: "0.5em" }} />
                 System
               </div>
-              {select === 2 ? <Dot /> : null}
+              {theme === "system" ? <Dot /> : null}
             </Dropdown.Item>
           </Dropdown>
         </nav>
@@ -90,7 +90,7 @@ function RightMenu() {
   const NewPost = () => {
     return (
       <nav>
-        <Link to="/editor">새글쓰기</Link>
+        <Link href="/editor">새글쓰기</Link>
       </nav>
     );
   };

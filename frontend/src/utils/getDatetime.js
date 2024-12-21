@@ -1,7 +1,7 @@
 export const getDatetime = (datetime) => {
   const today = new Date();
   const createdAt = new Date(datetime);
-  var diff = (today - createdAt) / (1000 * 60 * 60);
+  var diff = (today - createdAt) / (1000 * 60 * 60) || 0;
   if (diff < 0) diff = 0;
   var createdAtFormat;
   if (diff >= 24) {

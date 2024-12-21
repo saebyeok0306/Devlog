@@ -1,8 +1,8 @@
-import { get_post_files_api, get_post_url_api } from "@/api/Posts";
+"use client";
+import { get_post_files_api, get_post_url_api } from "@/api/posts";
 import Comment from "@/components/base/comment";
 import Post from "@/components/post";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authAtom } from "@/recoil/authAtom";
 import {
@@ -15,6 +15,7 @@ import { ga4Atom } from "@/recoil/ga4Atom";
 import { postAtom } from "@/recoil/postAtom";
 import { sendPageView } from "@/utils/reactGA4";
 import { sortComments } from "@/utils/sortComments";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 const resetPostData = async (setPostContent, setComments) => {
   await setPostContent("");
@@ -22,8 +23,8 @@ const resetPostData = async (setPostContent, setComments) => {
 };
 
 function PostCommentContainer({ ...props }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useRouter();
+  const location = usePathname();
   const { postUrl } = useParams();
   const [authDto] = useRecoilState(authAtom);
   const initialized = useRecoilValue(ga4Atom);
@@ -35,34 +36,31 @@ function PostCommentContainer({ ...props }) {
   useEffect(() => {
     const getPost = async () => {
       await resetPostData(setPostContent, setComments);
-      await get_post_url_api(postUrl)
-        .then(async (res) => {
-          const postData = res.data?.post;
-          sendPageView(location.pathname, postData.title, initialized);
-          try {
-            const result = await get_post_files_api(postData.id);
-            postData["files"] = result.data || [];
-          } catch (error) {
-            console.error("Failed to get post files:", error);
-            throw error;
-          }
-          setPostContent(postData);
-          const commentsObj = new CommentsData(
-            sortComments(res.data?.comments),
-            res.data?.comments.length
-          );
-          setComments(commentsObj);
-          setCommentState(new CommentState(res.data?.commentFlag));
-          setLikes(res.data?.likes);
-        })
-        .catch((error) => {
-          console.error("Failed to get post:", error);
-          if (history.length > 1) {
-            navigate(-1);
-          } else {
-            navigate("/");
-          }
-        });
+
+      try {
+        const post = await get_post_url_api(postUrl);
+        const postData = post?.post;
+        sendPageView(location, postData.title, initialized);
+
+        const files = await get_post_files_api(postData.id);
+        postData["files"] = files || [];
+        setPostContent(postData);
+
+        const commentsObj = new CommentsData(
+          sortComments(post?.comments),
+          post?.comments.length
+        );
+        setComments(commentsObj);
+        setCommentState(new CommentState(post?.commentFlag));
+        setLikes(post?.likes);
+      } catch (err) {
+        console.error("Failed to get post:", err);
+        if (history.length > 1) {
+          navigate.back();
+        } else {
+          navigate.push("/");
+        }
+      }
     };
     getPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps

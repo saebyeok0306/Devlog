@@ -1,16 +1,17 @@
+"use client";
 import React, { useEffect, useState } from "react";
 
 import "./EditCategory.scss";
 import FolderIcon from "@/assets/icons/Folder";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { themeAtom } from "@/recoil/themeAtom";
-import { get_categories_detail_api, set_categories_api } from "@/api/Category";
+import { useRecoilState } from "recoil";
+import { get_categories_detail_api, set_categories_api } from "@/api/category";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Table } from "flowbite-react";
 import { CategoryDetail } from "@/model/CategoryDetail";
 import EditCategoryModal from "./modal/EditCategoryModal";
-import { useNavigate } from "react-router-dom";
 import { categoryUpdaterAtom } from "@/recoil/categoryAtom";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 function allCheckCategoryHandler(allChecked, setAllChecked, setCheckedList) {
   if (!allChecked) {
@@ -62,7 +63,6 @@ async function saveCategoryHandler(list, setCategoryUpdater, navigate) {
     await set_categories_api(list);
     toast.info("카테고리가 저장되었습니다.");
     setCategoryUpdater((prev) => prev + 1);
-    // navigate(-1);
   } catch (err) {
     toast.error(`${err.response?.data ? err.response.data.error : err}`);
   }
@@ -129,8 +129,9 @@ function arrowDownHandler(checkedList, setCheckedList, list, setList) {
 
 function EditCategory() {
   // Reference https://romantech.net/1118?category=954568
-  const navigate = useNavigate();
-  const isDark = useRecoilValue(themeAtom);
+  const navigate = useRouter();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme == "dark";
   const [, setCategoryUpdater] = useRecoilState(categoryUpdaterAtom);
   const [list, setList] = useState([]); // 렌더될 요소
   const [allChecked, setAllChecked] = useState(false); // 전체 체크 여부
@@ -143,8 +144,8 @@ function EditCategory() {
   useEffect(() => {
     get_categories_detail_api()
       .then((res) => {
-        setList(res.data);
-        const newList = Array(res.data.length).fill(false);
+        setList(res);
+        const newList = Array(res.length).fill(false);
         setCheckedList(newList);
         setAllChecked(false);
       })
