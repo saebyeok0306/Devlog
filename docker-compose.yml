@@ -5,13 +5,6 @@ networks:
     driver: bridge
 
 services:
-  frontend-service:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    networks:
-      - ms-network
-
   discovery-service:
     build: ./backend/discovery-service
     ports:

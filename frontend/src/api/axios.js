@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { ETC_STORE } from "./cache";
+import { warnSignOut } from "@/utils/authenticate";
+import { jwt_refresh_api } from "@/api/user";
 
 const REFRESH_URL = "/reissue";
 
@@ -38,15 +40,15 @@ const responseRejectHandler = async (err, navigate, authDto, setAuthDto) => {
 
   const signOutToast = mem(
     async (message, path) => {
-      warnSignOut(setAuthDto, message);
-      navigate(path);
+      await warnSignOut(setAuthDto, message);
+      navigate.push(path);
     },
     { maxAge: 5, cache: ETC_STORE }
   );
 
   if (config.url === REFRESH_URL) {
     if (900 <= status && status <= 999)
-      await signOutToast("다시 로그인을 해주세요.", "/login", navigate);
+      await signOutToast("다시 로그인을 해주세요.", "/login");
     return Promise.reject(err);
   }
 

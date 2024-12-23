@@ -11,38 +11,21 @@ on:
 permissions: write-all
 
 env:
-  ZIP_NAME: "frontend.zip"
+  ZIP_NAME: "frontend.tar"
   APP_TARGET_PATH: "frontend/"
   APP_FOLDER_PATH: "/home/app/frontend"
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: [self-hosted, Linux, ARM64]
     defaults:
       run:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true # Buildx를 설치
-
-      - name: Set up Docker Buildx for ARM64
-        run: |
-          docker buildx create --use --platform linux/arm64
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       - name: Build ARM64 Docker image
-        run: docker buildx build --platform linux/arm64 -f Dockerfile.prod -t devlog-frontend:latest . --load
+        run: docker build -f Dockerfile.prod -t devlog-frontend:latest .
 
       - name: Save Docker image as tar file
         run: docker save -o frontend.tar devlog-frontend:latest
@@ -51,7 +34,7 @@ jobs:
       - name: Modify permissions
         run: chmod o+rwx ${{ env.ZIP_NAME }}
 
-      - name: Send build file
+      - name: Send docker image file
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -61,7 +44,7 @@ jobs:
           target: ${{ env.APP_FOLDER_PATH }}
           strip_components: 1
 
-      - name: Restart Server
+      - name: Start frontend server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -69,6 +52,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.APP_FOLDER_PATH }}
-            docker load -i frontend.tar
-            cd /home/app
-            docker-compose -f docker-compose.prod.yml up -d frontend-service
+            docker load -i ${{ env.ZIP_NAME}}
+            docker run -d -p 3000:3000 --name frontend-service devlog-frontend:latest

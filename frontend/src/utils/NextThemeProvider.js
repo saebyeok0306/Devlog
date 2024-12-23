@@ -1,14 +1,12 @@
 "use client";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
-import { GetPayload } from "./authenticate";
 import { put_blog_visit_api } from "@/api/info";
 import { useRecoilState } from "recoil";
 import { renderAtom } from "@/recoil/renderAtom";
 
 export default function NextThemeProvider({ children, ...props }) {
   const [render, setRender] = useRecoilState(renderAtom);
-  GetPayload();
 
   useEffect(() => {
     setRender(true);
