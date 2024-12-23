@@ -52,5 +52,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.APP_FOLDER_PATH }}
+            if docker ps | grep -q "frontend-service"; then
+            docker stop frontend-service
+            fi
             docker load -i ${{ env.ZIP_NAME}}
-            docker run -d -p 3000:3000 --name frontend-service devlog-frontend:latest
+            docker run -rm -d -p 3000:3000 --name frontend-service devlog-frontend:latest
