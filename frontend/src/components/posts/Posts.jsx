@@ -15,6 +15,7 @@ import { MasonryGrid } from "@egjs/react-grid";
 import classNames from "classnames";
 import { windowAtom } from "@/recoil/windowAtom";
 import Link from "next/link";
+import { postPagingAtom } from "@/recoil/postPagingAtom";
 
 const scrollToTopHandler = () => {
   window.scrollTo({
@@ -70,11 +71,7 @@ function Posts() {
   const windows = useRecoilValue(windowAtom);
   const [selectCategory, setSelectCategory] = useRecoilState(categoryAtom);
   const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState({
-    totalPages: 0,
-    currentPage: 0,
-    totalElements: 0,
-  });
+  const [page, setPage] = useRecoilState(postPagingAtom);
   const [viewSize, setViewSize] = useState(10);
   const [rendering, setRendering] = useState(true);
   const [renderer, setRenderer] = useState(0);

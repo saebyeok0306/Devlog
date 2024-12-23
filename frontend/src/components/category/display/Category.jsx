@@ -13,6 +13,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { renderAtom } from "@/recoil/renderAtom";
+import { postPagingAtom } from "@/recoil/postPagingAtom";
 
 function Category() {
   const navigate = useRouter();
@@ -21,7 +22,9 @@ function Category() {
   const isRender = useRecoilValue(renderAtom);
   const categoryUpdater = useRecoilValue(categoryUpdaterAtom);
   const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [, setSelectCategory] = useRecoilState(categoryAtom);
+  const [page, setPage] = useRecoilState(postPagingAtom);
   const [list, setList] = useState([]); // 렌더될 요소
 
   useEffect(() => {
@@ -43,7 +46,7 @@ function Category() {
         <FolderIcon
           width="100%"
           height="100%"
-          fill={resolvedTheme == "dark" ? "#fff" : "#000"}
+          fill={isDark ? "#fff" : "#000"}
         />
       </div>
     );
@@ -55,7 +58,7 @@ function Category() {
         <EditIcon
           width="100%"
           height="100%"
-          stroke={resolvedTheme == "dark" ? "#fff" : "#000"}
+          stroke={isDark ? "#fff" : "#000"}
         />
       </div>
     );
@@ -63,6 +66,7 @@ function Category() {
 
   const clickCategoryHandler = (id) => {
     setSelectCategory(id);
+    setPage({ ...page, currentPage: 0 });
     if (pathname !== "/") {
       navigate.push("/");
     }
@@ -82,10 +86,7 @@ function Category() {
           </button>
           {authDto?.role === "ADMIN" ? (
             <Link href="/manager/category">
-              <Tooltip
-                content="Edit"
-                style={resolvedTheme == "dark" ? "dark" : "light"}
-              >
+              <Tooltip content="Edit" style={isDark ? "dark" : "light"}>
                 <CategoryEditIcon />
               </Tooltip>
             </Link>
