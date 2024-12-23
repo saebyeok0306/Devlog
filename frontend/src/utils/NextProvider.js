@@ -6,6 +6,7 @@ import { RecoilRoot } from "recoil";
 import NextPostProcesser from "./NextPostProcesser";
 import ClientToastContainer from "./ToastContainer";
 import { AxiosProvider } from "@/api/axios";
+import CredentialProvider from "@/utils/CredentialProvider";
 
 export default function NextProvider({ children }) {
   return (
@@ -13,8 +14,10 @@ export default function NextProvider({ children }) {
       <CookiesProvider>
         <NextThemeProvider>
           <AxiosProvider>
-            <ClientToastContainer />
-            <NextPostProcesser>{children}</NextPostProcesser>
+            <CredentialProvider>
+              <ClientToastContainer />
+              <NextPostProcesser>{children}</NextPostProcesser>
+            </CredentialProvider>
           </AxiosProvider>
         </NextThemeProvider>
       </CookiesProvider>
