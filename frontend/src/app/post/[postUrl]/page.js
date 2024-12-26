@@ -1,6 +1,7 @@
 import PageTemplate from "@/components/common/pageTemplate";
 import HeaderContainer from "@/containers/base/HeaderContainer";
 import PostContainer from "@/containers/post/PostContainer";
+import { SHORT_BLOG_NAME } from "@/constants/base/main";
 
 const DEFAULT_METADATA = {
   title: "존재하지 않는 글입니다.",
@@ -27,7 +28,7 @@ export async function generateMetadata({ params, searchParams }, parent) {
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/main/posts/${postUrl}/metadata`,
       { next: { revalidate: 3600 } }
     ).then((res) => res.json());
-    metadata.title = post_metadata.title;
+    metadata.title = `${post_metadata.title} | ${SHORT_BLOG_NAME}`;
     metadata.openGraph.title = post_metadata.title;
     metadata.description = post_metadata.description;
     metadata.openGraph.description = post_metadata.description;

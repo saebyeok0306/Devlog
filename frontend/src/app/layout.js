@@ -5,11 +5,12 @@ import "@/styles/base/font.css";
 
 import NextProvider from "@/utils/NextProvider";
 import FooterContainer from "@/containers/base/FooterContainer";
+import { BLOG_DESCRIPTION, SHORT_BLOG_NAME } from "@/constants/base/main";
 
 export const revalidate = 3600; // fetch cache 1 hour
 export const metadata = {
-  title: "devLog",
-  description: "개발자의 개발이야기",
+  title: `${SHORT_BLOG_NAME}`,
+  description: BLOG_DESCRIPTION,
 };
 
 export default function RootLayout({ children }) {
