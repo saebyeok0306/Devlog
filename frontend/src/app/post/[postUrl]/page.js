@@ -35,12 +35,22 @@ export async function generateMetadata({ params, searchParams }, parent) {
     metadata.author.push({ name: post_metadata.author });
     metadata.openGraph.images.push({ url: post_metadata.previewUrl });
   } catch (err) {
-    console.log(err);
+    console.debug(err);
   }
   return metadata;
 }
 
-export default function ServerPage() {
+export default async function ServerPage({ params }) {
+  const { postUrl } = params;
+  try {
+    const exists = await get_post_exists_api(postUrl);
+    if (exists !== true) {
+      return notFound();
+    }
+  } catch (err) {
+    console.debug(err);
+    return notFound();
+  }
   return (
     <PageTemplate>
       <HeaderContainer />

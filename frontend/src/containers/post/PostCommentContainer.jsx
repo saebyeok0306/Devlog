@@ -54,12 +54,8 @@ function PostCommentContainer({ ...props }) {
         setCommentState(new CommentState(post?.commentFlag));
         setLikes(post?.likes);
       } catch (err) {
-        console.error("Failed to get post:", err);
-        if (history.length > 1) {
-          navigate.back();
-        } else {
-          navigate.push("/");
-        }
+        console.log("Failed to get post:", err);
+        navigate.push("/");
       }
     };
     getPost();
