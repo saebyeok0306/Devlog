@@ -18,7 +18,7 @@
     <tbody>
       <tr>
         <td valign="top">
-        React.js (vite)<br>
+        Next.js<br>
         Recoil
         </td>
         <td valign="top">
