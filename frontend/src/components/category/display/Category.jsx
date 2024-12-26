@@ -15,6 +15,8 @@ import { useTheme } from "next-themes";
 import { renderAtom } from "@/recoil/renderAtom";
 import { postPagingAtom } from "@/recoil/postPagingAtom";
 
+import { BiSolidCommentError } from "react-icons/bi";
+
 function Category() {
   const navigate = useRouter();
   const pathname = usePathname();
@@ -100,6 +102,9 @@ function Category() {
             >
               <CategoryIcon />
               <p>{`${item?.name}`}</p>
+              {item?.newPostIcon ? (
+                <BiSolidCommentError className="category-new-icon" />
+              ) : null}
             </button>
           </li>
         ))}

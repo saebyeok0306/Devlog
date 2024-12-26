@@ -11,9 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,7 +24,8 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getCategories() {
-        List<CategoryDto> categories = categoryService.getCategories().stream().map(CategoryDto::of).collect(Collectors.toList());
+        LocalDateTime now = LocalDateTime.now();
+        List<CategoryDto> categories = categoryService.getCategories().stream().map((category) -> CategoryDto.of(category, now)).toList();
         return ResponseEntity.ok().body(categories);
     }
 
@@ -37,7 +38,8 @@ public class CategoryController {
 
     @GetMapping("/readwrite")
     public ResponseEntity<List<CategoryDto>> getCategoriesRW() {
-        List<CategoryDto> categories = categoryService.getCategoriesReadWrite().stream().map(CategoryDto::of).collect(Collectors.toList());
+        LocalDateTime now = LocalDateTime.now();
+        List<CategoryDto> categories = categoryService.getCategoriesReadWrite().stream().map((category) -> CategoryDto.of(category, now)).toList();
         return ResponseEntity.ok().body(categories);
     }
 

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -36,4 +38,6 @@ public class Category extends CreateTime {
     @Convert(converter = RoleConverter.class)
     @Column(name = "read_category_auth")
     private Role readCategoryAuth = Role.GUEST;
+    @Setter
+    private LocalDateTime lastPostAt;
 }
