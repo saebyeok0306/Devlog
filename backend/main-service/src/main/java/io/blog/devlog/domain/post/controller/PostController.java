@@ -191,4 +191,9 @@ public class PostController {
         }
         return ResponsePostMetadataDto.of(post);
     }
+
+    @GetMapping("/{url}/exists")
+    public boolean isPostExists(@PathVariable String url) {
+        return postService.isPostExists(url);
+    }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -162,5 +163,27 @@ public class PostRepositoryTest {
         // then
         assertThat(getLastId).isEqualTo(5);
         assertThat(getPosts2.getContent().size()).isEqualTo(3);
+    }
+
+    @Test
+    void existsByUrl() {
+        // given
+
+        // when
+        boolean existsByUrl = postRepository.existsByUrl("url1");
+
+        // then
+        assertTrue(existsByUrl);
+    }
+
+    @Test
+    void notFoundByUrl() {
+        // given
+
+        // when
+        boolean existsByUrl = postRepository.existsByUrl("notFoundUrl");
+
+        // then
+        assertFalse(existsByUrl);
     }
 }
