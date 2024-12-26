@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -126,5 +127,10 @@ public class CategoryService {
     public boolean hasCommentCategoryAuth(Category category, Role role) {
         if (role == null) role = Role.GUEST;
         return category.getWriteCommentAuth().getKey() <= role.getKey();
+    }
+
+    public void updateNewPostDatetime(Category category) {
+        LocalDateTime now = LocalDateTime.now();
+        category.setLastPostAt(now);
     }
 }

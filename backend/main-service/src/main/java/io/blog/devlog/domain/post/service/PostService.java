@@ -114,4 +114,8 @@ public class PostService {
         User user = userService.getUserByEmail(email).orElseThrow(() -> new NotFoundException("User not found : " + email));
         return postRepository.findAllSlicePageUserPosts(pageable, lastId, user.getId(), user.isAdmin(), user.getRole());
     }
+
+    public boolean isPostExists(String url) {
+        return postRepository.existsByUrl(url);
+    }
 }

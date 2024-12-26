@@ -1,4 +1,5 @@
 import { API } from "./axios";
+import { MAIN_URL } from "@/constants/api/url";
 
 export const upload_post_api = async ({ postContext, postUrl, previewUrl }) => {
   const requestBody = {
@@ -112,9 +113,29 @@ export const get_post_edit_permission_api = async (postUrl) => {
 };
 
 export const get_post_metadata_api = async (postUrl) => {
-  return await API.get(`/posts/${postUrl}/metadata`, {})
-    .then((response) => response.data)
+  return await fetch(`${MAIN_URL}/posts/${postUrl}/metadata`, {
+    next: { revalidate: 60 },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      return res.json();
+    })
     .catch((error) => {
       throw error;
     });
+};
+
+export const get_post_exists_api = async (postUrl) => {
+  return await fetch(`${MAIN_URL}/posts/${postUrl}/exists`, {
+    next: { revalidate: 60 },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        return false;
+      }
+      return res.json();
+    })
+    .catch((error) => false);
 };

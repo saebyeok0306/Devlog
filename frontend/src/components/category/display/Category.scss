@@ -38,6 +38,14 @@
           transition: margin-left 50ms;
           pointer-events: none;
         }
+        
+        .category-new-icon {
+          margin: auto auto auto 7px;
+          color: #702dab;
+          &:is(.dark *) {
+            color: #bb91df;
+          }
+        }
       }
 
       &.category-all {

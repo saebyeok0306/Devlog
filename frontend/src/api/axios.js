@@ -8,16 +8,17 @@ import { useRecoilState } from "recoil";
 import { ETC_STORE } from "./cache";
 import { warnSignOut } from "@/utils/authenticate";
 import { jwt_refresh_api } from "@/api/user";
+import { LLM_URL, MAIN_URL } from "@/constants/api/url";
 
 const REFRESH_URL = "/reissue";
 
 export const API = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/main`,
+  baseURL: MAIN_URL,
   withCredentials: true,
 });
 
 export const LLM_API = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_ENDPOINT}/llm`,
+  baseURL: LLM_URL,
   withCredentials: true,
 });
 

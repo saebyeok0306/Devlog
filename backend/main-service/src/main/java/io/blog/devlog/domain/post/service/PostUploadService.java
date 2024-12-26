@@ -39,6 +39,7 @@ public class PostUploadService {
                 .orElseThrow(() -> new NotFoundException("Category not found : " + requestPostDto.getCategoryId()));
 
         Post post = postRepository.save(requestPostDto.toEntity(user, category));
+        categoryService.updateNewPostDatetime(category);
 
         fileService.uploadFileAndDeleteTempFile(post, requestPostDto.getFiles());
         fileService.deleteTempFiles(); // 임시파일 제거
