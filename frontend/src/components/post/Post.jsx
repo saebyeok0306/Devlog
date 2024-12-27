@@ -53,7 +53,7 @@ const onLikeCancelHandler = async (postUrl, likes, setLikes, authDto) => {
 function Post({ ...props }) {
   const { likes, setLikes } = props;
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme == "dark";
+  const isDark = resolvedTheme === "dark";
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
   const CommentsData = useRecoilValue(commentsAtom);
@@ -137,16 +137,16 @@ function Post({ ...props }) {
     );
   };
 
-  const createdAtFormat = getDatetime(postContent?.createdAt);
+  const createdAtFormat = getDatetime(postContent.createdAt);
   return (
     <div className="post-container" data-color-mode={isDark ? "dark" : "light"}>
       <header>
-        <h1 className="post-title">{postContent?.title || "Title"}</h1>
+        <h1 className="post-title">{postContent.title || "Title"}</h1>
         <div className="post-author">
-          By.{postContent?.user?.username || "Author"}
+          By.{postContent.user?.username || "Author"}
         </div>
         <div className="post-category">
-          {postContent?.category?.name || "Category"}
+          {postContent.category?.name || "Category"}
         </div>
         <div className="post-datetime text-gray-700 dark:text-gray-400">
           <HiCalendar />
@@ -165,7 +165,7 @@ function Post({ ...props }) {
         </div>
       </article>
       <UploadedFiles />
-      <Tailcard />
+      <Tailcard profile={postContent.user} />
       <hr />
       <footer>
         <Like />

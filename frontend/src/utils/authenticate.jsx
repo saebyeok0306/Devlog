@@ -1,5 +1,5 @@
 "use client";
-import { Auth } from "@/recoil/authAtom";
+import { AUTH_DEFAULT } from "@/recoil/authAtom";
 import { toast } from "react-toastify";
 import { clearAllCacheStore } from "@/api/cache";
 import { user_logout_api, user_profile_api } from "@/api/user";
@@ -8,15 +8,17 @@ export const signIn = async (setAuthDto, message = "로그인 성공!") => {
   try {
     let res = await user_profile_api();
     const payload = res.data;
-    setAuthDto(
-      new Auth(
-        payload.username,
-        payload.email,
-        true,
-        payload.role,
-        payload.profileUrl
-      )
-    );
+    setAuthDto((prev) => ({
+      ...prev,
+      username: payload.username,
+      email: payload.email,
+      about: payload.about,
+      isLogin: true,
+      role: payload.role,
+      profileUrl: payload.profileUrl,
+      provider: payload.provider,
+      certificate: payload.certificate,
+    }));
 
     clearAllCacheStore(); // 캐시 초기화
     if (message !== false) toast.success(`${message}`, {});
@@ -30,7 +32,7 @@ export const signIn = async (setAuthDto, message = "로그인 성공!") => {
 export const signOutProcess = async (setAuthDto) => {
   try {
     await user_logout_api();
-    setAuthDto(new Auth());
+    setAuthDto({ ...AUTH_DEFAULT });
     clearAllCacheStore(); // 캐시 초기화
     return true;
   } catch (error) {

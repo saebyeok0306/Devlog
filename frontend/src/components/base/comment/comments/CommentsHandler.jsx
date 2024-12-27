@@ -30,7 +30,7 @@ const uploadReplyHandler = async ({
       files,
       reply.private
     );
-    cancelEditHandler({ reply: reply, setReply: setReply });
+    await cancelEditHandler({ reply: reply, setReply: setReply });
 
     toast.info("댓글이 등록되었습니다.");
     return true;
@@ -100,8 +100,8 @@ const onEditHandler = async ({ comment, reply, setReply, setCommentFiles }) => {
     content: comment.content,
   });
   try {
-    const res = await get_comment_files_api(comment.id);
-    await setCommentFiles(res.data);
+    const payload = await get_comment_files_api(comment.id);
+    await setCommentFiles(payload);
   } catch (err) {
     await setCommentFiles([]);
     toast.error("댓글 파일을 불러오는데 실패했습니다.");
@@ -132,6 +132,7 @@ const updateEditHandler = async ({
     await cancelEditHandler({ reply: reply, setReply: setReply });
     return true;
   } catch (err) {
+    console.error(err);
     return false;
   }
 };

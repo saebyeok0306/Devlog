@@ -19,7 +19,7 @@ function FileUploader({
   setUploaderFiles,
 }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme == "dark";
+  const isDark = resolvedTheme === "dark";
   const [files, setFiles] = useState([]); // 임시파일
   const [isLoading, setIsLoading] = useState(false);
 

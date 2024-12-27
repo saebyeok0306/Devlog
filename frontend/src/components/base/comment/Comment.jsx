@@ -4,11 +4,14 @@ import React, { useEffect, useState } from "react";
 import "./Comment.scss";
 import { Timeline } from "flowbite-react";
 import { timelineCustomTheme } from "@/styles/theme/timeline";
-// import CommentEditor from "@/components/editor/commentEditor";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authAtom } from "@/recoil/authAtom";
 import { postAtom } from "@/recoil/postAtom";
-import { commentAtom, commentsAtom, CommentsData } from "@/recoil/commentAtom";
+import {
+  commentAtom,
+  COMMENTS_DATA_DEFAULT,
+  commentsAtom,
+} from "@/recoil/commentAtom";
 import Comments from "./comments/Comments";
 import {
   isWriteComment,
@@ -31,7 +34,7 @@ function Comment({ ...props }) {
   const { commentRef } = props;
   const authDto = useRecoilValue(authAtom);
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme == "dark";
+  const isDark = resolvedTheme === "dark";
   const [updater, setUpdater] = useState(0);
   const [reply, setReply] = useState({
     flag: false, // true: 답글 작성 false: 편집
@@ -54,13 +57,16 @@ function Comment({ ...props }) {
     get_comments_by_post_api(postContent.id)
       .then((res) => {
         const sortedComments = sortComments(res);
-        const commentsObj = new CommentsData(sortedComments, res?.length);
-        setCommentsData(commentsObj);
+        setCommentsData((prev) => ({
+          ...prev,
+          comments: sortedComments,
+          commentCount: res?.length,
+        }));
       })
       .catch((error) => {
         toast.error("댓글을 불러오는데 실패했습니다.");
         console.error("Failed to get comments:", error);
-        setCommentsData(new CommentsData());
+        setCommentsData({ ...COMMENTS_DATA_DEFAULT });
       });
     // eslint-disable-next-line
   }, [updater]);
