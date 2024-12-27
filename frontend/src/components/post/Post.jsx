@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { commentsAtom } from "@/recoil/commentAtom";
 import PostInitializer from "./PostInitializer";
 import { useTheme } from "next-themes";
+import Tailcard from "@/components/tailcard";
 
 const onLikeHandler = async (postUrl, likes, setLikes, authDto) => {
   try {
@@ -164,6 +165,7 @@ function Post({ ...props }) {
         </div>
       </article>
       <UploadedFiles />
+      <Tailcard />
       <hr />
       <footer>
         <Like />

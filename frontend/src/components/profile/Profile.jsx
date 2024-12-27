@@ -4,8 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Profile.scss";
 import { useRecoilState } from "recoil";
 import { authAtom } from "@/recoil/authAtom";
-import { Button } from "flowbite-react";
-import { onErrorImg } from "@/utils/defaultImg";
+import { Avatar, Button } from "flowbite-react";
 
 import ImageCrop from "./imageCrop";
 import {
@@ -13,19 +12,16 @@ import {
   ProfilePassword,
   ProfileUnregister,
 } from "./profileItem";
-import { signOutProcess } from "@/utils/authenticate";
 import { toast } from "react-toastify";
-import { delete_profile_url_api, user_profile_api } from "@/api/user";
-import { useRouter } from "next/navigation";
+import { delete_profile_url_api } from "@/api/user";
+import Info from "@/components/profile/profileItem/info/Info";
 
 function Profile() {
-  const navigate = useRouter();
   const fileInputRef = useRef(null);
-  const profileImageRef = useRef(null);
   const [authDto, setAuthDto] = useRecoilState(authAtom);
   const [userProfile, setUserProfile] = useState({
-    loading: true,
     username: "",
+    about: "",
     email: "",
     profileUrl: "",
     role: "",
@@ -41,19 +37,7 @@ function Profile() {
   });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        let payload = await user_profile_api();
-        payload = payload.data;
-        setUserProfile({ ...userProfile, ...payload, loading: false });
-      } catch (error) {
-        toast.error("프로필 정보를 불러오는데 실패했습니다.");
-        signOutProcess(setAuthDto);
-        navigate.push("/");
-      }
-    };
-
-    fetchUserProfile();
+    setUserProfile({ ...userProfile, ...authDto });
     // eslint-disable-next-line
   }, [authDto]);
 
@@ -72,21 +56,17 @@ function Profile() {
   };
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0]; // fileInputRef.current.files[0]
+    const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.addEventListener("load", () =>
         setImageCrop({
           ...imageCrop,
           openModal: true,
-          // targetImage: file,
-          // targetUrl: URL.createObjectURL(file),
           targetSrc: reader.result?.toString() || "",
         })
       );
       reader.readAsDataURL(file);
-      // const upload_url = URL.createObjectURL(file);
-      // setProfileUrl(upload_url);
       event.target.value = null;
     }
   };
@@ -101,22 +81,12 @@ function Profile() {
       />
       <header className="profile-header">
         <div className="profile-info-box">
-          <div className="profile-info-username">{authDto.username}</div>
-          <div className="profile-info-email">{authDto.email}</div>
+          <Info />
         </div>
         <div className="profile-info-hr border-gray-300 dark:border-gray-500" />
         <div className="profile-image-box">
           <div className="profile-image">
-            <img
-              ref={profileImageRef}
-              src={
-                userProfile.profileUrl === null
-                  ? "profile"
-                  : userProfile.profileUrl
-              }
-              alt="user-profile"
-              onError={onErrorImg}
-            />
+            <Avatar img={userProfile.profileUrl} alt="user-profile" rounded />
             <input
               type="file"
               accept="image/*"
