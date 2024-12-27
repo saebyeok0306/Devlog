@@ -16,6 +16,7 @@ public class Blog extends BaseTime {
     private Long id;
     @Setter
     private Long visit; // Blog Visit Count
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
