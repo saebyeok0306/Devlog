@@ -30,9 +30,11 @@ public class Post extends BaseTime {
     @Column(length = 50000)
     private String content;
     private String previewUrl;
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;

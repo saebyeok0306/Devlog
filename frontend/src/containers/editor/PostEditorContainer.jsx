@@ -4,7 +4,7 @@ import {
   get_post_files_api,
   get_post_url_api,
 } from "@/api/posts";
-import { PostContext, postContextAtom } from "@/recoil/editorAtom";
+import { postContextAtom } from "@/recoil/editorAtom";
 import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -41,22 +41,21 @@ function PostEditorContainer() {
             postData.previewUrl
         );
 
-        const newContext = new PostContext(
-          postData.id,
-          postData.title,
-          "", // body
-          postData.content,
-          postData.category,
-          postData.files,
-          preview,
-          postData.private,
-          postData.createdAt,
-          postData.modifiedAt,
-          postData.url,
-          postData.views
-        );
-
-        setPostContext(newContext);
+        setPostContext((prev) => ({
+          ...prev,
+          id: postData.id,
+          title: postData.title,
+          body: "",
+          content: postData.content,
+          category: postData.category,
+          files: postData.files,
+          preview: preview,
+          isPrivate: postData.private,
+          createdAt: postData.createdAt,
+          modifiedAt: postData.modifiedAt,
+          url: postData.url,
+          views: postData.views,
+        }));
         setIsReady(true);
       } catch (err) {
         console.error("Failed to get post:", err);

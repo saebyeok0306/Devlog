@@ -97,7 +97,7 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile, setAuthDto }) {
     // You might want { type: "image/jpeg", quality: <0 to 1> } to
     // reduce image size
     const blob = await offscreen.convertToBlob({
-      type: "image/jpeg",
+      type: "image/png",
     });
 
     if (blobUrlRef.current) {
@@ -107,8 +107,8 @@ function ImageCrop({ imageCrop, setImageCrop, setUserProfile, setAuthDto }) {
     await resizeBlob(blob)
       .then(async (output_blob) => {
         try {
-          const output_file = new File([output_blob], "profile.jpg", {
-            type: "image/jpeg",
+          const output_file = new File([output_blob], "profile.png", {
+            type: "image/png",
             lastModified: new Date(),
           });
           const payload = await upload_file_api(output_file);

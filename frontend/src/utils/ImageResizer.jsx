@@ -7,7 +7,7 @@ export const resizeBlob = (blob, width = 256, height = 256) =>
       blob, // Blob
       width, // maxWidth.
       height, // maxHeight
-      "JPEG", // Format.
+      "PNG", // Format.
       100, // Quality 100 is max.
       0,
       (uri) => {

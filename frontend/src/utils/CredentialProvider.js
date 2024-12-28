@@ -1,5 +1,5 @@
 ﻿import { useRecoilState } from "recoil";
-import { Auth, authAtom } from "@/recoil/authAtom";
+import { authAtom } from "@/recoil/authAtom";
 import { useEffect } from "react";
 import {
   has_jwt_cookie_api,
@@ -22,17 +22,17 @@ export default function CredentialProvider({ children }) {
         const payload = result.data;
 
         if (result.status === 200) {
-          setAuthDto(
-            new Auth(
-              payload.username,
-              payload.email,
-              true,
-              payload.role,
-              payload.profileUrl,
-              payload.provider,
-              payload.certificate
-            )
-          );
+          setAuthDto((prev) => ({
+            ...prev,
+            username: payload.username,
+            email: payload.email,
+            about: payload.about,
+            isLogin: true,
+            role: payload.role,
+            profileUrl: payload.profileUrl,
+            provider: payload.provider,
+            certificate: payload.certificate,
+          }));
         } else if (result.status === 204) {
           return;
         }

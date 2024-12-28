@@ -20,10 +20,12 @@ public class PostLike extends CreateTime implements Persistable<PostLikeId> {
     @EmbeddedId
     private PostLikeId id;
 
+    @ToString.Exclude
     @MapsId("postId")
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+    @ToString.Exclude
     @MapsId("userId")
     @ManyToOne
     @JoinColumn(name = "user_id")

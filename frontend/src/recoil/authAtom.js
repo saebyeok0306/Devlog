@@ -1,28 +1,17 @@
 import { atom } from "recoil";
 
-export class Auth {
-  constructor(
-    username = null,
-    email = null,
-    isLogin = false,
-    role = "GUEST",
-    profileUrl = null,
-    provider = null,
-    certificate = false
-  ) {
-    this.username = username;
-    this.email = email;
-    this.isLogin = isLogin;
-    this.role = role;
-    this.profileUrl = profileUrl;
-    this.provider = provider;
-    this.certificate = certificate;
-  }
-}
+export const AUTH_DEFAULT = {
+  username: null,
+  about: "자기소개를 작성해주세요.",
+  email: null,
+  isLogin: false,
+  role: "GUEST",
+  profileUrl: null,
+  provider: null,
+  certificate: false,
+};
 
 export const authAtom = atom({
   key: "author",
-  /** @type {Auth} */
-  default: new Auth(),
-  // effects_UNSTABLE: [persistAtom],
+  default: { ...AUTH_DEFAULT },
 });

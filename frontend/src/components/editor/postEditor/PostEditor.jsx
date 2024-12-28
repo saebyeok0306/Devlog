@@ -9,7 +9,7 @@ import { ClassicEditor } from "ckeditor5";
 
 import "./PostEditor.scss";
 import { Button } from "flowbite-react";
-import { PostContext, postContextAtom } from "@/recoil/editorAtom";
+import { POST_CONTEXT_DEFAULT, postContextAtom } from "@/recoil/editorAtom";
 import { toast } from "react-toastify";
 import { get_categories_readwrite_api } from "@/api/category";
 import Publish from "./publish";
@@ -27,11 +27,10 @@ const divideTitleAndBody = (content) => {
   const title = header1.textContent;
   header1.remove();
   const detail = doc.body.innerHTML;
-  const data = {
+  return {
     title: title.trim(),
     body: detail,
   };
-  return data;
 };
 
 function PostEditor() {
@@ -82,7 +81,7 @@ function PostEditor() {
           return navigate.back();
         }
         setCategories(res_categories);
-        if (postContext.category == null || postContext.category == undefined) {
+        if (postContext.category == null) {
           setPostContext((prev) => ({ ...prev, category: res_categories[0] }));
         }
       })
@@ -92,7 +91,7 @@ function PostEditor() {
     return () => {
       setOpenModal(false);
       setOpenLoader(false);
-      setPostContext(new PostContext());
+      setPostContext({ ...POST_CONTEXT_DEFAULT });
       setIsLayoutReady(false);
     };
     // eslint-disable-next-line

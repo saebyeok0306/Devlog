@@ -13,12 +13,14 @@ import lombok.NoArgsConstructor;
 public class ResponseUserDto {
     private String username;
     private String email;
+    private String about;
     private String profileUrl;
 
     public static ResponseUserDto of(User user) {
         return ResponseUserDto.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .about(user.getAbout())
                 .profileUrl(user.getProfileUrl())
                 .build();
     }

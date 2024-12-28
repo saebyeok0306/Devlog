@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class ResponseUserProfileDto {
     private String username;
     private String email;
+    private String about;
     private String profileUrl;
     private Role role;
     private String provider;
@@ -23,6 +24,7 @@ public class ResponseUserProfileDto {
         return ResponseUserProfileDto.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
+                .about(user.getAbout())
                 .profileUrl(user.getProfileUrl())
                 .role(user.getRole())
                 .provider(user.getProvider())

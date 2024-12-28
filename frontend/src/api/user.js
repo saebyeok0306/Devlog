@@ -130,3 +130,15 @@ export const has_jwt_cookie_api = async () => {
       throw error;
     });
 };
+
+export const upload_user_profile_api = async (username, about) => {
+  const requestBody = {
+    username: username,
+    about: about,
+  };
+  return await API.post("/profile", requestBody)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};

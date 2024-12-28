@@ -7,19 +7,18 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { authAtom } from "@/recoil/authAtom";
 import {
   commentAtom,
+  COMMENTS_DATA_DEFAULT,
   commentsAtom,
-  CommentsData,
-  CommentState,
 } from "@/recoil/commentAtom";
 import { ga4Atom } from "@/recoil/ga4Atom";
-import { postAtom } from "@/recoil/postAtom";
+import { POST_DEFAULT, postAtom } from "@/recoil/postAtom";
 import { sendPageView } from "@/utils/reactGA4";
 import { sortComments } from "@/utils/sortComments";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
 const resetPostData = async (setPostContent, setComments) => {
-  await setPostContent("");
-  await setComments(new CommentsData());
+  await setPostContent({ ...POST_DEFAULT });
+  await setComments({ ...COMMENTS_DATA_DEFAULT });
 };
 
 function PostCommentContainer({ ...props }) {
@@ -46,12 +45,15 @@ function PostCommentContainer({ ...props }) {
         postData["files"] = files || [];
         setPostContent(postData);
 
-        const commentsObj = new CommentsData(
-          sortComments(post?.comments),
-          post?.comments.length
-        );
-        setComments(commentsObj);
-        setCommentState(new CommentState(post?.commentFlag));
+        setComments((prev) => ({
+          ...prev,
+          comments: sortComments(post?.comments),
+          commentCount: post?.comments.length,
+        }));
+        setCommentState((prev) => ({
+          ...prev,
+          commentFlag: post?.commentFlag,
+        }));
         setLikes(post?.likes);
       } catch (err) {
         console.log("Failed to get post:", err);
