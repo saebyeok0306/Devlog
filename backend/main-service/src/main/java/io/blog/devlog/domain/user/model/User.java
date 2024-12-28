@@ -27,6 +27,7 @@ public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Setter
     @NotNull
     private String username;
     @NotNull
@@ -34,6 +35,8 @@ public class User extends BaseTime {
     @NotNull
     @Column(unique = true)
     private String email;
+    @Setter
+    private String about;
     @Nullable
     @Column(name = "profile_url")
     private String profileUrl;

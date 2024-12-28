@@ -2,11 +2,13 @@ package io.blog.devlog.domain.user.controller;
 
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.user.dto.RequestPasswordDto;
+import io.blog.devlog.domain.user.dto.RequestProfileDto;
 import io.blog.devlog.domain.user.dto.RequestProfileUrlDto;
 import io.blog.devlog.domain.user.dto.ResponseUserProfileDto;
 import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.domain.user.service.VerifyService;
+import io.blog.devlog.global.exception.UnauthorizedAccessException;
 import io.blog.devlog.global.redis.message.VerifyEmailMessage;
 import io.blog.devlog.global.redis.service.VerifyEmailPubService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
@@ -32,12 +35,22 @@ public class ProfileController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping
-    public ResponseEntity<ResponseUserProfileDto> getProfile() throws BadRequestException {
+    public ResponseEntity<ResponseUserProfileDto> getProfile() {
         String userEmail = getUserEmail();
-        if (userEmail == null) throw new BadRequestException("로그인이 필요합니다.");
-        log.info("GET /profile userEmail : {}", userEmail);
-        User user = userService.getUserByEmail(userEmail).orElseThrow(() -> new BadRequestException("잘못된 요청입니다."));
+        if (userEmail == null) throw new UnauthorizedAccessException("로그인이 필요합니다.");
+        User user = userService.getUserByEmail(userEmail).orElseThrow(() -> new UnauthorizedAccessException("잘못된 요청입니다."));
         return ResponseEntity.ok(ResponseUserProfileDto.of(user));
+    }
+
+    @PostMapping
+    public void updateProfile(@RequestBody RequestProfileDto requestProfileDto) {
+        String userEmail = getUserEmail();
+        if (userEmail == null) throw new UnauthorizedAccessException("로그인이 필요합니다.");
+        User user = userService.getUserByEmail(userEmail).orElseThrow(() -> new UnauthorizedAccessException("잘못된 요청입니다."));
+        user.setUsername(requestProfileDto.getUsername());
+        user.setAbout(requestProfileDto.getAbout());
+        user.setModifiedAt(LocalDateTime.now());
+        userService.saveUser(user);
     }
 
     @PutMapping("/password")
