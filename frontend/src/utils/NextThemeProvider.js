@@ -10,9 +10,7 @@ export default function NextThemeProvider({ children, ...props }) {
 
   useEffect(() => {
     setRender(true);
-    if (render) {
-      put_blog_visit_api();
-    }
+    put_blog_visit_api();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
