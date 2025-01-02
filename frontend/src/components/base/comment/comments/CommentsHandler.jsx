@@ -95,6 +95,7 @@ const onEditHandler = async ({ comment, reply, setReply, setCommentFiles }) => {
     flag: false,
     editId: comment.id,
     content: comment.content,
+    hidden: comment.hidden,
   });
   try {
     const payload = await get_comment_files_api(comment.id);

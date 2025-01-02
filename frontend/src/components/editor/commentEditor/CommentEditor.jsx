@@ -95,6 +95,7 @@ function CommentEditor({
       editorInstance.setData("");
       captchaRef?.current.props.grecaptcha.reset();
     }
+    if (privateRef.current) privateRef.current.checked = false;
     await setUpdater((prev) => prev + 1);
   };
 
@@ -121,6 +122,9 @@ function CommentEditor({
               setEditorInstance(editor);
               if (comment.content) {
                 editor.setData(comment.content);
+                if (privateRef.current) {
+                  privateRef.current.checked = comment.hidden;
+                }
               }
               editor.plugins.get("FileRepository").createUploadAdapter = (
                 loader
