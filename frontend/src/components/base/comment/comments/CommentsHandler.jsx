@@ -115,8 +115,6 @@ const cancelEditHandler = async ({ reply, setReply }) => {
     target: null,
     hidden: false,
   });
-  console.log("작동함");
-  // setReplyComment("");
 };
 
 const updateEditHandler = async ({
