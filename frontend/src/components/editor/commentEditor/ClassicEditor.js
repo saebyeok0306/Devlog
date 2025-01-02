@@ -54,6 +54,7 @@ import {
 
 import translations from "ckeditor5/translations/ko.js";
 import TableAutoFit from "../postEditor/custom/TableAutoFit";
+import { toast } from "react-toastify";
 
 const commentEditorConfig = {
   toolbar: {
@@ -228,7 +229,11 @@ class CustomCommentUploadAdapter {
               default: `${process.env.NEXT_PUBLIC_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
             });
           } catch (error) {
-            reject(error);
+            toast.warning(
+              error?.response ? error.response.data.error : error.message,
+              { position: "bottom-center" }
+            );
+            reject();
           }
         })
     );
@@ -236,6 +241,7 @@ class CustomCommentUploadAdapter {
 
   abort() {
     // 파일 업로드 중단 시 처리 로직
+    console.log("abort()");
   }
 }
 
