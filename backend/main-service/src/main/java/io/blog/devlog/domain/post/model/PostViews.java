@@ -10,7 +10,7 @@ import org.springframework.data.domain.Persistable;
 import java.sql.Timestamp;
 
 @Table(name="POSTVIEWS", indexes = {
-        @Index(name = "idx_post", columnList = "post_id"),
+        @Index(name = "idx_post_view", columnList = "post_id"),
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

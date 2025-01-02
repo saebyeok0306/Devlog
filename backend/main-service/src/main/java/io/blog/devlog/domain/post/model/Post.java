@@ -42,7 +42,7 @@ public class Post extends BaseTime {
 //    private List<File> files;
     private long views;
 //    private long likes;
-    private boolean isPrivate;
+    private boolean hidden;
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = false)
     private List<Comment> comments;
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = false)

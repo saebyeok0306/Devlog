@@ -25,7 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -42,22 +42,24 @@ public class CommentServiceTest {
     @Test
     void saveComment() {
         // given
+        User user = EntityFactory.createUser();
         Post post = EntityFactory.createPost();
+        Comment comment = EntityFactory.createComment("test", user, post);
         RequestCommentDto commentDto = RequestCommentDto.builder()
-                .parent(1L)
+                .parent(0L)
                 .build();
-        Comment comment = commentDto.toEntity(testConfig.adminUser, post);
-
+        
         given(commentRepository.save(any(Comment.class))).willReturn(comment);
         doNothing().when(fileService).uploadFileAndDeleteTempFile(comment, commentDto.getFiles());
         doNothing().when(fileService).deleteTempFiles();
 
         // when
-        ResponseCommentDto responseCommentDto = commentService.saveComment(testConfig.adminUser, commentDto, post);
+        commentService.saveComment(user, commentDto, post);
 
         // then
-        assertThat(responseCommentDto.getUser().getUsername()).isEqualTo(testConfig.adminUser.getUsername());
-        assertThat(responseCommentDto.getParent()).isEqualTo(1L);
+        verify(commentRepository, times(1)).save(any(Comment.class));
+        verify(fileService, times(1)).uploadFileAndDeleteTempFile(comment, commentDto.getFiles());
+        verify(fileService, times(1)).deleteTempFiles();
     }
 
     @Test
@@ -69,7 +71,7 @@ public class CommentServiceTest {
         Comment comment = EntityFactory.createComment("prev content", user, post);
         RequestEditCommentDto editCommentDto = RequestEditCommentDto.builder()
                 .content("edit content")
-                .isPrivate(false)
+                .hidden(false)
                 .build();
         Comment editedComment = comment.toEdit(editCommentDto);
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
@@ -96,7 +98,7 @@ public class CommentServiceTest {
                 .post(post)
                 .commentFlag(true)
                 .build();
-        given(commentRepository.findAllByPostId(null, 0L, false)).willReturn(comments);
+        given(commentRepository.findAllByPostId(post.getId())).willReturn(comments);
 
         // when
         List<ResponseCommentDto> commentsFromPost = commentService.getCommentsFromPost(user, postDetail);
@@ -110,20 +112,21 @@ public class CommentServiceTest {
     @Test
     void deleteComment() {
         // given
-        Long commentId = null;
         User user = EntityFactory.createUser(null, null, Role.ADMIN);
         Post post = EntityFactory.createPost();
         Comment comment = EntityFactory.createComment("test", user, post);
-        given(commentRepository.findById(commentId)).willReturn(Optional.ofNullable(comment));
-        given(commentRepository.save(comment)).willReturn(comment);
+        Long commentId = comment.getId();
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
         doNothing().when(fileService).deleteFileFromComment(comment);
+        given(commentRepository.existsByParent(commentId)).willReturn(false);
+        doNothing().when(commentRepository).delete(comment);
         testConfig.updateAuthentication(user);
 
         // when
         commentService.deleteComment(commentId);
 
         // then
-        assertThat(comment.isDeleted()).isTrue();
+        verify(commentRepository, times(1)).delete(comment);
     }
 
     @Test

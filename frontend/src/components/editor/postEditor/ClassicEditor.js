@@ -72,6 +72,7 @@ import TableAutoFit from "./custom/TableAutoFit";
 import UpgradeSentence from "./custom/UpgradeSentence";
 import TitleSuggestion from "./custom/TitleSuggestion";
 import FileUploader from "./custom/FileUploader";
+import { toast } from "react-toastify";
 
 const editorConfig = {
   toolbar: {
@@ -317,7 +318,11 @@ class CustomUploadAdapter {
               default: `${process.env.NEXT_PUBLIC_API_FILE_URL}/${payload.filePath}/${payload.fileUrl}`,
             });
           } catch (error) {
-            reject(error);
+            toast.warning(
+              error?.response ? error.response.data.error : error.message,
+              { position: "bottom-center" }
+            );
+            reject();
           }
         })
     );

@@ -13,10 +13,20 @@ import hljs from "highlight.js";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { commentFilesAtom } from "@/recoil/commentAtom";
 import { renderAtom } from "@/recoil/renderAtom";
+import { Checkbox, Label } from "flowbite-react";
 
-function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
+function CommentEditor({
+  comment,
+  setComment,
+  onCancel,
+  onSave,
+  setUpdater,
+  allowHidden,
+  captchaRef,
+}) {
   const MAX_LENGTH = 5000;
   const editorRef = useRef(null);
+  const privateRef = useRef(null);
 
   const [editorInstance, setEditorInstance] = useState(null);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
@@ -31,13 +41,6 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (editorInstance && comment.content) {
-      editorInstance.setData(comment.content);
-    }
-    // eslint-disable-next-line
-  }, [editorInstance]);
-
   const handleChangeContent = async (editor) => {
     const content = editor.getData();
     if (content.length <= MAX_LENGTH) {
@@ -48,8 +51,8 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
       editor.setData(newContent);
       if (throttle) return;
       if (!throttle) {
-        await setThrottle(true);
-        await setTimeout(async () => {
+        setThrottle(true);
+        setTimeout(async () => {
           toast.info(`최대 ${MAX_LENGTH}자까지 입력 가능합니다.`, {
             position: "bottom-center",
           });
@@ -82,10 +85,17 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
     };
     const newFiles = commentFiles.filter((file) => fileFilter(file));
 
-    await setComment({ ...comment, content: tempDiv.innerHTML });
-
-    editorInstance.setData("");
-    await onSave(tempDiv.innerHTML, newFiles);
+    await setComment({
+      ...comment,
+      content: tempDiv.innerHTML,
+      hidden: privateRef?.current != null ? privateRef?.current.checked : false,
+    });
+    const res = await onSave(tempDiv.innerHTML, newFiles);
+    if (res) {
+      editorInstance.setData("");
+      captchaRef?.current.props.grecaptcha.reset();
+    }
+    if (privateRef.current) privateRef.current.checked = false;
     await setUpdater((prev) => prev + 1);
   };
 
@@ -110,6 +120,12 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
             config={commentEditorConfig}
             onReady={(editor) => {
               setEditorInstance(editor);
+              if (comment.content) {
+                editor.setData(comment.content);
+                if (privateRef.current) {
+                  privateRef.current.checked = comment.hidden;
+                }
+              }
               editor.plugins.get("FileRepository").createUploadAdapter = (
                 loader
               ) => {
@@ -123,6 +139,22 @@ function CommentEditor({ comment, setComment, onCancel, onSave, setUpdater }) {
         )}
       </div>
       <div className="comment-editor-bottom">
+        <div className="mr-0.5">
+          {allowHidden === true ? (
+            <>
+              <Checkbox
+                id="private-comment"
+                className="mr-1"
+                ref={privateRef}
+                color="purple"
+                onChange={(e) =>
+                  setComment({ ...comment, hidden: e.target.checked })
+                }
+              />
+              <Label htmlFor="private-comment">비밀댓글</Label>
+            </>
+          ) : null}
+        </div>
         <span>
           {comment.content.length}/{MAX_LENGTH}
         </span>

@@ -1,11 +1,15 @@
 package io.blog.devlog.domain.comment.dto;
 
 import io.blog.devlog.domain.comment.model.Comment;
+import io.blog.devlog.domain.comment.model.GuestDetail;
 import io.blog.devlog.domain.file.dto.FileDto;
 import io.blog.devlog.domain.post.model.Post;
-import io.blog.devlog.domain.user.model.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,19 +18,24 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class RequestCommentDto {
+public class RequestGuestCommentDto {
     private String postUrl;
     private Long parent; // 대댓글
     private String content;
-    @Builder.Default
-    private List<FileDto> files = Collections.emptyList();
     @ColumnDefault("false")
     private boolean hidden;
 
-    public Comment toEntity(User user, Post post) {
+    private String username;
+    private String password;
+
+    public Comment toEntity(BCryptPasswordEncoder bCryptPasswordEncoder, Post post) {
+        GuestDetail guest = GuestDetail.builder()
+                .username(this.username)
+                .password(bCryptPasswordEncoder.encode(this.password))
+                .build();
         return Comment.builder()
-                .user(user)
+                .user(null)
+                .guest(guest)
                 .post(post)
                 .parent(this.parent)
                 .content(this.content)

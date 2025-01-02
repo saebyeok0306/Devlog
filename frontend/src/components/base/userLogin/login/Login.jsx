@@ -121,7 +121,6 @@ function Login() {
                 ref={captchaRef}
                 sitekey={`${process.env.NEXT_PUBLIC_RECAPTCHA_PUBLIC_KEY}`}
                 onChange={onCaptchaHandler}
-                theme={resolvedTheme == "dark" ? "dark" : "light"}
               />
             </div>
             <div className="buttons col w-1/2 m-auto mt-3">

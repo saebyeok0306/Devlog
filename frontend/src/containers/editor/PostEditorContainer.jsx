@@ -50,7 +50,7 @@ function PostEditorContainer() {
           category: postData.category,
           files: postData.files,
           preview: preview,
-          isPrivate: postData.private,
+          hidden: postData.hidden,
           createdAt: postData.createdAt,
           modifiedAt: postData.modifiedAt,
           url: postData.url,

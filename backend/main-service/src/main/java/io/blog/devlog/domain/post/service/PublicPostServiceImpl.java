@@ -17,7 +17,7 @@ public class PublicPostServiceImpl implements PublicPostService {
 
     @Override
     public boolean isPubliclyVisible(Post post) {
-        if (post.isPrivate()) return false;
+        if (post.isHidden()) return false;
         if (!categoryService.hasReadCategoryAuth(post.getCategory(), Role.GUEST)) return false;
         return true;
     }

@@ -46,8 +46,8 @@ public class AuthController {
                 .username(userDto.getUsername())
                 .password(userDto.getPassword())
                 .email(userDto.getEmail())
-                .certificate(false)
-                .role(Role.GUEST) // 인증이 안된 상태이므로 GUEST 권한
+                .certificate(false) // 인증이 안된 상태
+                .role(Role.USER)
                 .build();
 
         user.passwordEncode(bCryptPasswordEncoder);

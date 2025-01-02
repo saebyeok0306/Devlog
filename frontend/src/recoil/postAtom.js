@@ -9,7 +9,7 @@ export const POST_DEFAULT = {
   user: null,
   category: null,
   views: 0,
-  isPrivate: false,
+  hidden: false,
   modifiedAt: null,
   createdAt: null,
   ownership: false,

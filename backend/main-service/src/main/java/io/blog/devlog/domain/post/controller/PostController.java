@@ -107,14 +107,11 @@ public class PostController {
     @GetMapping("/{url}")
     public ResponseEntity<ResponsePostCommentDto> getPost(HttpServletRequest request, @PathVariable String url) {
         String email = getUserEmail();
-        User user = userService.getUserByEmail(email).orElse(null);
-        if (user == null) {
-            user = User.builder()
-                    .email(null)
-                    .role(Role.GUEST)
-                    .username("GUEST")
-                    .build();
-        }
+        User user = userService.getUserByEmail(email).orElse(User.builder()
+                .email(null)
+                .role(Role.GUEST)
+                .username("GUEST")
+                .build());
         PostDetail postDetail = postService.getPostByUrl(url, user);
         boolean increased = postViewsService.increaseViewCount(postDetail.getPost().getId(), request);
         if (increased) {

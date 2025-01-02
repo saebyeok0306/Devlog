@@ -46,13 +46,13 @@ function Publish({
 
   const publicHandler = (e) => {
     e.preventDefault();
-    setPostContext({ ...postContext, isPrivate: false });
+    setPostContext({ ...postContext, hidden: false });
     toast.info("전체공개로 설정되었습니다.");
   };
 
   const privateHandler = (e) => {
     e.preventDefault();
-    setPostContext({ ...postContext, isPrivate: true });
+    setPostContext({ ...postContext, hidden: true });
     toast.info("비공개로 설정되었습니다.");
   };
 
@@ -158,13 +158,13 @@ function Publish({
                 <h3 className="text-xl font-medium">포스트 공개범위</h3>
                 <div>
                   <Button
-                    color={postContext.isPrivate ? "gray" : "blue"}
+                    color={postContext.hidden ? "gray" : "blue"}
                     onClick={publicHandler}
                   >
                     전체공개
                   </Button>
                   <Button
-                    color={postContext.isPrivate ? "warning" : "gray"}
+                    color={postContext.hidden ? "warning" : "gray"}
                     onClick={privateHandler}
                   >
                     비공개

@@ -24,4 +24,13 @@ public class ResponseUserDto {
                 .profileUrl(user.getProfileUrl())
                 .build();
     }
+
+    public static ResponseUserDto of(String username) {
+        return ResponseUserDto.builder()
+                .username(username)
+                .email(null)
+                .about(null)
+                .profileUrl(null)
+                .build();
+    }
 }
