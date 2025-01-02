@@ -42,18 +42,19 @@ public class CommentServiceTest {
     @Test
     void saveComment() {
         // given
+        User user = EntityFactory.createUser();
         Post post = EntityFactory.createPost();
+        Comment comment = EntityFactory.createComment("test", user, post);
         RequestCommentDto commentDto = RequestCommentDto.builder()
-                .parent(1L)
+                .parent(0L)
                 .build();
-        Comment comment = commentDto.toEntity(testConfig.adminUser, post);
-
+        
         given(commentRepository.save(any(Comment.class))).willReturn(comment);
         doNothing().when(fileService).uploadFileAndDeleteTempFile(comment, commentDto.getFiles());
         doNothing().when(fileService).deleteTempFiles();
 
         // when
-        commentService.saveComment(testConfig.adminUser, commentDto, post);
+        commentService.saveComment(user, commentDto, post);
 
         // then
         verify(commentRepository, times(1)).save(any(Comment.class));
@@ -97,7 +98,7 @@ public class CommentServiceTest {
                 .post(post)
                 .commentFlag(true)
                 .build();
-        given(commentRepository.findAllByPostId(null)).willReturn(comments);
+        given(commentRepository.findAllByPostId(post.getId())).willReturn(comments);
 
         // when
         List<ResponseCommentDto> commentsFromPost = commentService.getCommentsFromPost(user, postDetail);
@@ -111,20 +112,21 @@ public class CommentServiceTest {
     @Test
     void deleteComment() {
         // given
-        Long commentId = null;
         User user = EntityFactory.createUser(null, null, Role.ADMIN);
         Post post = EntityFactory.createPost();
         Comment comment = EntityFactory.createComment("test", user, post);
-        given(commentRepository.findById(commentId)).willReturn(Optional.ofNullable(comment));
-        given(commentRepository.save(comment)).willReturn(comment);
+        Long commentId = comment.getId();
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
         doNothing().when(fileService).deleteFileFromComment(comment);
+        given(commentRepository.existsByParent(commentId)).willReturn(false);
+        doNothing().when(commentRepository).delete(comment);
         testConfig.updateAuthentication(user);
 
         // when
         commentService.deleteComment(commentId);
 
         // then
-        assertThat(comment.isDeleted()).isTrue();
+        verify(commentRepository, times(1)).delete(comment);
     }
 
     @Test
