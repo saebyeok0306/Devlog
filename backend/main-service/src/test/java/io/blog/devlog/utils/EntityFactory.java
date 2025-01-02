@@ -81,8 +81,8 @@ public class EntityFactory {
                 .content(content != null ? content : faker.redDeadRedemption2().settlement())
                 .user(user != null ? user : EntityFactory.createUser(null, null, null))
                 .post(post != null ? post : EntityFactory.createPost(null, null, null, null))
-                .isDeleted(false)
-                .isPrivate(false)
+                .deleted(false)
+                .hidden(false)
                 .build();
     }
 
@@ -92,8 +92,8 @@ public class EntityFactory {
                 .content(faker.redDeadRedemption2().settlement())
                 .user(EntityFactory.createUser())
                 .post(EntityFactory.createPost())
-                .isDeleted(false)
-                .isPrivate(false)
+                .deleted(false)
+                .hidden(false)
                 .build();
     }
 }

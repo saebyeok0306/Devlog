@@ -8,7 +8,7 @@ export const POST_CONTEXT_DEFAULT = {
   category: null,
   files: [],
   preview: null,
-  isPrivate: false,
+  hidden: false,
   createdAt: null,
   modifiedAt: null,
   url: "",

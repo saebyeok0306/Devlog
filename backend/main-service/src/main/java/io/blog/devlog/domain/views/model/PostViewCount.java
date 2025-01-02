@@ -7,7 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDate;
 
 @Table(name="POSTVIEWCOUNT", indexes = {
-        @Index(name = "idx_post", columnList = "post_id, view_date"),
+        @Index(name = "idx_post_view_count", columnList = "post_id, view_date"),
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

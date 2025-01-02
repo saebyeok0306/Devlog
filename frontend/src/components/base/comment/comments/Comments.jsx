@@ -7,17 +7,19 @@ import { getDatetime } from "@/utils/getDatetime";
 import { HiAnnotation } from "react-icons/hi";
 import {
   cancelEditHandler,
-  deleteCommentHandler,
-  isWriteComment,
   onEditHandler,
   onReplyHandler,
   updateEditHandler,
+  updateGuestEditHandler,
+  uploadGuestReplyHandler,
   uploadReplyHandler,
 } from "./CommentsHandler";
 import { authAtom } from "@/recoil/authAtom";
 import { commentAtom, commentFilesAtom } from "@/recoil/commentAtom";
 import { postAtom } from "@/recoil/postAtom";
 import dynamic from "next/dynamic";
+import { useRef, useState } from "react";
+import GuestCommentEditor from "@/components/editor/commentEditor/GuestCommentEditor";
 
 const CommentEditor = dynamic(
   () => import("@/components/editor/commentEditor"),
@@ -36,46 +38,91 @@ const CommentReply = ({
   const authDto = useRecoilValue(authAtom);
   const postContent = useRecoilValue(postAtom);
 
+  const captchaRef = useRef(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [verify, setVerify] = useState(false);
+
   return (
     <Timeline.Item className={"comment create-reply"}>
       <Timeline.Point icon={HiAnnotation} />
       <Timeline.Content>
         <Timeline.Time className="comment-user">
-          <div>{`${authDto?.username}님`}</div>
+          <div>{`${authDto.username || username}님`}</div>
         </Timeline.Time>
         <Timeline.Body className="comment-content">
           <div className="comment-content-body">
             <p className="comment-reply-name">@{reply.target.user.username}</p>
           </div>
-          <CommentEditor
-            comment={reply}
-            setComment={setReply}
-            onCancel={() =>
-              cancelEditHandler({
-                reply: reply,
-                setReply: setReply,
-              })
-            }
-            onSave={(content, files) =>
-              uploadReplyHandler({
-                postContent: postContent,
-                comments: comments,
-                reply: reply,
-                setReply: setReply,
-                content: content,
-                files: files,
-              })
-            }
-            setUpdater={setUpdater}
-          />
+          {authDto.isLogin ? (
+            <CommentEditor
+              allowHidden={true}
+              comment={reply}
+              setComment={setReply}
+              onCancel={() =>
+                cancelEditHandler({
+                  reply: reply,
+                  setReply: setReply,
+                })
+              }
+              onSave={(content, files) =>
+                uploadReplyHandler({
+                  postContent: postContent,
+                  comments: comments,
+                  reply: reply,
+                  setReply: setReply,
+                  content: content,
+                  files: files,
+                })
+              }
+              setUpdater={setUpdater}
+            />
+          ) : (
+            <GuestCommentEditor
+              comment={reply}
+              setComment={setReply}
+              onCancel={() =>
+                cancelEditHandler({
+                  reply: reply,
+                  setReply: setReply,
+                })
+              }
+              onSave={(content, files) =>
+                uploadGuestReplyHandler({
+                  postContent: postContent,
+                  comments: comments,
+                  reply: reply,
+                  setReply: setReply,
+                  content: content,
+                  files: files,
+                  username: username,
+                  password: password,
+                  verify: verify,
+                })
+              }
+              setUpdater={setUpdater}
+              setUsername={setUsername}
+              setPassword={setPassword}
+              captchaRef={captchaRef}
+              setVerify={setVerify}
+            />
+          )}
         </Timeline.Body>
       </Timeline.Content>
     </Timeline.Item>
   );
 };
 
-const CommentBox = ({ comment, comments, reply, setReply, setUpdater }) => {
+const CommentBox = ({
+  comment,
+  comments,
+  reply,
+  setReply,
+  setUpdater,
+  setDeletePopup,
+}) => {
   const isReply = comment.parent ? true : false;
+
   return (
     <Timeline.Item className={isReply ? "comment reply" : "comment"}>
       <Timeline.Point
@@ -104,6 +151,7 @@ const CommentBox = ({ comment, comments, reply, setReply, setUpdater }) => {
             reply={reply}
             setReply={setReply}
             setUpdater={setUpdater}
+            setDeletePopup={setDeletePopup}
           />
         )}
       </Timeline.Content>
@@ -111,14 +159,25 @@ const CommentBox = ({ comment, comments, reply, setReply, setUpdater }) => {
   );
 };
 
-const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
+const CommentView = ({
+  comment,
+  comments,
+  reply,
+  setReply,
+  setUpdater,
+  setDeletePopup,
+}) => {
   const authDto = useRecoilValue(authAtom);
   const commentState = useRecoilValue(commentAtom);
   const [, setCommentFiles] = useRecoilState(commentFilesAtom);
 
+  const onDeleteHandler = () => {
+    setDeletePopup((prev) => ({ ...prev, openModal: true, target: comment }));
+  };
+
   const CommentToolbar = () => {
     if (
-      isWriteComment({ commentState: commentState, authDto: authDto }) &&
+      commentState.commentFlag === true &&
       comment.ownership &&
       !comment.deleted
     ) {
@@ -137,16 +196,7 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
             >
               수정
             </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() =>
-                deleteCommentHandler({
-                  comment: comment,
-                  setUpdater: setUpdater,
-                })
-              }
-            >
-              삭제
-            </Dropdown.Item>
+            <Dropdown.Item onClick={onDeleteHandler}>삭제</Dropdown.Item>
           </Dropdown>
         </>
       );
@@ -174,6 +224,11 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
           {/* {comment.content} */}
           {!comment.deleted ? (
             <div className="comment-md-content">
+              {comment.hidden && !comment.hiddenFlag ? (
+                <span className="text-[0.8rem] text-gray-600 dark:text-gray-500 select-none">
+                  [비밀 댓글입니다]
+                </span>
+              ) : null}
               <div
                 className="ck-content"
                 dangerouslySetInnerHTML={{ __html: comment.content }}
@@ -189,8 +244,7 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
           <time dateTime={comment.createdAt}>
             {getDatetime(comment.createdAt)}
           </time>
-          {isWriteComment({ commentState: commentState, authDto: authDto }) &&
-          !comment.deleted ? (
+          {commentState.commentFlag === true && !comment.deleted ? (
             <button
               onClick={() =>
                 onReplyHandler({
@@ -211,9 +265,14 @@ const CommentView = ({ comment, comments, reply, setReply, setUpdater }) => {
 };
 
 const CommentEdit = ({ comment, comments, reply, setReply, setUpdater }) => {
-  return (
-    <>
+  const captchaRef = useRef(null);
+  const [password, setPassword] = useState("");
+  const [verify, setVerify] = useState(false);
+
+  if (comment.user.email != null) {
+    return (
       <CommentEditor
+        allowHidden={true}
         comment={reply}
         setComment={setReply}
         onCancel={() =>
@@ -230,15 +289,48 @@ const CommentEdit = ({ comment, comments, reply, setReply, setUpdater }) => {
             setReply: setReply,
             content: content,
             files: files,
+            verify: verify,
           })
         }
         setUpdater={setUpdater}
       />
-    </>
+    );
+  }
+  return (
+    <GuestCommentEditor
+      comment={reply}
+      setComment={setReply}
+      onCancel={() =>
+        cancelEditHandler({
+          reply: reply,
+          setReply: setReply,
+        })
+      }
+      onSave={(content, files) =>
+        updateGuestEditHandler({
+          comment: comment,
+          comments: comments,
+          reply: reply,
+          setReply: setReply,
+          content: content,
+          password: password,
+        })
+      }
+      setUpdater={setUpdater}
+      setPassword={setPassword}
+      captchaRef={captchaRef}
+      setVerify={setVerify}
+    />
   );
 };
 
-const Comments = ({ comments, reply, setReply, setUpdater }) => {
+const Comments = ({
+  comments,
+  reply,
+  setReply,
+  setUpdater,
+  setDeletePopup,
+}) => {
   if (!comments) {
     return null;
   }
@@ -252,6 +344,7 @@ const Comments = ({ comments, reply, setReply, setUpdater }) => {
             reply={reply}
             setReply={setReply}
             setUpdater={setUpdater}
+            setDeletePopup={setDeletePopup}
           />
           {comment.children &&
             comment.children.map((child, idx2) => (
@@ -262,6 +355,7 @@ const Comments = ({ comments, reply, setReply, setUpdater }) => {
                 reply={reply}
                 setReply={setReply}
                 setUpdater={setUpdater}
+                setDeletePopup={setDeletePopup}
               />
             ))}
           {reply.flag === true && reply.editId === comment.id ? (

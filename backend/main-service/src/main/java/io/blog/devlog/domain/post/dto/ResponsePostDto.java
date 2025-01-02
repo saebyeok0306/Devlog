@@ -23,7 +23,7 @@ public class ResponsePostDto {
     private ResponseUserDto user;
     private CategoryDto category;
     private long views;
-    private boolean isPrivate;
+    private boolean hidden;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
     private boolean ownership; // 권한 소유
@@ -38,7 +38,7 @@ public class ResponsePostDto {
                 .user(ResponseUserDto.of(post.getUser()))
                 .category(CategoryDto.of(post.getCategory()))
                 .views(post.getViews())
-                .isPrivate(post.isPrivate())
+                .hidden(post.isHidden())
                 .modifiedAt(post.getModifiedAt())
                 .createdAt(post.getCreatedAt())
                 .ownership(post.getUser().getEmail().equals(email))

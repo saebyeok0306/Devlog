@@ -1,5 +1,6 @@
 package io.blog.devlog.domain.post.service;
 
+import io.blog.devlog.domain.category.model.Category;
 import io.blog.devlog.domain.file.service.FileService;
 import io.blog.devlog.domain.post.dto.ResponsePostUrlDto;
 import io.blog.devlog.domain.post.model.Post;
@@ -117,5 +118,9 @@ public class PostService {
 
     public boolean isPostExists(String url) {
         return postRepository.existsByUrl(url);
+    }
+
+    public Category getCategoryByPostId(Long postId) {
+        return postRepository.findCategoryByPostId(postId);
     }
 }

@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -28,7 +27,7 @@ public class RequestEditPostDto {
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();
     private long views;
-    private boolean isPrivate;
+    private boolean hidden;
     private LocalDateTime modifiedAt;
     private LocalDateTime createdAt;
 
@@ -47,7 +46,7 @@ public class RequestEditPostDto {
                 .category(category)
                 .user(user)
                 .views(this.views)
-                .isPrivate(this.isPrivate)
+                .hidden(this.hidden)
                 .build();
         newPost.setModifiedAt(this.modifiedAt);
         newPost.setCreatedAt(this.createdAt);

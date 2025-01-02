@@ -25,7 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -53,11 +53,12 @@ public class CommentServiceTest {
         doNothing().when(fileService).deleteTempFiles();
 
         // when
-        ResponseCommentDto responseCommentDto = commentService.saveComment(testConfig.adminUser, commentDto, post);
+        commentService.saveComment(testConfig.adminUser, commentDto, post);
 
         // then
-        assertThat(responseCommentDto.getUser().getUsername()).isEqualTo(testConfig.adminUser.getUsername());
-        assertThat(responseCommentDto.getParent()).isEqualTo(1L);
+        verify(commentRepository, times(1)).save(any(Comment.class));
+        verify(fileService, times(1)).uploadFileAndDeleteTempFile(comment, commentDto.getFiles());
+        verify(fileService, times(1)).deleteTempFiles();
     }
 
     @Test
@@ -69,7 +70,7 @@ public class CommentServiceTest {
         Comment comment = EntityFactory.createComment("prev content", user, post);
         RequestEditCommentDto editCommentDto = RequestEditCommentDto.builder()
                 .content("edit content")
-                .isPrivate(false)
+                .hidden(false)
                 .build();
         Comment editedComment = comment.toEdit(editCommentDto);
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
@@ -96,7 +97,7 @@ public class CommentServiceTest {
                 .post(post)
                 .commentFlag(true)
                 .build();
-        given(commentRepository.findAllByPostId(null, 0L, false)).willReturn(comments);
+        given(commentRepository.findAllByPostId(null)).willReturn(comments);
 
         // when
         List<ResponseCommentDto> commentsFromPost = commentService.getCommentsFromPost(user, postDetail);

@@ -23,7 +23,7 @@ public class RequestPostDto {
     @Builder.Default
     private List<FileDto> files = Collections.emptyList();
     @ColumnDefault("false")
-    private boolean isPrivate;
+    private boolean hidden;
 
     public RequestPostDto setUrl(String url) {
         this.url = url;
@@ -38,7 +38,7 @@ public class RequestPostDto {
                 .previewUrl(this.previewUrl)
                 .category(category)
                 .user(user)
-                .isPrivate(this.isPrivate)
+                .hidden(this.hidden)
                 .build();
     }
 }
