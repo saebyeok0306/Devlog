@@ -1,18 +1,14 @@
 "use client";
 import { ThemeProvider } from "next-themes";
-import { useEffect } from "react";
-import { put_blog_visit_api } from "@/api/info";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { renderAtom } from "@/recoil/renderAtom";
+import Initializer from "@/utils/Initializer";
 
 export default function NextThemeProvider({ children, ...props }) {
-  const [render, setRender] = useRecoilState(renderAtom);
+  const render = useRecoilValue(renderAtom);
 
-  useEffect(() => {
-    setRender(true);
-    put_blog_visit_api();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // 블로그 최초 접속시 초기화 함수
+  Initializer();
 
   // TODO: 나중에는 google bot인 경우를 따로 판단해서 화면 표시하기.
   if (!render) {
