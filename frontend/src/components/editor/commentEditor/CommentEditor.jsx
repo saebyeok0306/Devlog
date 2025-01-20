@@ -15,6 +15,8 @@ import { commentFilesAtom } from "@/recoil/commentAtom";
 import { renderAtom } from "@/recoil/renderAtom";
 import { Checkbox, Label } from "flowbite-react";
 
+// import CKEditorInspector from "@ckeditor/ckeditor5-inspector";
+
 function CommentEditor({
   comment,
   setComment,
@@ -119,6 +121,8 @@ function CommentEditor({
             editor={ClassicEditor}
             config={commentEditorConfig}
             onReady={(editor) => {
+              // CKEditorInspector.attach(editor);
+
               const model = editor.model;
               setEditorInstance(editor);
               if (comment.content) {
@@ -144,6 +148,7 @@ function CommentEditor({
               //   // 원래 execute 명령을 호출
               //   return originalExecute.apply(editor, args);
               // };
+
               editor.plugins
                 .get("ImageUploadEditing")
                 .on("uploadComplete", (evt, { data, imageElement }) => {
