@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 import "./Profile.scss";
-import { get_info_api, set_info_api } from "@/api/info";
+import { set_info_api } from "@/api/info";
 import EditIcon from "@/assets/icons/Edit";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Tooltip } from "flowbite-react";
@@ -10,6 +10,7 @@ import { onErrorImg } from "@/utils/defaultImg";
 import { authAtom } from "@/recoil/authAtom";
 import { useTheme } from "next-themes";
 import { blogAtom } from "@/recoil/blogAtom";
+
 // import profile_img from '../../assets/profile.jpg';
 
 function Profile() {
@@ -18,41 +19,30 @@ function Profile() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const [blogProfile, setBlogProfile] = useRecoilState(blogAtom);
-  const [profile, setProfile] = useState();
   const [editMode, setEditMode] = useState(false);
   const [editProfile, setEditProfile] = useState();
-
-  useEffect(() => {
-    get_info_api()
-      .then((res) => {
-        setBlogProfile(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
 
   const handleResizeHeight = (e = null, setter = null) => {
     textarea.current.style.height = "auto"; //height 초기화
     textarea.current.style.height = textarea.current.scrollHeight + 2 + "px";
-    if (setter !== null) setter({ ...profile, about: e.target.value });
+    if (setter !== null) setter({ ...blogProfile, about: e.target.value });
   };
 
   const handleEdit = (e) => {
     e.preventDefault();
     setEditMode(!editMode);
     if (editMode === false) {
-      setEditProfile(profile);
+      setEditProfile(blogProfile);
     } else {
       if (
-        editProfile.username === profile.username &&
-        editProfile.about === profile.about &&
-        editProfile.profile_url === profile.profile_url
+        editProfile?.username === blogProfile.username &&
+        editProfile?.about === blogProfile.about &&
+        editProfile?.profile_url === blogProfile.profile_url
       )
         return;
       set_info_api(editProfile.about, editProfile.profile_url)
         .then((res) => {
-          setProfile(editProfile);
+          setBlogProfile(editProfile);
         })
         .catch((err) => {
           console.error(err);
@@ -90,7 +80,7 @@ function Profile() {
             <textarea
               ref={textarea}
               rows={2}
-              value={blogProfile.about}
+              value={editProfile?.about || ""}
               onChange={(e) => handleResizeHeight(e, setEditProfile)}
             />
             <button onClick={(e) => handleEdit(e)}>

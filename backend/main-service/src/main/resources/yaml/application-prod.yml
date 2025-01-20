@@ -15,7 +15,7 @@ spring:
     password: ${ORACLE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update # DDL (create/update/create-drop/validate/none)
+      ddl-auto: validate # DDL (create/update/create-drop/validate/none)
   data:
     redis:
       host: redis

@@ -132,7 +132,8 @@ function EditCategory() {
   const navigate = useRouter();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme == "dark";
-  const [, setCategoryUpdater] = useRecoilState(categoryUpdaterAtom);
+  const [categoryUpdater, setCategoryUpdater] =
+    useRecoilState(categoryUpdaterAtom);
   const [list, setList] = useState([]); // 렌더될 요소
   const [allChecked, setAllChecked] = useState(false); // 전체 체크 여부
   const [checkedList, setCheckedList] = useState([]);
@@ -142,6 +143,10 @@ function EditCategory() {
   const [modalCategoryName, setModalCategoryName] = useState("");
 
   useEffect(() => {
+    get_categories_detail();
+  }, [categoryUpdater]);
+
+  const get_categories_detail = () => {
     get_categories_detail_api()
       .then((res) => {
         setList(res);
@@ -152,7 +157,7 @@ function EditCategory() {
       .catch((err) => {
         toast.error(`${err.response?.data ? err.response.data.error : err}`);
       });
-  }, []);
+  };
 
   const CategoryIcon = () => {
     return (

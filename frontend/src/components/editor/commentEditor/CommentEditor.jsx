@@ -15,6 +15,8 @@ import { commentFilesAtom } from "@/recoil/commentAtom";
 import { renderAtom } from "@/recoil/renderAtom";
 import { Checkbox, Label } from "flowbite-react";
 
+// import CKEditorInspector from "@ckeditor/ckeditor5-inspector";
+
 function CommentEditor({
   comment,
   setComment,
@@ -119,6 +121,9 @@ function CommentEditor({
             editor={ClassicEditor}
             config={commentEditorConfig}
             onReady={(editor) => {
+              // CKEditorInspector.attach(editor);
+
+              const model = editor.model;
               setEditorInstance(editor);
               if (comment.content) {
                 editor.setData(comment.content);
@@ -133,7 +138,26 @@ function CommentEditor({
               };
             }}
             onChange={(event, editor) => {
-              handleChangeContent(editor);
+              handleChangeContent(editor).then();
+              // const originalExecute = editor.execute;
+              //
+              // editor.execute = (...args) => {
+              //   // 실행된 명령과 인자를 로그로 출력
+              //   console.log(`Command executed: ${args[0]}`, args);
+              //
+              //   // 원래 execute 명령을 호출
+              //   return originalExecute.apply(editor, args);
+              // };
+
+              editor.plugins
+                .get("ImageUploadEditing")
+                .on("uploadComplete", (evt, { data, imageElement }) => {
+                  if (imageElement.is("element", "imageBlock")) {
+                    editor.execute("imageStyle", { value: "alignBlockLeft" });
+                    editor.execute("resizeImage", { width: "25%" });
+                  }
+                });
+              // END
             }}
           />
         )}
