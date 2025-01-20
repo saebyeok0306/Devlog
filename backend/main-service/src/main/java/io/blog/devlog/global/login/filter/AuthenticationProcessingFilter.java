@@ -28,12 +28,33 @@ public class AuthenticationProcessingFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
+    private boolean ignoreRequestURI(String requestURI, String[] ignoreURIs) {
+        for (String uri : ignoreURIs) {
+            if (uri.endsWith("/**")) {
+                String _uri = uri.substring(0, uri.length()-4);
+                if (requestURI.startsWith(_uri)) {
+                    return true;
+                }
+            }
+            else if (requestURI.equals(uri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         log.info("AuthenticationProcessingFilter 호출됨 {}", requestURI);
 
-        if (requestURI.equals("/signout") || requestURI.equals("/reissue")) {
+        String[] ignoreURIs = {
+            "/actuator/**",
+            "/signout",
+            "/reissue"
+        };
+
+        if (ignoreRequestURI(requestURI, ignoreURIs)) {
             filterChain.doFilter(request, response);
             return;
         }
