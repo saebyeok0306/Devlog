@@ -72,6 +72,7 @@ const commentEditorConfig = {
       "specialCharacters",
       "horizontalLine",
       "link",
+      "insertImage",
       "insertTable",
       "highlight",
       "codeBlock",
