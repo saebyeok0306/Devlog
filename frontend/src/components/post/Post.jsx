@@ -88,7 +88,7 @@ function Post({ ...props }) {
                   onClick={null}
                 >
                   <a
-                    href={`${import.meta.env.VITE_API_ENDPOINT}/download/${file.fileUrl}`}
+                    href={`${process.env.NEXT_PUBLIC_API_ENDPOINT}/download/${file.fileUrl}`}
                     download={file.fileName}
                   >
                     <p className="file-upload-file-name">
