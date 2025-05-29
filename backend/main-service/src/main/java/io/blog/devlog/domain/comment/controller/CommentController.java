@@ -12,6 +12,8 @@ import io.blog.devlog.domain.user.model.User;
 import io.blog.devlog.domain.user.service.UserService;
 import io.blog.devlog.global.exception.NoPermissionException;
 import io.blog.devlog.global.exception.NotFoundException;
+import io.blog.devlog.global.redis.message.CommentEmailMessage;
+import io.blog.devlog.global.redis.service.CommentEmailPubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +29,12 @@ import static io.blog.devlog.global.utils.SecurityUtils.getUserEmail;
 @RequestMapping("/comments")
 @Slf4j
 public class CommentController {
+
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
+    private final CommentEmailPubService commentEmailPubService;
+
     @PostMapping
     public void uploadComment(@RequestBody RequestCommentDto requestCommentDto) {
         log.info("RequestCommentDto : " + requestCommentDto);
@@ -42,6 +47,16 @@ public class CommentController {
             throw new NoPermissionException("댓글을 작성할 권한이 없습니다.");
         }
         commentService.saveComment(user, requestCommentDto, postDetail.getPost());
+
+        CommentEmailMessage emailMessage = new CommentEmailMessage(
+                postDetail.getPost().getUser().getEmail(),
+                String.format("[devLog] {%s} 게시글에 댓글이 달렸습니다.", postDetail.getPost().getTitle()),
+                postDetail.getPost().getTitle(),
+                postDetail.getPost().getUrl(),
+                requestCommentDto.getContent(),
+                user.getUsername()
+        );
+        commentEmailPubService.sendEmail(emailMessage);
     }
 
     @PostMapping("/{commentId}")
