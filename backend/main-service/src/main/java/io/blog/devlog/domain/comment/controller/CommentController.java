@@ -48,12 +48,13 @@ public class CommentController {
         }
         commentService.saveComment(user, requestCommentDto, postDetail.getPost());
 
+        String contentTextOnly = requestCommentDto.getContent().replaceAll("<[^>]*>", "");
         CommentEmailMessage emailMessage = new CommentEmailMessage(
                 postDetail.getPost().getUser().getEmail(),
-                String.format("[devLog] {%s} 게시글에 댓글이 달렸습니다.", postDetail.getPost().getTitle()),
+                String.format("[devLog] %s 게시글에 댓글이 달렸습니다.", postDetail.getPost().getTitle()),
                 postDetail.getPost().getTitle(),
                 postDetail.getPost().getUrl(),
-                requestCommentDto.getContent(),
+                contentTextOnly,
                 user.getUsername()
         );
         commentEmailPubService.sendEmail(emailMessage);
