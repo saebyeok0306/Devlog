@@ -17,23 +17,28 @@ class EmailServiceImpl : EmailService {
     @Autowired
     private lateinit var templateEngine: SpringTemplateEngine
 
-    override fun sendEmail(type: MessageType, email: String, subject: String, authCode: String) {
+    override fun sendEmail(type: MessageType, email: String, subject: String, params: HashMap<String, String>) {
         val mimeMessage: MimeMessage = emailSender.createMimeMessage()
 
         try {
             val helper = MimeMessageHelper(mimeMessage, true, "utf-8")
             helper.setTo(email)
             helper.setSubject(subject)
-            helper.setText(this.setContext(type, authCode), true)
+            helper.setText(this.setContext(type, params), true)
             emailSender.send(mimeMessage)
         } catch (e : Exception) {
             println("Failed to send email $e")
         }
     }
 
-    override fun setContext(type: MessageType, authCode: String): String {
+    override fun setContext(type: MessageType, params: HashMap<String, String>): String {
         val context = Context()
-        context.setVariable("authCode", authCode)
+
+        for (entry in params.entries) {
+            context.setVariable(entry.key, entry.value)
+        }
+
+//        context.setVariable("authCode", authCode)
         return templateEngine.process(type.name.lowercase(), context)
     }
 }

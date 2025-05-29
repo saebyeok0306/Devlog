@@ -15,6 +15,8 @@ class EmailController {
 
     @PostMapping("/send")
     fun sendEmail(@RequestBody message: AuthenticationMessage) {
-        emailService.sendEmail(MessageType.EMAIL, message.email, message.subject, message.authCode)
+        val params = HashMap<String, String>()
+        params["authCode"] = message.authCode
+        emailService.sendEmail(MessageType.EMAIL, message.email, message.subject, params)
     }
 }
