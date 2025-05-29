@@ -1,5 +1,5 @@
 package io.blog.mail.mail.types
 
 enum class MessageType {
-    EMAIL, PASSWORD
+    EMAIL, PASSWORD, COMMENT
 }

@@ -1,5 +1,6 @@
 package io.blog.mail.redis.config
 
+import io.blog.mail.redis.service.CommentEmailSubService
 import io.blog.mail.redis.service.VerifyEmailSubService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -17,6 +18,8 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 class RedisConfig {
     @Autowired
     private lateinit var verifyEmailSubService: VerifyEmailSubService
+    @Autowired
+    private lateinit var commentEmailSubService: CommentEmailSubService
 
     @Value("\${spring.data.redis.host}")
     var redisHost: String = "localhost"
@@ -31,8 +34,23 @@ class RedisConfig {
     }
 
     @Bean
+    fun verifyEmailTopic(): ChannelTopic {
+        return ChannelTopic("VerifyEmail")
+    }
+
+    @Bean
     fun verifyEmailMessageListenerAdapter(): MessageListenerAdapter {
         return MessageListenerAdapter(verifyEmailSubService)
+    }
+
+    @Bean
+    fun commentEmailTopic(): ChannelTopic {
+        return ChannelTopic("CommentEmail")
+    }
+
+    @Bean
+    fun commentEmailMessageListenerAdapter(): MessageListenerAdapter {
+        return MessageListenerAdapter(commentEmailSubService)
     }
 
     @Bean
@@ -40,11 +58,7 @@ class RedisConfig {
         val container = RedisMessageListenerContainer()
         container.setConnectionFactory(redisConnectionFactory())
         container.addMessageListener(verifyEmailMessageListenerAdapter(), verifyEmailTopic())
+        container.addMessageListener(commentEmailMessageListenerAdapter(), commentEmailTopic())
         return container
-    }
-
-    @Bean
-    fun verifyEmailTopic(): ChannelTopic {
-        return ChannelTopic("VerifyEmail")
     }
 }
