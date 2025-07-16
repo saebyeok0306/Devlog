@@ -5,16 +5,6 @@ networks:
     driver: bridge
 
 services:
-  frontend-service:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    ports:
-      - "3000:3000"
-    networks:
-      - ms-network
-    restart: on-failure
-
   discovery-service:
     build:
       context: ./backend/discovery-service
