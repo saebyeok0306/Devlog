@@ -10,7 +10,7 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://mysql:3306/devlog?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     #    url: jdbc:mysql://database:3306/devlog?serverTimezone=Asia/Seoul
     # driver-class-name: oracle.jdbc.OracleDriver
     # url: jdbc:oracle:thin:@testdb_high?TNS_ADMIN=/home/app/backend/wallet
@@ -18,7 +18,7 @@ spring:
     password: ${ORACLE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate # DDL (create/update/create-drop/validate/none)
+      ddl-auto: create # DDL (create/update/create-drop/validate/none)
   data:
     redis:
       host: redis
