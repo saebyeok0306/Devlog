@@ -20,13 +20,13 @@ function FooterComponent() {
       <Footer container>
         <Responsive className="footer-responsive">
           <Footer.Copyright
-            href="https://github.com/westreed"
+            href="https://github.com/saebyeok0306"
             by="SeHun.J"
-            year={2024}
+            year={2025}
           />
           <Footer.LinkGroup className="footer-items">
             <FooterLinker href="/">Licensing</FooterLinker>
-            <FooterLinker href="/">Contact</FooterLinker>
+            <FooterLinker href="mailto:sehun0306.dev@gmail.com">Contact</FooterLinker>
           </Footer.LinkGroup>
         </Responsive>
       </Footer>
