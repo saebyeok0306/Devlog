@@ -159,4 +159,4 @@ jobs:
 
           script: |
             cd /home/app
-            docker-compose -f docker-compose.prod.yml up -d --build discovery-service
+            docker compose -f docker-compose.prod.yml up -d --build discovery-service
