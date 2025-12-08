@@ -2,7 +2,6 @@ package io.blog.devlog.domain.views.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -21,7 +20,6 @@ public class PostViewCount {
     private Long id;
     private Long postId;
     private LocalDate viewDate;
-    @ColumnDefault("0")
     private int viewCount;
 
     public PostViewCount(Long postId, LocalDate viewDate, int viewCount) {

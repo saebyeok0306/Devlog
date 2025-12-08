@@ -43,8 +43,9 @@ public class Comment extends BaseTime {
     private String content;
     private boolean hidden;
     @Setter
-    @ColumnDefault("0")
-    private boolean deleted;
+    @ColumnDefault("0") // false
+    @Builder.Default
+    private boolean deleted = false;
 
     public Comment toEdit(RequestEditCommentDto requestEditCommentDto) {
         this.content = requestEditCommentDto.getContent();

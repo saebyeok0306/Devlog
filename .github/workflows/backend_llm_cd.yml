@@ -132,6 +132,9 @@ jobs:
     needs:
       - build
     runs-on: ubuntu-22.04
+    concurrency:
+      group: startup-lock
+      cancel-in-progress: false
     steps:
       - name: Restart Server
         uses: appleboy/ssh-action@master

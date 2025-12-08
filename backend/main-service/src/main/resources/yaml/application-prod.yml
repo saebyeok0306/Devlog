@@ -9,10 +9,10 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@testdb_high?TNS_ADMIN=/home/app/backend/wallet
-    username: ${ORACLE_USERNAME}
-    password: ${ORACLE_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DEVLOG_MAIN_DB_HOST}/devlog
+    username: ${DEVLOG_MAIN_DB_NM}
+    password: ${DEVLOG_MAIN_DB_PW}
   jpa:
     hibernate:
       ddl-auto: validate # DDL (create/update/create-drop/validate/none)
