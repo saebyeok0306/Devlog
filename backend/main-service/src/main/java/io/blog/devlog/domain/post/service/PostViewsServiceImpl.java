@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,9 @@ public class PostViewsServiceImpl implements PostViewsService {
     public boolean increaseViewCount(Long postId, HttpServletRequest request) {
         String clientIP = request.getRemoteAddr();
         if (request.getHeader("X-Forwarded-For") != null) {
-            clientIP = request.getHeader("X-Forwarded-For").split(",")[0];
+            String forwardForIp = request.getHeader("X-Forwarded-For");
+            log.info("X-Forwarded-For : " + forwardForIp);
+            clientIP = forwardForIp.split(",")[0];
         }
         String hashIP = DigestUtils.md5Hex(clientIP);
 
